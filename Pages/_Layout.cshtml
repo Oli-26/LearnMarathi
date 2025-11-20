@@ -1,0 +1,396 @@
+@using Microsoft.AspNetCore.Components.Web
+@namespace LearnMarathi.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <base href="~/"/>
+    <link href="css/site.css" rel="stylesheet"/>
+    <link href="LearnMarathi.styles.css" rel="stylesheet"/>
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered"/>
+</head>
+<body>
+@RenderBody()
+
+<div id="blazor-error-ui">
+    <environment include="Staging,Production">
+        An error has occurred. This application may no longer respond until reloaded.
+    </environment>
+    <environment include="Development">
+        An unhandled exception has occurred. See browser dev tools for details.
+    </environment>
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+<script src="_framework/blazor.server.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+<script>
+    var signaturePad;
+
+    function initSignaturePad() {
+        try {
+            const canvas = document.getElementById('signaturePad');
+            if (!canvas) {
+                console.error('Canvas element not found');
+                return;
+            }
+
+            // Prevent default touch behavior to avoid scrolling while drawing
+            canvas.addEventListener('touchstart', function (e) {
+                e.preventDefault();
+            }, {passive: false});
+
+            canvas.addEventListener('touchmove', function (e) {
+                e.preventDefault();
+            }, {passive: false});
+
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: '#fafafa',
+                penColor: '#2d6a2d',
+                minWidth: 4,
+                maxWidth: 8,
+                throttle: 0,
+                minDistance: 0,
+                velocityFilterWeight: 0.7
+            });
+
+            // Handle canvas resizing
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                const rect = canvas.getBoundingClientRect();
+
+                // Store current drawing if exists
+                const data = signaturePad.isEmpty() ? null : signaturePad.toData();
+
+                canvas.width = rect.width * ratio;
+                canvas.height = rect.height * ratio;
+                canvas.getContext('2d').scale(ratio, ratio);
+                canvas.style.width = rect.width + 'px';
+                canvas.style.height = rect.height + 'px';
+
+                // Restore drawing if it existed
+                if (data) {
+                    signaturePad.fromData(data);
+                } else {
+                    signaturePad.clear();
+                }
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+        } catch (error) {
+            console.error('Error initializing signature pad:', error);
+        }
+    }
+
+    function clearSignaturePad() {
+        if (signaturePad) {
+            signaturePad.clear();
+        }
+    }
+
+    function getSignaturePadData() {
+        if (signaturePad && !signaturePad.isEmpty()) {
+            return signaturePad.toDataURL();
+        }
+        return null
+    }
+
+
+        // Voice recognition functions
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let audioContext;
+        let audioStream;
+
+        async function startVoiceRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        channelCount: 1,
+                        sampleRate: 16000,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    }
+                });
+
+                audioStream = stream;
+                audioChunks = [];
+
+                // Create AudioContext for processing
+                audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                    sampleRate: 16000
+                });
+
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                // Start recording with 10 second limit to prevent huge files
+                mediaRecorder.start();
+
+                // Auto-stop after 10 seconds to prevent memory issues
+                setTimeout(() => {
+                    if (isRecording && mediaRecorder && mediaRecorder.state === 'recording') {
+                        console.log('Auto-stopping recording after 10 seconds');
+                        // Don't call stop here, let the user click stop
+                    }
+                }, 10000);
+
+                isRecording = true;
+                return {success: true, message: 'Recording started'};
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                return {success: false, message: 'Could not access microphone: ' + error.message};
+            }
+        }
+
+        async function stopVoiceRecording() {
+            if (!mediaRecorder || !isRecording) {
+                return {success: false, message: 'No recording in progress'};
+            }
+
+            return new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    reject(new Error('Recording stop timeout'));
+                }, 10000); // 10 second timeout
+
+                mediaRecorder.onstop = async () => {
+                    clearTimeout(timeout);
+
+                    try {
+                        // Stop all media tracks
+                        if (audioStream) {
+                            audioStream.getTracks().forEach(track => track.stop());
+                        }
+
+                        const audioBlob = new Blob(audioChunks, {type: 'audio/webm;codecs=opus'});
+
+                        // Convert WebM to PCM WAV format for Vosk
+                        const pcmData = await convertToPCM16(audioBlob);
+
+                        isRecording = false;
+                        audioChunks = [];
+
+                        resolve({success: true, audioData: pcmData});
+                    } catch (error) {
+                        console.error('Error processing audio:', error);
+                        isRecording = false;
+                        reject(error);
+                    }
+                };
+
+                try {
+                    mediaRecorder.stop();
+                } catch (error) {
+                    clearTimeout(timeout);
+                    isRecording = false;
+                    reject(error);
+                }
+            });
+        }
+
+        // Convert audio blob to PCM 16-bit mono 16kHz format
+        async function  convertToPCM16(audioBlob) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const arrayBuffer = await audioBlob.arrayBuffer();
+
+                    // Decode audio data
+                    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+                    // Get mono channel data
+                    const channelData = audioBuffer.getChannelData(0);
+
+                    // Convert to 16-bit PCM
+                    const pcm16 = new Int16Array(channelData.length);
+                    for (let i = 0; i < channelData.length; i++) {
+                        // Convert float32 [-1.0, 1.0] to int16 [-32768, 32767]
+                        const s = Math.max(-1, Math.min(1, channelData[i]));
+                        pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                    }
+
+                    // Convert to base64 safely without stack overflow
+                    const uint8Array = new Uint8Array(pcm16.buffer);
+
+                    // Convert uint8Array to base64 in chunks
+                    let binaryString = '';
+                    const chunkSize = 8192; // Process 8KB at a time for binary string
+
+                    for (let i = 0; i < uint8Array.length; i += chunkSize) {
+                        const chunk = uint8Array.subarray(i, Math.min(i + chunkSize, uint8Array.length));
+                        binaryString += String.fromCharCode.apply(null, Array.from(chunk));
+                    }
+
+                    // Now convert the full binary string to base64
+                    const base64 = btoa(binaryString);
+
+                    console.log('Audio converted:', channelData.length, 'samples,', uint8Array.length, 'bytes,', base64.length, 'base64 chars');
+                    resolve(base64);
+                } catch (error) {
+                    console.error('Error converting audio:', error);
+                    reject(error);
+                }
+            });
+        }
+
+        function isCurrentlyRecording() {
+            return isRecording;
+        }
+
+        // Old validation function (keeping for backward compatibility)
+        async function validateCharacter(expectedChar) {
+            try {
+                if (!signaturePad || signaturePad.isEmpty()) {
+                    return {success: false, message: 'Please draw something first'};
+                }
+
+                await initTesseract();
+
+                // Get the canvas data with better quality
+                const canvas = document.getElementById('signaturePad');
+
+                // Create a temporary canvas for preprocessing
+                const tempCanvas = document.createElement('canvas');
+                const ctx = tempCanvas.getContext('2d');
+
+                // Use larger size for better recognition (scaled up)
+                const scale = 2;
+                tempCanvas.width = canvas.width * scale;
+                tempCanvas.height = canvas.height * scale;
+
+                // Fill with white background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+                // Draw the signature scaled up
+                ctx.scale(scale, scale);
+                ctx.drawImage(canvas, 0, 0);
+
+                // Convert to high contrast black and white
+                const imageData = ctx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                const data = imageData.data;
+
+                // Increase contrast and convert to pure black/white
+                for (let i = 0; i < data.length; i += 4) {
+                    const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                    // More aggressive threshold for better OCR
+                    const value = brightness > 200 ? 255 : 0;
+                    data[i] = value;     // R
+                    data[i + 1] = value; // G
+                    data[i + 2] = value; // B
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+
+                // Get the preprocessed image
+                const imageDataUrl = tempCanvas.toDataURL('image/png');
+
+                console.log('Recognizing character...');
+                const {data: {text, confidence}} = await worker.recognize(imageDataUrl);
+
+                // Clean up the recognized text
+                const recognizedChar = text.trim().replace(/\s+/g, '').replace(/[^\u0900-\u097F]/g, '');
+                const cleanExpected = expectedChar.trim();
+
+                console.log('Expected:', cleanExpected, 'Recognized:', recognizedChar, 'Confidence:', confidence);
+
+                // Multi-level validation
+                let isCorrect = false;
+                let matchType = '';
+                let similarity = 0;
+
+                // 1. Exact match
+                if (recognizedChar === cleanExpected) {
+                    isCorrect = true;
+                    matchType = 'exact';
+                    similarity = 100;
+                }
+                // 2. Fuzzy match with high similarity threshold (85%)
+                else if (recognizedChar.length > 0) {
+                    similarity = calculateSimilarity(recognizedChar, cleanExpected);
+
+                    if (similarity >= 85) {
+                        isCorrect = true;
+                        matchType = 'fuzzy-high';
+                    }
+                    // 3. Visually similar characters (70% similarity + visual match)
+                    else if (similarity >= 70 && areVisuallySimilar(recognizedChar, cleanExpected)) {
+                        isCorrect = true;
+                        matchType = 'visual-similar';
+                    }
+                    // 4. Contains the expected character
+                    else if (recognizedChar.includes(cleanExpected) || cleanExpected.includes(recognizedChar)) {
+                        isCorrect = true;
+                        matchType = 'partial';
+                    }
+                    // 5. Low confidence but close enough (for very poor handwriting)
+                    else if (similarity >= 60 && confidence < 50) {
+                        isCorrect = true;
+                        matchType = 'low-confidence-accept';
+                    }
+                }
+
+                // Generate feedback message
+                let message = '';
+                if (isCorrect) {
+                    switch (matchType) {
+                        case 'exact':
+                            message = '✓ Perfect match! Excellent!';
+                            break;
+                        case 'fuzzy-high':
+                            message = `✓ Very close! (${similarity.toFixed(0)}% match)`;
+                            break;
+                        case 'visual-similar':
+                            message = `✓ Close enough! These characters look similar.`;
+                            break;
+                        case 'partial':
+                            message = `✓ Partially correct - recognized part of the character.`;
+                            break;
+                        case 'low-confidence-accept':
+                            message = `✓ Accepted! (Drawing could be clearer, ${similarity.toFixed(0)}% match)`;
+                            break;
+                    }
+                } else {
+                    if (recognizedChar) {
+                        message = `Try again! Recognized as "${recognizedChar}" (${similarity.toFixed(0)}% match)`;
+                    } else {
+                        message = 'Could not recognize. Try drawing more clearly with thicker strokes.';
+                    }
+                }
+
+                return {
+                    success: isCorrect,
+                    recognizedChar: recognizedChar || 'Not recognized',
+                    expectedChar: cleanExpected,
+                    confidence: Math.round(confidence),
+                    similarity: Math.round(similarity),
+                    matchType: matchType,
+                    message: message
+                };
+            } catch (error) {
+                console.error('Validation error:', error);
+                return {
+                    success: false,
+                    message: 'Recognition failed: ' + error.message,
+                    recognizedChar: 'Error',
+                    confidence: 0,
+                    similarity: 0
+                };
+            }
+    }
+</script>
+</body>
+</html>

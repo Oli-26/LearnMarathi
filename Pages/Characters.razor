@@ -1,0 +1,1838 @@
+@page "/characters"
+@using LearnMarathi.Data
+@using LearnMarathi.Models
+@using LearnMarathi.Services
+@using Microsoft.JSInterop
+@inject IMarathiCharacterRepository Repository
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject LearnMarathi.Services.IVoiceRecognitionService VoiceRecognitionService
+
+<PageTitle>Marathi Characters - Learn Marathi</PageTitle>
+
+<div class="main-container">
+    <div class="header">
+        <h1>Marathi Characters & Pronunciation</h1>
+        <p>Learn the Devanagari script - the foundation of reading and writing Marathi</p>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <button class="nav-button" @onclick='() => NavigateToPage("/")'>← Back to Home</button>
+        @if (characters != null && characters.Any())
+        {
+            <button class="quiz-button" @onclick="StartQuiz">🎯 Take Quiz</button>
+            <button class="quiz-button" @onclick="StartDrawing">✏️ Drawing Practice</button>
+            <button class="quiz-button" @onclick="StartPronunciation">🎤 Pronunciation Practice</button>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div style="background: #ffebee; padding: 20px; border-radius: 10px; margin: 20px 0; color: #c62828;">
+            <h3>Error:</h3>
+            <p>@errorMessage</p>
+        </div>
+    }
+
+    @if (isLoading)
+    {
+        <div style="text-align: center; padding: 40px;">
+            <p>Loading characters...</p>
+        </div>
+    }
+    else if (characters == null || !characters.Any())
+    {
+        <div style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
+            <h2>No Characters Found</h2>
+            <p>Please make sure you've run the SQL setup script to create and populate the database.</p>
+        </div>
+    }
+    else if (showQuizReview)
+    {
+        <div class="review-modal-overlay" @onclick="CloseReview">
+            <div class="review-modal" @onclick:stopPropagation="true">
+                <div class="review-header">
+                    <h2>📊 Quiz Results</h2>
+                    <button class="close-review-btn" @onclick="CloseReview">✕</button>
+                </div>
+
+                <div class="review-summary">
+                    <div class="summary-card correct-card">
+                        <div class="summary-number">@correctAnswers</div>
+                        <div class="summary-label">Correct</div>
+                    </div>
+                    <div class="summary-card wrong-card">
+                        <div class="summary-number">@wrongAnswers</div>
+                        <div class="summary-label">Wrong</div>
+                    </div>
+                    <div class="summary-card score-card">
+                        <div class="summary-number">@((correctAnswers + wrongAnswers > 0 ? (int)((double)correctAnswers / (correctAnswers + wrongAnswers) * 100) : 0))%</div>
+                        <div class="summary-label">Score</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Performance by Character</h3>
+                    <div class="chart-legend">
+                        <span class="legend-item"><span class="legend-color correct-color"></span> Correct</span>
+                        <span class="legend-item"><span class="legend-color wrong-color"></span> Wrong</span>
+                    </div>
+
+                    <div class="bar-chart">
+                        @foreach (var stat in GetCharacterStats())
+                        {
+                            var totalForChar = stat.CorrectCount + stat.WrongCount;
+                            var maxTotal = GetCharacterStats().Max(s => s.CorrectCount + s.WrongCount);
+                            var correctHeight = maxTotal > 0 ? (stat.CorrectCount * 200.0 / maxTotal) : 0;
+                            var wrongHeight = maxTotal > 0 ? (stat.WrongCount * 200.0 / maxTotal) : 0;
+                            var accuracy = totalForChar > 0 ? (int)((double)stat.CorrectCount / totalForChar * 100) : 0;
+
+                            <div class="bar-item">
+                                <div class="bar-stack" style="height: 200px;">
+                                    @if (stat.CorrectCount > 0)
+                                    {
+                                        <div class="bar-segment correct-bar"
+                                             style="height: @(correctHeight)px;"
+                                             title="Correct: @stat.CorrectCount">
+                                            @if (correctHeight > 20)
+                                            {
+                                                <span class="bar-count">@stat.CorrectCount</span>
+                                            }
+                                        </div>
+                                    }
+                                    @if (stat.WrongCount > 0)
+                                    {
+                                        <div class="bar-segment wrong-bar"
+                                             style="height: @(wrongHeight)px;"
+                                             title="Wrong: @stat.WrongCount">
+                                            @if (wrongHeight > 20)
+                                            {
+                                                <span class="bar-count">@stat.WrongCount</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                <div class="bar-label">
+                                    <div class="char-display">@stat.Character</div>
+                                    <div class="accuracy-display">@accuracy%</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="action-btn primary-btn" @onclick="RestartQuiz">🔄 Try Again</button>
+                    <button class="action-btn secondary-btn" @onclick="BackToLearning">📚 Back to Learning</button>
+                </div>
+            </div>
+        </div>
+    }
+    else if (showPronunciation)
+    {
+        <div class="pronunciation-container">
+            <div class="pronunciation-header">
+                <h2>Pronunciation Practice</h2>
+                <button class="close-quiz-btn" @onclick="ClosePronunciation">✕ Exit Practice</button>
+            </div>
+
+            <div class="score-board">
+                <span class="score-item">Correct: <strong>@pronunciationCorrect</strong></span>
+                <span class="score-item">Wrong: <strong>@pronunciationWrong</strong></span>
+            </div>
+
+            @if (currentPronunciationCharacter != null)
+            {
+                <div class="pronunciation-card">
+                    <h3>Say this character:</h3>
+                    <div class="question-display">@currentPronunciationCharacter.MarathiChar</div>
+                    <div class="pronunciation-hint">
+                        <strong>Pronunciation:</strong> @currentPronunciationCharacter.Pronunciation
+                    </div>
+                    <div class="pronunciation-hint">
+                        <strong>English:</strong> @currentPronunciationCharacter.EnglishTranslation
+                    </div>
+
+                    <div class="voice-controls">
+                        @if (!isRecording)
+                        {
+                            <button class="action-btn primary-btn record-btn" @onclick="StartRecording">
+                                🎤 Hold to Record
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="action-btn recording-btn" @onclick="StopRecording">
+                                ⏹️ Stop Recording
+                            </button>
+                            <div class="recording-indicator">
+                                <span class="pulse"></span> Recording...
+                            </div>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(pronunciationFeedback))
+                    {
+                        <div class="validation-feedback @pronunciationFeedbackClass">
+                            <div class="validation-message">@pronunciationFeedback</div>
+                            @if (!string.IsNullOrEmpty(recognizedText))
+                            {
+                                <div class="validation-details">
+                                    <span>You said: <strong>@recognizedText</strong></span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else if(isProcessingRecording)
+                    {
+                        <div>
+                            Processing....
+                        </div>
+                    }
+
+                    <div class="pronunciation-controls">
+                        <button class="action-btn secondary-btn" @onclick="NextPronunciationCharacter">➡️ Next Character</button>
+                    </div>
+
+                    <div class="pronunciation-note">
+                        <p><strong>💡 Tips for better recognition:</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>The model is trained on conversational Hindi, so it may recognize character sounds as Hindi words (e.g., "हाँ")</li>
+                            <li>Speak clearly and pronounce the full character sound (not just a quick syllable)</li>
+                            <li>The system uses phonetic matching, so close sounds will be accepted</li>
+                            <li>Check the console (F12) to see what was heard vs expected</li>
+                        </ul>
+                        <p style="margin-top: 10px;"><strong>Setup:</strong> Voice recognition requires a Vosk model. Download from <a href="https://alphacephei.com/vosk/models" target="_blank">alphacephei.com/vosk/models</a> and configure in Program.cs</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (showDrawing)
+    {
+        <div class="drawing-container">
+            <div class="drawing-header">
+                <h2>Drawing Practice</h2>
+                <button class="close-quiz-btn" @onclick="CloseDrawing">✕ Exit Drawing</button>
+            </div>
+
+            <div class="score-board">
+                <span class="score-item">Practice Count: <strong>@drawingCount</strong></span>
+            </div>
+
+            @if (currentDrawingCharacter != null)
+            {
+                <div class="drawing-card">
+                    <h3>Practice drawing this character:</h3>
+                    <div class="quiz-settings">
+                        <label>Difficulty (Number of choices): </label>
+                        <select @bind="drawDifficultyLevel" @bind:event="onchange">
+                            <option value="1">Show Character</option>
+                            <option value="2">Hide Characher</option>
+                        </select>
+                    </div>
+                    
+                    @if(@drawDifficultyLevel == 1){
+                        <div class="question-display">@currentDrawingCharacter.MarathiChar</div>
+                    }
+                    <div class="pronunciation-hint">@currentDrawingCharacter.EnglishTranslation (@currentDrawingCharacter.Pronunciation)</div>
+
+                    <div class="canvas-container">
+                        <canvas id="signaturePad" width="250" height="250"></canvas>
+                    </div>
+
+                    <div class="drawing-controls">
+                        <button class="action-btn secondary-btn" @onclick="ClearCanvas">🗑️ Clear</button>
+                        @if (drawDifficultyLevel == 2)
+                        {
+                            <button class="action-btn primary-btn" @onclick="ValidateDrawing" >
+                                <span>✓ Check Answer</span>
+                            </button>  
+                        }
+                       
+                        <button class="action-btn primary-btn" @onclick="NextCharacter">➡️ Next Character</button>
+                    </div>
+
+                    @if (drawDifficultyLevel == 2 && showGoal)
+                    {
+                        <div class="goal-container">
+                            <div class="goal-display">
+                                <div class="goal-text">
+                                    <span>Draw this character:</span>
+                                    <div class="marathi-char">@currentDrawingCharacter.MarathiChar</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else if (showQuiz)
+    {
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <h2>Character Quiz</h2>
+                <button class="close-quiz-btn" @onclick="CloseQuiz">✕ Exit Quiz</button>
+            </div>
+
+            <div class="quiz-settings">
+                <label>Difficulty (Number of choices): </label>
+                <select @bind="difficultyLevel" @bind:event="onchange">
+                    <option value="2">Easy (2 choices)</option>
+                    <option value="4">Medium (4 choices)</option>
+                    <option value="6">Hard (6 choices)</option>
+                    <option value="8">Expert (8 choices)</option>
+                </select>
+            </div>
+
+            <div class="score-board">
+                <span class="score-item">Correct: <strong>@correctAnswers</strong></span>
+                <span class="score-item">Wrong: <strong>@wrongAnswers</strong></span>
+                <span class="score-item">Score: <strong>@((correctAnswers + wrongAnswers > 0 ? (int)((double)correctAnswers / (correctAnswers + wrongAnswers) * 100) : 0))%</strong></span>
+            </div>
+
+            @if (currentQuestion != null)
+            {
+                <div class="question-card">
+                    <h3>@currentQuestion.QuestionText</h3>
+                    <div class="question-display">@currentQuestion.DisplayCharacter</div>
+
+                    <div class="options-grid">
+                        @foreach (var option in currentQuestion.Options)
+                        {
+                            <button class="option-btn @GetOptionClass(option)"
+                                    @onclick="() => CheckAnswer(option)"
+                                    disabled="@(answerSelected)">
+                                @option
+                            </button>
+                        }
+                    </div>
+
+                    @if (answerSelected)
+                    {
+                        <button class="next-btn" @onclick="GenerateNewQuestion">Next Question →</button>
+                        <div class="feedback @(isCorrect ? "correct" : "wrong")">
+                            @if (isCorrect)
+                            {
+                                <span>✓ Correct!</span>
+                            }
+                            else
+                            {
+                                <span>✗ Wrong! The correct answer is: @currentQuestion.CorrectAnswer</span>
+                            }
+                        </div>
+                        
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div style="margin-bottom: 30px;">
+            <button class="filter-btn @(selectedType == "All" ? "active" : "")" @onclick='() => FilterByType("All")'>All</button>
+            <button class="filter-btn @(selectedType == "Vowel" ? "active" : "")" @onclick='() => FilterByType("Vowel")'>Vowels (स्वर)</button>
+            <button class="filter-btn @(selectedType == "Consonant" ? "active" : "")" @onclick='() => FilterByType("Consonant")'>Consonants (व्यंजन)</button>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
+            @foreach (var character in filteredCharacters)
+            {
+                <div class="character-card">
+                    <div class="marathi-char">@character.MarathiChar</div>
+                    <div class="transliteration">@character.EnglishTranslation</div>
+                    <div class="pronunciation">@character.Pronunciation</div>
+                </div>
+            }
+        </div>
+        <div>
+            "Reflexive" in Marathi phonetics typically refers to retroflex consonants - sounds produced by curling the tongue back towards the roof of the mouth. 
+            
+            
+
+            Aspirated - pronounced with an audible puff of air (marked with 'h' in transliteration)
+        </div>
+            
+    }
+</div>
+
+<style>
+    .main-container {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .header h1 {
+        color: #2d6a2d;
+        margin-bottom: 10px;
+    }
+
+    .nav-button {
+        background: linear-gradient(135deg, #90ee90, #7cbd7c);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .filter-btn {
+        background: white;
+        border: 2px solid #90ee90;
+        color: #2d6a2d;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover {
+        background-color: #e8f5e8;
+    }
+
+    .filter-btn.active {
+        background: linear-gradient(135deg, #90ee90, #7cbd7c);
+        color: white;
+    }
+
+    .character-card {
+        background: white;
+        border: 2px solid #90ee90;
+        border-radius: 10px;
+        padding: 20px;
+        width: 150px;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .character-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .marathi-char {
+        font-size: 48px;
+        font-weight: bold;
+        color: #2d6a2d;
+        margin-bottom: 10px;
+    }
+
+    .transliteration {
+        font-size: 20px;
+        color: #4a7c4a;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .pronunciation {
+        font-size: 14px;
+        color: #666;
+        font-style: italic;
+    }
+
+    .quiz-button {
+        background: linear-gradient(135deg, #7cbd7c, #5a9e5a);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-left: 10px;
+    }
+
+    .quiz-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .quiz-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .quiz-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #90ee90;
+    }
+
+    .quiz-header h2 {
+        color: #2d6a2d;
+        margin: 0;
+    }
+
+    .close-quiz-btn {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .close-quiz-btn:hover {
+        background: #ff5252;
+        transform: scale(1.05);
+    }
+
+    .quiz-settings {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f0f8f0;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .quiz-settings label {
+        font-weight: 600;
+        color: #2d6a2d;
+        margin-right: 10px;
+    }
+
+    .quiz-settings select {
+        padding: 8px 15px;
+        border: 2px solid #90ee90;
+        border-radius: 5px;
+        font-size: 16px;
+        background: white;
+        cursor: pointer;
+    }
+
+    .score-board {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 30px;
+        padding: 15px;
+        background: linear-gradient(135deg, #90ee90, #7cbd7c);
+        border-radius: 10px;
+        color: white;
+    }
+
+    .score-item {
+        font-size: 18px;
+    }
+
+    .question-card {
+        text-align: center;
+    }
+
+    .question-card h3 {
+        color: #2d6a2d;
+        margin-bottom: 20px;
+    }
+
+    .question-display {
+        font-size: 72px;
+        font-weight: bold;
+        color: #2d6a2d;
+        margin: 30px 0;
+        padding: 20px;
+        background: #f0f8f0;
+        border-radius: 15px;
+    }
+
+    .options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin: 30px 0;
+    }
+
+    .option-btn {
+        padding: 20px;
+        font-size: 20px;
+        background: white;
+        border: 2px solid #90ee90;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        color: #2d6a2d;
+    }
+
+    .option-btn:hover:not(:disabled) {
+        background: #e8f5e8;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .option-btn.correct {
+        background: #4caf50;
+        color: white;
+        border-color: #4caf50;
+    }
+
+    .option-btn.wrong {
+        background: #ff6b6b;
+        color: white;
+        border-color: #ff6b6b;
+    }
+
+    .option-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .feedback {
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .feedback.correct {
+        background: #c8e6c9;
+        color: #2e7d32;
+    }
+
+    .feedback.wrong {
+        background: #ffcdd2;
+        color: #c62828;
+    }
+
+    .next-btn {
+        background: linear-gradient(135deg, #90ee90, #7cbd7c);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .next-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Review Modal Styles */
+    .review-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .review-modal {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 900px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    .modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #90ee90;
+    }
+
+    .review-header h2 {
+        color: #2d6a2d;
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .close-review-btn {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 20px;
+        transition: all 0.3s ease;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close-review-btn:hover {
+        background: #ff5252;
+        transform: rotate(90deg);
+    }
+
+    .review-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .summary-card {
+        text-align: center;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .summary-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .correct-card {
+        background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+    }
+
+    .wrong-card {
+        background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+    }
+
+    .score-card {
+        background: linear-gradient(135deg, #90ee90, #7cbd7c);
+        color: white;
+    }
+
+    .summary-number {
+        font-size: 48px;
+        font-weight: bold;
+        color: #2d6a2d;
+    }
+
+    .score-card .summary-number {
+        color: white;
+    }
+
+    .summary-label {
+        font-size: 18px;
+        margin-top: 10px;
+        font-weight: 600;
+        color: #2d6a2d;
+    }
+
+    .score-card .summary-label {
+        color: white;
+    }
+
+    .chart-container {
+        margin-top: 40px;
+    }
+
+    .chart-container h3 {
+        color: #2d6a2d;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
+
+    .chart-legend {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+    }
+
+    .correct-color {
+        background: #4caf50;
+    }
+
+    .wrong-color {
+        background: #ff6b6b;
+    }
+
+    .bar-chart {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 15px;
+        overflow-x: auto;
+        min-height: 300px;
+    }
+
+    .bar-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 60px;
+    }
+
+    .bar-stack {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        justify-content: flex-end;
+        width: 50px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .bar-segment {
+        width: 100%;
+        border-radius: 5px 5px 0 0;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .bar-segment:hover {
+        opacity: 0.8;
+        transform: scaleX(1.1);
+    }
+
+    .correct-bar {
+        background: linear-gradient(to top, #4caf50, #66bb6a);
+    }
+
+    .wrong-bar {
+        background: linear-gradient(to top, #ff6b6b, #ff8a80);
+        border-radius: 5px 5px 0 0;
+    }
+
+    .bar-segment:first-child {
+        border-radius: 5px 5px 0 0;
+    }
+
+    .bar-count {
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .bar-label {
+        text-align: center;
+    }
+
+    .char-display {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2d6a2d;
+        margin-bottom: 5px;
+    }
+
+    .accuracy-display {
+        font-size: 12px;
+        color: #666;
+        font-weight: 600;
+    }
+
+    .action-btn {
+        padding: 15px 30px;
+        font-size: 16px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        margin: 0 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .primary-btn {
+        background: linear-gradient(135deg, #90ee90, #7cbd7c);
+        color: white;
+    }
+
+    .secondary-btn {
+        background: white;
+        color: #2d6a2d;
+        border: 2px solid #90ee90;
+    }
+
+    .secondary-btn:hover {
+        background: #e8f5e8;
+    }
+
+    /* Pronunciation Mode Styles */
+    .pronunciation-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .pronunciation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #90ee90;
+    }
+
+    .pronunciation-header h2 {
+        color: #2d6a2d;
+        margin: 0;
+    }
+
+    .pronunciation-card {
+        text-align: center;
+    }
+
+    .pronunciation-card h3 {
+        color: #2d6a2d;
+        margin-bottom: 20px;
+    }
+
+    .voice-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin: 30px 0;
+    }
+
+    .record-btn {
+        font-size: 20px;
+        padding: 20px 50px;
+        background: linear-gradient(135deg, #ff6b6b, #ff5252);
+        animation: pulse-btn 2s infinite;
+    }
+
+    @@keyframes pulse-btn {
+        0%, 100% {
+            box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+        }
+        50% {
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.6);
+        }
+    }
+
+    .recording-btn {
+        font-size: 20px;
+        padding: 20px 50px;
+        background: linear-gradient(135deg, #ff5252, #d32f2f);
+        animation: recording-pulse 1s infinite;
+    }
+
+    @@keyframes recording-pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
+    }
+
+    .recording-indicator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #d32f2f;
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    .pulse {
+        width: 12px;
+        height: 12px;
+        background: #d32f2f;
+        border-radius: 50%;
+        animation: pulse-dot 1s infinite;
+    }
+
+    @@keyframes pulse-dot {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.3);
+            opacity: 0.5;
+        }
+    }
+
+    .pronunciation-controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin: 30px 0;
+    }
+
+    .pronunciation-note {
+        margin-top: 30px;
+        padding: 15px;
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        border-radius: 5px;
+        text-align: left;
+    }
+
+    .pronunciation-note p {
+        margin: 0;
+        color: #1565c0;
+        font-size: 14px;
+    }
+
+    .pronunciation-note a {
+        color: #0d47a1;
+        text-decoration: underline;
+    }
+
+    /* Drawing Mode Styles */
+    .drawing-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .drawing-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #90ee90;
+    }
+
+    .drawing-header h2 {
+        color: #2d6a2d;
+        margin: 0;
+    }
+
+    .drawing-card {
+        text-align: center;
+    }
+
+    .drawing-card h3 {
+        color: #2d6a2d;
+        margin-bottom: 20px;
+    }
+
+    .pronunciation-hint {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .canvas-container {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+    }
+
+    #signaturePad {
+        border: 3px solid #90ee90;
+        border-radius: 10px;
+        cursor: crosshair;
+        background: #fafafa;
+        touch-action: none;
+        max-width: 100%;
+        width: 250px;
+        height: 250px;
+    }
+
+    @@media (max-width: 768px) {
+        #signaturePad {
+            width: 70vw;
+            height: 70vw;
+            max-width: 250px;
+            max-height: 250px;
+        }
+
+        .drawing-container {
+            padding: 15px;
+        }
+
+        .question-display {
+            font-size: 48px !important;
+        }
+
+        .drawing-controls {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+    }
+
+    .drawing-controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin: 30px 0;
+    }
+
+    .drawing-note {
+        margin-top: 30px;
+        padding: 15px;
+        background: #fff9e6;
+        border-left: 4px solid #ffc107;
+        border-radius: 5px;
+    }
+
+    .drawing-note p {
+        margin: 0;
+        color: #856404;
+        font-size: 14px;
+    }
+
+    /* Validation Feedback Styles */
+    .validation-feedback {
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .validation-correct {
+        background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+        border: 2px solid #4caf50;
+    }
+
+    .validation-wrong {
+        background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+        border: 2px solid #f44336;
+    }
+
+    .validation-message {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #2d6a2d;
+    }
+
+    .validation-wrong .validation-message {
+        color: #c62828;
+    }
+
+    .validation-details {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        font-size: 16px;
+        flex-wrap: wrap;
+    }
+
+    .validation-details span {
+        color: #555;
+    }
+
+    .action-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    @@media (max-width: 768px) {
+        .validation-message {
+            font-size: 16px;
+        }
+
+        .validation-details {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+</style>
+
+@code {
+    private IEnumerable<MarathiCharacter> characters = new List<MarathiCharacter>();
+    private IEnumerable<MarathiCharacter> filteredCharacters = new List<MarathiCharacter>();
+    private string selectedType = "All";
+    private bool isLoading = true;
+    private string errorMessage = "";
+
+    // Quiz variables
+    private bool showQuiz = false;
+    private bool showQuizReview = false;
+    private QuizQuestion? currentQuestion = null;
+    private int difficultyLevel = 4;
+    private int drawDifficultyLevel = 1;
+    private int correctAnswers = 0;
+    private int wrongAnswers = 0;
+    private bool answerSelected = false;
+    private bool isCorrect = false;
+    private string selectedAnswer = "";
+    private Random random = new Random();
+    private List<string> correctAnswersAggregate = new List<string>();
+    private List<string> wrongAnswersAggregate = new List<string>();
+
+    // Drawing variables
+    private bool showDrawing = false;
+    private MarathiCharacter? currentDrawingCharacter = null;
+    private int drawingCount = 0;
+    private bool showGoal = false;
+
+    // Pronunciation variables
+    private bool showPronunciation = false;
+    private MarathiCharacter? currentPronunciationCharacter = null;
+    private int pronunciationCorrect = 0;
+    private int pronunciationWrong = 0;
+    private bool isRecording = false;
+    private bool isProcessingRecording = false;
+    private string pronunciationFeedback = "";
+    private string pronunciationFeedbackClass = "";
+    private string recognizedText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (Repository == null)
+            {
+                errorMessage = "Repository is not initialized!";
+                isLoading = false;
+                return;
+            }
+
+            characters = await Repository.GetAllCharactersAsync();
+            filteredCharacters = characters;
+
+            if (characters == null || !characters.Any())
+            {
+                errorMessage = "No characters found in database. Please run the SQL setup script.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading characters: {ex.Message}";
+            Console.WriteLine($"Full error: {ex}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void FilterByType(string type)
+    {
+        selectedType = type;
+        if (type == "All")
+        {
+            filteredCharacters = characters;
+        }
+        else
+        {
+            filteredCharacters = characters.Where(c => c.CharacterType == type);
+        }
+    }
+
+    private void NavigateToPage(string url)
+    {
+        NavigationManager.NavigateTo(url);
+    }
+
+    private void StartQuiz()
+    {
+        showQuiz = true;
+        correctAnswers = 0;
+        wrongAnswers = 0;
+        GenerateNewQuestion();
+        correctAnswersAggregate = new List<string>();
+        wrongAnswersAggregate = new List<string>();
+    }
+
+    private void CloseQuiz()
+    {
+        showQuiz = false;
+        showQuizReview = true;
+        currentQuestion = null;
+        answerSelected = false;
+    }
+
+    private void GenerateNewQuestion()
+    {
+        if (!characters.Any()) return;
+
+        answerSelected = false;
+        isCorrect = false;
+        selectedAnswer = "";
+
+        // Randomly decide if we ask for Marathi->English or English->Marathi
+        bool askMarathiToEnglish = random.Next(2) == 0;
+
+        // Select a random character as the correct answer
+        var charactersList = characters.ToList();
+        var correctChar = charactersList[random.Next(charactersList.Count)];
+
+        // Generate wrong options
+        var wrongOptions = charactersList
+            .Where(c => c.Id != correctChar.Id)
+            .OrderBy(x => random.Next())
+            .Take(difficultyLevel - 1)
+            .ToList();
+
+        var allOptions = new List<string>();
+
+        if (askMarathiToEnglish)
+        {
+            // Question: Show Marathi, ask for English
+            allOptions.Add(correctChar.EnglishTranslation);
+            allOptions.AddRange(wrongOptions.Select(c => c.EnglishTranslation));
+
+            currentQuestion = new QuizQuestion
+            {
+                QuestionText = "What is the English transliteration?",
+                DisplayCharacter = correctChar.MarathiChar,
+                CorrectAnswer = correctChar.EnglishTranslation,
+                Options = allOptions.OrderBy(x => random.Next()).ToList()
+            };
+        }
+        else
+        {
+            // Question: Show English, ask for Marathi
+            allOptions.Add(correctChar.MarathiChar);
+            allOptions.AddRange(wrongOptions.Select(c => c.MarathiChar));
+
+            currentQuestion = new QuizQuestion
+            {
+                QuestionText = "Which Marathi character represents this?",
+                DisplayCharacter = correctChar.EnglishTranslation,
+                CorrectAnswer = correctChar.MarathiChar,
+                Options = allOptions.OrderBy(x => random.Next()).ToList()
+            };
+        }
+    }
+
+    private void CheckAnswer(string answer)
+    {
+        if (answerSelected || currentQuestion == null) return;
+
+        answerSelected = true;
+        selectedAnswer = answer;
+        isCorrect = answer == currentQuestion.CorrectAnswer;
+
+        if (isCorrect)
+        {
+            correctAnswersAggregate.Add(answer);
+            correctAnswers++;
+        }
+        else
+        {
+            wrongAnswersAggregate.Add(currentQuestion.CorrectAnswer);
+            wrongAnswers++;
+        }
+    }
+
+    private string GetOptionClass(string option)
+    {
+        if (!answerSelected) return "";
+
+        if (option == currentQuestion?.CorrectAnswer)
+            return "correct";
+
+        if (option == selectedAnswer && !isCorrect)
+            return "wrong";
+
+        return "";
+    }
+
+    private List<CharacterStat> GetCharacterStats()
+    {
+        var stats = new Dictionary<string, CharacterStat>();
+
+        // Process correct answers
+        foreach (var answer in correctAnswersAggregate)
+        {
+            if (!stats.ContainsKey(answer))
+            {
+                stats[answer] = new CharacterStat { Character = answer };
+            }
+            stats[answer].CorrectCount++;
+        }
+
+        // Process wrong answers
+        foreach (var answer in wrongAnswersAggregate)
+        {
+            if (!stats.ContainsKey(answer))
+            {
+                stats[answer] = new CharacterStat { Character = answer };
+            }
+            stats[answer].WrongCount++;
+        }
+
+        // Sort by total attempts (most attempted first), then by accuracy
+        return stats.Values
+            .OrderByDescending(s => s.CorrectCount + s.WrongCount)
+            .ThenByDescending(s => s.CorrectCount)
+            .ToList();
+    }
+
+    private void CloseReview()
+    {
+        showQuizReview = false;
+        correctAnswersAggregate.Clear();
+        wrongAnswersAggregate.Clear();
+    }
+
+    private void RestartQuiz()
+    {
+        showQuizReview = false;
+        StartQuiz();
+    }
+
+    private void BackToLearning()
+    {
+        showQuizReview = false;
+        correctAnswersAggregate.Clear();
+        wrongAnswersAggregate.Clear();
+    }
+
+    // Drawing Mode Methods
+    private async Task StartDrawing()
+    {
+        showDrawing = true;
+        drawingCount = 0;
+        SelectRandomCharacter();
+        await Task.Delay(100); // Small delay to ensure DOM is ready
+        await InitializeSignaturePad();
+    }
+
+    private void CloseDrawing()
+    {
+        showDrawing = false;
+        currentDrawingCharacter = null;
+        drawingCount = 0;
+    }
+
+    private void SelectRandomCharacter()
+    {
+        if (!characters.Any()) return;
+        var charactersList = characters.ToList();
+        currentDrawingCharacter = charactersList[random.Next(charactersList.Count)];
+    }
+
+    private async Task NextCharacter()
+    {
+        drawingCount++;
+        SelectRandomCharacter();
+        showGoal = false;
+        await ClearCanvas();
+    }
+
+    private async Task ClearCanvas()
+    {
+        await JSRuntime.InvokeVoidAsync("clearSignaturePad");
+    }
+
+    private async Task InitializeSignaturePad()
+    {
+        await JSRuntime.InvokeVoidAsync("initSignaturePad");
+    }
+
+    private async Task ValidateDrawing()
+    {
+        if (currentDrawingCharacter == null) return;
+        showGoal = true;
+
+        StateHasChanged();
+
+
+
+
+    }
+
+    // Pronunciation Practice Methods
+    private void StartPronunciation()
+    {
+        showPronunciation = true;
+        pronunciationCorrect = 0;
+        pronunciationWrong = 0;
+        SelectRandomPronunciationCharacter();
+    }
+
+    private void ClosePronunciation()
+    {
+        showPronunciation = false;
+        currentPronunciationCharacter = null;
+        pronunciationCorrect = 0;
+        pronunciationWrong = 0;
+        pronunciationFeedback = "";
+        recognizedText = "";
+    }
+
+    private void SelectRandomPronunciationCharacter()
+    {
+        if (!characters.Any()) return;
+        var charactersList = characters.ToList();
+        currentPronunciationCharacter = charactersList[random.Next(charactersList.Count)];
+        pronunciationFeedback = "";
+        recognizedText = "";
+        pronunciationFeedbackClass = "";
+    }
+
+    private async Task NextPronunciationCharacter()
+    {
+        SelectRandomPronunciationCharacter();
+        await Task.CompletedTask;
+    }
+
+    private async Task StartRecording()
+    {
+        try
+        {
+            isRecording = true;
+            pronunciationFeedback = "";
+            await JSRuntime.InvokeVoidAsync("startVoiceRecording");
+        }
+        catch (Exception ex)
+        {
+            pronunciationFeedback = $"Error starting recording: {ex.Message}";
+            pronunciationFeedbackClass = "validation-wrong";
+            isRecording = false;
+        }
+    }
+
+    private async Task StopRecording()
+    {
+        try
+        {
+            isRecording = false;
+            isProcessingRecording = true;
+            
+            StateHasChanged(); // Update UI immediately
+
+            // Add a small delay to ensure recording stops cleanly
+            await Task.Delay(100);
+
+                // Increase timeout for large audio data transfer
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            var result = await JSRuntime.InvokeAsync<VoiceRecordingResult>("stopVoiceRecording", cts.Token);
+
+            if (result?.Success == true && !string.IsNullOrEmpty(result.AudioData))
+            {
+                try
+                {
+                    Console.WriteLine($"Received audio data: {result.AudioData?.Length ?? 0} base64 chars");
+
+                    // Convert base64 to byte array
+                    byte[] audioData = Convert.FromBase64String(result.AudioData);
+                    Console.WriteLine($"Decoded audio data: {audioData.Length} bytes");
+
+                    // Use injected Vosk service (model is cached in memory)
+                    var recognitionResult = await VoiceRecognitionService.RecognizeSpeechAsync(audioData);
+                    isProcessingRecording = false;
+                    if (recognitionResult.Success && !string.IsNullOrEmpty(recognitionResult.Text))
+                    {
+                        recognizedText = recognitionResult.Text;
+                        var expectedPronunciation = currentPronunciationCharacter?.Pronunciation ?? "";
+                        var expectedEnglish = currentPronunciationCharacter?.EnglishTranslation ?? "";
+
+                        bool isCorrect = ValidatePronunciation(recognitionResult.Text, expectedEnglish);
+
+                        if (isCorrect)
+                        {
+                            pronunciationCorrect++;
+                            pronunciationFeedback = $"✓ Great! Recognized: '{recognitionResult.Text}' (Confidence: {recognitionResult.Confidence:P0})";
+                            pronunciationFeedbackClass = "validation-correct";
+                        }
+                        else
+                        {
+                            pronunciationWrong++;
+                            pronunciationFeedback = $"Not quite right. Heard: '{recognitionResult.Text}', Expected: '{expectedPronunciation}' ({expectedEnglish})";
+                            pronunciationFeedbackClass = "validation-wrong";
+                        }
+                    }
+                    else
+                    {
+                        pronunciationFeedback = recognitionResult.Error ?? "Could not recognize speech. Please try again.";
+                        pronunciationFeedbackClass = "validation-wrong";
+                        recognizedText = "Not recognized";
+                    }
+                }
+                catch (FormatException fex)
+                {
+                    isProcessingRecording = false;
+                    Console.WriteLine($"Format exception: {fex.Message}");
+                    pronunciationFeedback = $"Invalid audio data format: {fex.Message}";
+                    pronunciationFeedbackClass = "validation-wrong";
+                }
+                catch (Exception ex)
+                {
+                    isProcessingRecording = false;
+                    Console.WriteLine($"Audio processing error: {ex.Message}");
+                    pronunciationFeedback = $"Audio processing error: {ex.Message}";
+                    pronunciationFeedbackClass = "validation-wrong";
+                }
+            }
+            else
+
+            {
+                isProcessingRecording = false;
+                pronunciationFeedback = result?.Message ?? "Failed to record audio";
+                pronunciationFeedbackClass = "validation-wrong";
+            }
+        }
+        catch (JSException jsEx)
+        {
+            pronunciationFeedback = $"JavaScript error: {jsEx.Message}";
+            pronunciationFeedbackClass = "validation-wrong";
+            isRecording = false;
+            isProcessingRecording = false;
+        }
+        catch (TaskCanceledException)
+        {
+            pronunciationFeedback = "Recording was cancelled or timed out";
+            pronunciationFeedbackClass = "validation-wrong";
+            isRecording = false;
+            isProcessingRecording = false;
+        }
+        catch (Exception ex)
+        {
+            pronunciationFeedback = $"Error: {ex.Message}";
+            pronunciationFeedbackClass = "validation-wrong";
+            isRecording = false;
+            isProcessingRecording = false;
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private bool ValidatePronunciation(string recognizedText, string expectedText)
+    {
+        if (string.IsNullOrEmpty(recognizedText) || string.IsNullOrEmpty(expectedText))
+            return false;
+
+        // Normalize and compare
+        var recognized = recognizedText.ToLower().Trim();
+        var expected = expectedText.ToLower().Trim();
+
+        Console.WriteLine($"Validating: Recognized='{recognized}', Expected='{expected}'");
+
+        // 1. Exact match
+        if (recognized == expected)
+        {
+            Console.WriteLine("Match: Exact");
+            return true;
+        }
+
+        // 2. Contains match
+        if (recognized.Contains(expected) || expected.Contains(recognized))
+        {
+            Console.WriteLine("Match: Contains");
+            return true;
+        }
+
+        // 3. Phonetic matching for Marathi/Hindi characters
+        // Map common Devanagari sounds to their phonetic equivalents
+        var phoneticMappings = new Dictionary<string, string[]>
+        {
+            // Vowels
+            { "a", new[] { "aa", "ah", "uh", "आ", "अ" } },
+            { "aa", new[] { "a", "ah", "आ", "अ" } },
+            { "i", new[] { "ee", "ई", "इ" } },
+            { "ee", new[] { "i", "ई", "इ" } },
+            { "u", new[] { "oo", "ऊ", "उ" } },
+            { "oo", new[] { "u", "ऊ", "उ" } },
+            { "e", new[] { "ay", "ए", "ऐ" } },
+            { "o", new[] { "oh", "ओ", "औ" } },
+
+            // Common confusions with हाँ (haan/yes)
+            { "ka", new[] { "क", "kaa", "kah" } },
+            { "kha", new[] { "ख", "khaa", "khah" } },
+            { "ga", new[] { "ग", "gaa", "gah" } },
+            { "gha", new[] { "घ", "ghaa", "ghah" } },
+            { "cha", new[] { "च", "chaa", "chah" } },
+            { "ja", new[] { "ज", "jaa", "jah" } },
+            { "ta", new[] { "त", "taa", "tah" } },
+            { "da", new[] { "द", "daa", "dah" } },
+            { "na", new[] { "न", "naa", "nah" } },
+            { "pa", new[] { "प", "paa", "pah" } },
+            { "ba", new[] { "ब", "baa", "bah" } },
+            { "ma", new[] { "म", "maa", "mah" } },
+            { "ya", new[] { "य", "yaa", "yah" } },
+            { "ra", new[] { "र", "raa", "rah" } },
+            { "la", new[] { "ल", "laa", "lah" } },
+            { "va", new[] { "व", "vaa", "vah", "wa" } },
+            { "sa", new[] { "स", "saa", "sah" } },
+            { "ha", new[] { "ह", "haa", "hah", "हाँ", "हा" } },
+        };
+
+        // Check if recognized text phonetically matches expected
+        foreach (var mapping in phoneticMappings)
+        {
+            if (expected.Contains(mapping.Key))
+            {
+                foreach (var variant in mapping.Value)
+                {
+                    if (recognized.Contains(variant))
+                    {
+                        Console.WriteLine($"Match: Phonetic ({mapping.Key} ~ {variant})");
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // 4. Fuzzy match with Levenshtein distance (very lenient for short sounds)
+        int distance = LevenshteinDistance(recognized, expected);
+        int maxLength = Math.Max(recognized.Length, expected.Length);
+        double similarity = 1.0 - ((double)distance / maxLength);
+
+        Console.WriteLine($"Levenshtein: distance={distance}, similarity={similarity:P0}");
+
+        // For very short expected text (1-3 chars), be more lenient
+        if (maxLength <= 3 && similarity >= 0.4)
+        {
+            Console.WriteLine("Match: Short text fuzzy match");
+            return true;
+        }
+
+        // For longer text, require higher similarity
+        if (similarity >= 0.6)
+        {
+            Console.WriteLine("Match: Fuzzy match");
+            return true;
+        }
+
+        // 5. Check first character/sound match (for single character sounds)
+        if (expected.Length <= 2 && recognized.Length > 0 && expected[0] == recognized[0])
+        {
+            Console.WriteLine("Match: First character");
+            return true;
+        }
+
+        Console.WriteLine("No match found");
+        return false;
+    }
+
+    private int LevenshteinDistance(string s1, string s2)
+    {
+        if (string.IsNullOrEmpty(s1)) return s2?.Length ?? 0;
+        if (string.IsNullOrEmpty(s2)) return s1.Length;
+
+        int[,] d = new int[s1.Length + 1, s2.Length + 1];
+
+        for (int i = 0; i <= s1.Length; i++) d[i, 0] = i;
+        for (int j = 0; j <= s2.Length; j++) d[0, j] = j;
+
+        for (int i = 1; i <= s1.Length; i++)
+        {
+            for (int j = 1; j <= s2.Length; j++)
+            {
+                int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
+                d[i, j] = Math.Min(Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1), d[i - 1, j - 1] + cost);
+            }
+        }
+
+        return d[s1.Length, s2.Length];
+    }
+
+    private class VoiceRecordingResult
+    {
+        public bool Success { get; set; }
+        public string? AudioData { get; set; }
+        public string? Message { get; set; }
+    }
+
+    private class ValidationResult
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = "";
+        public string? RecognizedCharacter { get; set; }
+        public double Confidence { get; set; }
+    }
+
+    private class QuizQuestion
+    {
+        public string QuestionText { get; set; } = "";
+        public string DisplayCharacter { get; set; } = "";
+        public string CorrectAnswer { get; set; } = "";
+        public List<string> Options { get; set; } = new();
+    }
+
+    private class CharacterStat
+    {
+        public string Character { get; set; } = "";
+        public int CorrectCount { get; set; }
+        public int WrongCount { get; set; }
+    }
+}
