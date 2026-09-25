@@ -110,6 +110,7 @@
     // Which SRS decks count towards each lesson's progress bar.
     private static readonly Dictionary<string, string[]> LessonDecks = new()
     {
+        ["/commute"] = new[] { "commute" },
         ["/listening"] = new[] { "listen_words", "listen_phrases" },
         ["/sentences"] = new[] { "sentences" },
         ["/characters"] = new[] { "characters" },
@@ -125,21 +126,22 @@
     {
         new("Practice", "drills", new[] {
             new Lesson("01", "Review",    "Everything due, all decks",   "उजळणी",    "/review",    false),
-            new Lesson("02", "Listening", "Sound first, no script",      "ऐकणे",     "/listening", false),
-            new Lesson("03", "Sentences", "Build it word by word",       "वाक्यरचना", "/sentences", false),
+            new Lesson("02", "Commute",   "Guided audio for the train",  "प्रवास",    "/commute",   false),
+            new Lesson("03", "Listening", "Sound first, no script",      "ऐकणे",     "/listening", false),
+            new Lesson("04", "Sentences", "Build it word by word",       "वाक्यरचना", "/sentences", false),
         }),
         new("Script", "reading", new[] {
-            new Lesson("04", "Characters", "Devanagari foundations",     "अक्षरे",   "/characters", false),
-            new Lesson("05", "Barakhadi",  "Vowel signs and conjuncts",  "बाराखडी",  "/barakhadi",  false),
+            new Lesson("05", "Characters", "Devanagari foundations",     "अक्षरे",   "/characters", false),
+            new Lesson("06", "Barakhadi",  "Vowel signs and conjuncts",  "बाराखडी",  "/barakhadi",  false),
         }),
         new("Vocabulary", "words", new[] {
-            new Lesson("06", "Common Words", "By category, by frequency", "शब्द",   "/commonwords", false),
-            new Lesson("07", "Numbers",      "One to a hundred",          "अंक",    "/numbers",     false),
-            new Lesson("08", "Phrases",      "Everyday chunks",           "वाक्ये",  "/phrases",     false),
+            new Lesson("07", "Common Words", "By category, by frequency", "शब्द",   "/commonwords", false),
+            new Lesson("08", "Numbers",      "One to a hundred",          "अंक",    "/numbers",     false),
+            new Lesson("09", "Phrases",      "Everyday chunks",           "वाक्ये",  "/phrases",     false),
         }),
         new("Structure", "grammar", new[] {
-            new Lesson("09", "Verbs",   "Endings that agree with you", "क्रियापदे", "/verbs",   false),
-            new Lesson("10", "Grammar", "Patterns and tenses",         "व्याकरण",   "/grammar", false),
+            new Lesson("10", "Verbs",   "Endings that agree with you", "क्रियापदे", "/verbs",   false),
+            new Lesson("11", "Grammar", "Patterns and tenses",         "व्याकरण",   "/grammar", false),
         }),
     };
 

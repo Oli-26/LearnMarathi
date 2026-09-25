@@ -32,6 +32,7 @@ public class ReviewService : IReviewService
     private readonly INumberRepository _numbers;
     private readonly IVerbRepository _verbs;
     private readonly ISentenceRepository _sentences;
+    private readonly ICommuteRepository _commute;
     private readonly ISrsService _srs;
 
     private readonly IJSRuntime _js;
@@ -49,6 +50,7 @@ public class ReviewService : IReviewService
         INumberRepository numbers,
         IVerbRepository verbs,
         ISentenceRepository sentences,
+        ICommuteRepository commute,
         ISrsService srs,
         IJSRuntime js)
     {
@@ -58,6 +60,7 @@ public class ReviewService : IReviewService
         _numbers = numbers;
         _verbs = verbs;
         _sentences = sentences;
+        _commute = commute;
         _srs = srs;
         _js = js;
     }
@@ -95,6 +98,12 @@ public class ReviewService : IReviewService
 
         cards.AddRange((await _sentences.GetAllAsync())
             .Select(x => new ReviewCard("sentences", "Sentences", x.Id.ToString(), x.Marathi, x.English, x.Pronunciation, "sentences")));
+
+        // Key words from Commute episodes; they enter Review only via "Add these words to Review".
+        cards.AddRange((await _commute.GetAllAsync())
+            .SelectMany(e => e.Vocab.Select(v => (e.Topic, v)))
+            .DistinctBy(t => t.v.Marathi)
+            .Select(t => new ReviewCard("commute", "Commute", t.v.Marathi, t.v.Marathi, t.v.English, t.v.Roman, $"commute:{t.Topic}")));
 
         // New material arrives most-common-word first, with a verb or phrase mixed in now and then.
         var newWords = byFrequency.Select(w => cards.First(c => c.Deck == "words" && c.Id == w.Id.ToString()));

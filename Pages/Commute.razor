@@ -1,0 +1,426 @@
+@page "/commute"
+@using System.Text.Json
+@using LearnMarathi.Data
+@using LearnMarathi.Models
+@using LearnMarathi.Services
+@implements IAsyncDisposable
+@inject ICommuteRepository Repository
+@inject ISrsService Srs
+@inject IStreakService Streak
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Commute · Learn Marathi</PageTitle>
+
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+
+    @if (episode == null)
+    {
+        <PageHead Title="Commute" Marathi="प्रवास" Eyebrow="Listening" Glyph="headphones"
+                  Blurb="Guided episodes for the train. Each one plays the conversation, walks through it line by line with the English, then plays it again. Pocket the phone and listen." />
+
+        @if (isLoading)
+        {
+            <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+        }
+        else
+        {
+            <div style="margin:18px 24px 0;padding:12px 14px;border:1px solid @(Theme.Gold + "50");border-radius:12px;background:@(Theme.Gold + "12");">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:1.5px;color:@Theme.Gold;text-transform:uppercase;">Unverified</div>
+                <div style="font-size:12px;color:@Theme.Muted;line-height:1.6;margin-top:6px;">
+                    These scripts have not been checked by a native speaker yet. They should be natural, but treat odd phrasing with suspicion.
+                </div>
+            </div>
+
+            <div @onclick="PlayAll"
+                 style="margin:18px 24px 0;padding:15px;border-radius:100px;background:@Theme.Cream;color:@Theme.Ink;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">
+                <Icon Name="play" Size="16" Color="@Theme.Ink" /> Play all unheard
+            </div>
+
+            @foreach (var group in episodes.GroupBy(e => e.Topic))
+            {
+                <div style="padding:26px 24px 0;">
+                    <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;margin-bottom:6px;">@TopicLabel(group.Key)</div>
+                    @foreach (var ep in group)
+                    {
+                        var done = listened.Contains(ep.Id);
+                        <div @onclick="() => Open(ep)"
+                             style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid @(Theme.MutedDk + "30");cursor:pointer;">
+                            <div style="width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid @(done ? Theme.Gold : Theme.MutedDk + "80");background:@(done ? Theme.Gold : "transparent");">
+                                <Icon Name="@(done ? "check" : "play")" Size="14" Color="@(done ? Theme.Ink : Theme.Cream)" />
+                            </div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-family:@Theme.Serif;font-size:19px;color:@Theme.Cream;line-height:1.2;">@ep.Title</div>
+                                <div style="font-family:@Theme.Deva;font-size:15px;color:@Theme.Gold;margin-top:2px;">@ep.MarathiTitle</div>
+                            </div>
+                            <div style="text-align:right;flex-shrink:0;font-family:@Theme.Mono;font-size:10px;color:@Theme.Muted;line-height:1.7;">
+                                <div>@LevelLabel(ep.Level)</div>
+                                @if (positions.TryGetValue(ep.Id, out var at))
+                                {
+                                    <div style="color:@Theme.Gold;">Resume @FormatTime(at)</div>
+                                }
+                                else if (durations.TryGetValue(ep.Id, out var d))
+                                {
+                                    <div>@FormatTime(d)</div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <PageHead Title="Commute" Marathi="प्रवास" Glyph="headphones" Compact="true" OnBack="Close" />
+
+        <div style="padding:20px 24px 0;">
+            <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">@TopicLabel(episode.Topic) · @PhaseLabel</div>
+            <div style="font-family:@Theme.Serif;font-size:26px;color:@Theme.Cream;margin-top:8px;line-height:1.15;">@episode.Title</div>
+            <div style="font-family:@Theme.Deva;font-size:18px;color:@Theme.Gold;margin-top:4px;">@episode.MarathiTitle</div>
+        </div>
+
+        @if (timing == null)
+        {
+            <div style="margin:24px;font-size:13px;color:@Theme.Muted;">Audio for this episode has not been built yet.</div>
+        }
+        else
+        {
+            @* Sticky so the controls stay reachable while the transcript scrolls underneath. *@
+            <div style="position:sticky;top:0;z-index:5;background:@Theme.Ink;padding:16px 24px 14px;border-bottom:1px solid @(Theme.MutedDk + "30");">
+                <input type="range" min="0" max="@((int)timing.Duration)" step="1" value="@((int)position)"
+                       @onchange="SeekFromSlider" style="width:100%;accent-color:@Theme.Gold;" />
+                <div style="display:flex;justify-content:space-between;font-family:@Theme.Mono;font-size:10px;color:@Theme.Muted;">
+                    <span>@FormatTime(position)</span><span>@FormatTime(timing.Duration)</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:center;gap:28px;margin-top:10px;">
+                    <div @onclick='() => JSRuntime.InvokeVoidAsync("commuteSkip", -10)' style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;">
+                        <Icon Name="rewind" Size="24" Color="@Theme.Cream" />
+                        <span style="font-family:@Theme.Mono;font-size:9px;color:@Theme.Muted;">10s</span>
+                    </div>
+                    <div @onclick="TogglePlay"
+                         style="width:64px;height:64px;border-radius:50%;background:@Theme.Gold;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                        <Icon Name="@(playing ? "pause" : "play")" Size="26" Color="@Theme.Ink" Stroke="2.6" />
+                    </div>
+                    <div @onclick="ToggleRate"
+                         style="cursor:pointer;min-width:44px;text-align:center;padding:6px 8px;border-radius:100px;border:1px solid @(rate < 1 ? Theme.Gold : Theme.MutedDk + "80");font-family:@Theme.Mono;font-size:11px;color:@(rate < 1 ? Theme.Gold : Theme.Cream);">@(rate < 1 ? "0.75×" : "1×")</div>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:8px;padding:14px 24px 4px;">
+                @foreach (var (label, on, toggle) in new (string, bool, Action)[] {
+                    ("Romanised", showRoman, () => showRoman = !showRoman),
+                    ("English", showEnglish, () => showEnglish = !showEnglish),
+                    ("Auto-next", autoNext, () => autoNext = !autoNext) })
+                {
+                    <span @onclick="toggle"
+                          style="padding:6px 12px;border-radius:100px;border:1px solid @(on ? Theme.Cream : Theme.MutedDk + "60");color:@(on ? Theme.Cream : Theme.Muted);font-size:11px;cursor:pointer;">@label</span>
+                }
+            </div>
+
+            <div style="padding:6px 24px 0;">
+                @for (var i = 0; i < episode.Lines.Count; i++)
+                {
+                    var idx = i;
+                    var line = episode.Lines[i];
+                    var active = currentLine == i;
+                    <div id="line-@i" @onclick="() => JumpToLine(idx)"
+                         style="padding:12px 0 12px 14px;border-left:2px solid @(active ? Theme.Gold : "transparent");cursor:pointer;opacity:@(currentLine < 0 || active ? "1" : "0.6");">
+                        <div style="font-family:@Theme.Mono;font-size:9px;letter-spacing:1.5px;color:@Theme.Muted;text-transform:uppercase;">@SpeakerName(line.Speaker)</div>
+                        <div style="font-family:@Theme.Deva;font-size:20px;color:@(active ? Theme.Gold : Theme.Cream);line-height:1.5;margin-top:2px;">@line.Marathi</div>
+                        @if (showRoman)
+                        {
+                            <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;margin-top:2px;">@line.Roman</div>
+                        }
+                        @if (showEnglish)
+                        {
+                            <div style="font-size:13px;color:@Theme.Muted;margin-top:3px;">@line.English</div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div style="padding:28px 24px 0;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Check yourself</div>
+                @for (var q = 0; q < episode.Questions.Count; q++)
+                {
+                    var qi = q;
+                    var question = episode.Questions[q];
+                    <div style="margin-top:14px;">
+                        <div style="font-size:14px;color:@Theme.Cream;line-height:1.5;">@question.Question</div>
+                        <div style="display:grid;gap:8px;margin-top:10px;">
+                            @for (var o = 0; o < question.Options.Count; o++)
+                            {
+                                var oi = o;
+                                var picked = answers.TryGetValue(qi, out var a) ? a : -1;
+                                var state = picked < 0 ? "" : oi == question.Answer ? "right" : oi == picked ? "wrong" : "";
+                                <div @onclick="() => AnswerQuestion(qi, oi)"
+                                     style="padding:12px 14px;border-radius:12px;cursor:pointer;font-size:13px;
+                                            border:1px solid @(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.MutedDk + "50");
+                                            background:@(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.Ink2);
+                                            color:@(state == "right" ? Theme.Ink : Theme.Cream);">@question.Options[o]</div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div style="padding:28px 24px 8px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Key words</div>
+                @foreach (var v in episode.Vocab)
+                {
+                    <div @onclick="() => Speak(v.Marathi)"
+                         style="display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid @(Theme.MutedDk + "30");cursor:pointer;flex-wrap:wrap;">
+                        <span style="font-family:@Theme.Deva;font-size:19px;color:@Theme.Cream;">@v.Marathi</span>
+                        <span style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;">@v.Roman</span>
+                        <span style="font-size:13px;color:@Theme.Muted;margin-left:auto;">@v.English</span>
+                    </div>
+                }
+                <div @onclick="AddVocabToReview"
+                     style="margin-top:18px;padding:15px;text-align:center;border-radius:100px;cursor:@(vocabAdded ? "default" : "pointer");background:@(vocabAdded ? "transparent" : Theme.Cream);border:1px solid @(vocabAdded ? Theme.Gold : Theme.Cream);color:@(vocabAdded ? Theme.Gold : Theme.Ink);font-weight:600;">
+                    @(vocabAdded ? "Added to Review" : "Add these words to Review")
+                </div>
+            </div>
+        }
+    }
+
+    <NavBar />
+</div>
+
+@code {
+    public const string Deck = "commute";
+    private const string ListenedKey = "lm_commute_done";
+    private const string PositionsKey = "lm_commute_pos";
+
+    private List<CommuteEpisode> episodes = new();
+    private Dictionary<string, double> durations = new();
+    private HashSet<string> listened = new();
+    private Dictionary<string, double> positions = new();
+    private double lastSavedAt;
+    private bool autoNext;
+    private bool isLoading = true;
+
+    private CommuteEpisode? episode;
+    private CommuteTiming? timing;
+    private DotNetObjectReference<Commute>? selfRef;
+    private double position;
+    private bool playing;
+    private double rate = 1;
+    private int currentLine = -1;
+    private int currentSegment = -1;
+    private bool showRoman = true;
+    private bool showEnglish;
+    private bool vocabAdded;
+    private Dictionary<int, int> answers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        episodes = (await Repository.GetAllAsync()).ToList();
+        try
+        {
+            var raw = await JSRuntime.InvokeAsync<string?>("lmStorageGet", ListenedKey);
+            if (!string.IsNullOrEmpty(raw)) listened = JsonSerializer.Deserialize<HashSet<string>>(raw) ?? new();
+            var rawPos = await JSRuntime.InvokeAsync<string?>("lmStorageGet", PositionsKey);
+            if (!string.IsNullOrEmpty(rawPos)) positions = JsonSerializer.Deserialize<Dictionary<string, double>>(rawPos) ?? new();
+        }
+        catch (JsonException) { }
+        isLoading = false;
+        StateHasChanged();
+
+        foreach (var ep in episodes)
+        {
+            var t = await Repository.GetTimingAsync(ep);
+            if (t != null) durations[ep.Id] = t.Duration;
+        }
+    }
+
+    private async Task Open(CommuteEpisode ep)
+    {
+        episode = ep;
+        timing = await Repository.GetTimingAsync(ep);
+        position = 0;
+        playing = false;
+        currentLine = currentSegment = -1;
+        answers = new();
+        vocabAdded = false;
+        if (timing == null) return;
+
+        // Resume where you stopped, unless that was the closing seconds.
+        var startAt = positions.TryGetValue(ep.Id, out var saved) && saved < timing.Duration - 15 ? saved : 0;
+        position = lastSavedAt = startAt;
+        selfRef ??= DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("commuteLoad", ep.AudioUrl, ep.Title, selfRef, startAt);
+        await JSRuntime.InvokeVoidAsync("commuteRate", rate);
+        await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+    }
+
+    private async Task PlayAll()
+    {
+        var first = episodes.FirstOrDefault(e => !listened.Contains(e.Id) && durations.ContainsKey(e.Id))
+                    ?? episodes.FirstOrDefault(e => durations.ContainsKey(e.Id));
+        if (first == null) return;
+        autoNext = true;
+        await Open(first);
+        await JSRuntime.InvokeAsync<bool>("commutePlay");
+    }
+
+    private async Task Close()
+    {
+        await SavePositionAsync();
+        await JSRuntime.InvokeVoidAsync("commuteUnload");
+        episode = null;
+        timing = null;
+        playing = false;
+    }
+
+    private async Task TogglePlay()
+    {
+        if (playing) await JSRuntime.InvokeVoidAsync("commutePause");
+        else await JSRuntime.InvokeAsync<bool>("commutePlay");
+    }
+
+    private async Task ToggleRate()
+    {
+        rate = rate < 1 ? 1 : 0.75;
+        await JSRuntime.InvokeVoidAsync("commuteRate", rate);
+    }
+
+    private async Task SeekFromSlider(ChangeEventArgs e)
+    {
+        if (double.TryParse(e.Value?.ToString(), out var t)) await JSRuntime.InvokeVoidAsync("commuteSeek", t);
+    }
+
+    /// <summary>Tapping a line jumps to its line-by-line teaching segment, the most useful place to replay.</summary>
+    private async Task JumpToLine(int line)
+    {
+        var seg = timing?.Segments.FirstOrDefault(s => s.Line == line && s.Phase == "slow");
+        if (seg == null) return;
+        await JSRuntime.InvokeVoidAsync("commuteSeek", seg.T);
+        if (!playing) await JSRuntime.InvokeAsync<bool>("commutePlay");
+    }
+
+    [JSInvokable]
+    public async Task OnTime(double t)
+    {
+        position = t;
+        if (Math.Abs(t - lastSavedAt) >= 5) await SavePositionAsync();
+        if (timing == null) return;
+        var seg = timing.Segments.FindLastIndex(s => s.T <= t);
+        if (seg != currentSegment)
+        {
+            currentSegment = seg;
+            var line = seg >= 0 ? timing.Segments[seg].Line : -1;
+            if (line >= 0 && line != currentLine)
+            {
+                currentLine = line;
+                if (playing) await JSRuntime.InvokeVoidAsync("lmScrollIntoView", $"line-{line}");
+            }
+        }
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void OnPlaying(bool isPlaying)
+    {
+        playing = isPlaying;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task OnEnded()
+    {
+        playing = false;
+        if (episode == null) return;
+        var finished = episode;
+        if (positions.Remove(finished.Id))
+            await JSRuntime.InvokeVoidAsync("lmStorageSet", PositionsKey, JsonSerializer.Serialize(positions));
+        if (listened.Add(finished.Id))
+        {
+            await JSRuntime.InvokeVoidAsync("lmStorageSet", ListenedKey, JsonSerializer.Serialize(listened));
+            await Streak.TouchAsync();
+        }
+
+        var next = autoNext ? NextUnheardAfter(finished) : null;
+        if (next != null)
+        {
+            await Open(next);
+            await JSRuntime.InvokeAsync<bool>("commutePlay");
+        }
+        StateHasChanged();
+    }
+
+    private CommuteEpisode? NextUnheardAfter(CommuteEpisode current)
+    {
+        var start = episodes.IndexOf(current);
+        return episodes.Skip(start + 1).Concat(episodes.Take(start))
+                       .FirstOrDefault(e => !listened.Contains(e.Id) && durations.ContainsKey(e.Id));
+    }
+
+    private async Task SavePositionAsync()
+    {
+        if (episode == null || timing == null || position < 5) return;
+        lastSavedAt = position;
+        positions[episode.Id] = Math.Round(position, 1);
+        await JSRuntime.InvokeVoidAsync("lmStorageSet", PositionsKey, JsonSerializer.Serialize(positions));
+    }
+
+    private string PhaseLabel
+    {
+        get
+        {
+            if (timing == null || currentSegment < 0) return "Ready";
+            var firstSlow = timing.Segments.FindIndex(s => s.Phase == "slow");
+            var lastRepeat = timing.Segments.FindLastIndex(s => s.Phase == "repeat");
+            if (currentSegment < firstSlow - 1) return "Listen through";
+            if (currentSegment <= lastRepeat) return "Line by line";
+            return "Once more";
+        }
+    }
+
+    private void AnswerQuestion(int question, int option)
+    {
+        if (!answers.ContainsKey(question)) answers[question] = option;
+    }
+
+    private async Task AddVocabToReview()
+    {
+        if (episode == null || vocabAdded) return;
+        foreach (var v in episode.Vocab)
+        {
+            var card = await Srs.GetAsync(Deck, v.Marathi);
+            // A first correct rep, so each word comes up as a normal Review question from tomorrow.
+            if (card.Reps == 0) await Srs.RecordAsync(Deck, v.Marathi, true);
+        }
+        vocabAdded = true;
+    }
+
+    private string SpeakerName(string key) =>
+        episode != null && episode.Speakers.TryGetValue(key, out var s) ? s.Name : key;
+
+    private static string LevelLabel(int level) => level switch { 1 => "Easy", 3 => "Story", _ => "Everyday" };
+
+    private static string TopicLabel(string topic) => topic switch
+    {
+        "Town" => "Around town",
+        "Stories" => "Stories",
+        "Commute" => "On the train",
+        "Work" => "At work",
+        "Home" => "Family and home",
+        "Food" => "Shops and food",
+        _ => topic
+    };
+
+    private static string FormatTime(double seconds) => TimeSpan.FromSeconds(seconds).ToString(@"m\:ss");
+
+    private async Task Speak(string text) => await JSRuntime.InvokeVoidAsync("speakMarathi", text);
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await SavePositionAsync();
+            await JSRuntime.InvokeVoidAsync("commuteUnload");
+        }
+        catch (JSDisconnectedException) { }
+        selfRef?.Dispose();
+    }
+}

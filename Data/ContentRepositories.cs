@@ -6,6 +6,11 @@ namespace LearnMarathi.Data;
 public interface INumberRepository { Task<IEnumerable<MarathiNumber>> GetAllAsync(); }
 public interface IVerbRepository { Task<IEnumerable<Verb>> GetAllAsync(); }
 public interface ISentenceRepository { Task<IEnumerable<SentenceDrill>> GetAllAsync(); }
+public interface ICommuteRepository
+{
+    Task<IEnumerable<CommuteEpisode>> GetAllAsync();
+    Task<CommuteTiming?> GetTimingAsync(CommuteEpisode episode);
+}
 
 public class NumberRepository : INumberRepository
 {
@@ -46,5 +51,30 @@ public class SentenceRepository : ISentenceRepository
     {
         _cache ??= await _http.GetFromJsonAsync<List<SentenceDrill>>("data/sentences.json");
         return _cache ?? new List<SentenceDrill>();
+    }
+}
+
+public class CommuteRepository : ICommuteRepository
+{
+    private readonly HttpClient _http;
+    private List<CommuteEpisode>? _cache;
+    private readonly Dictionary<string, CommuteTiming?> _timings = new();
+
+    public CommuteRepository(HttpClient http) { _http = http; }
+
+    public async Task<IEnumerable<CommuteEpisode>> GetAllAsync()
+    {
+        _cache ??= await _http.GetFromJsonAsync<List<CommuteEpisode>>("data/commute.json");
+        return _cache ?? new List<CommuteEpisode>();
+    }
+
+    public async Task<CommuteTiming?> GetTimingAsync(CommuteEpisode episode)
+    {
+        if (_timings.TryGetValue(episode.Id, out var cached)) return cached;
+        CommuteTiming? timing = null;
+        try { timing = await _http.GetFromJsonAsync<CommuteTiming>(episode.TimingUrl); }
+        catch (HttpRequestException) { /* audio not built yet */ }
+        _timings[episode.Id] = timing;
+        return timing;
     }
 }

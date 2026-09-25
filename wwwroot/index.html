@@ -215,6 +215,49 @@
         return { success: true, message: 'Recording started' };
     }
 
+    // Commute player. One <audio> element is reused for every episode: once the user has started it,
+    // the WebView lets it start the next track with no tap, which "Play all" needs with the screen locked.
+    let commuteAudio = null;
+
+    function commuteLoad(src, title, dotnetRef, startAt) {
+        const a = commuteAudio || (commuteAudio = new Audio());
+        a.pause();
+        a.preload = 'auto';
+        a.ontimeupdate = () => dotnetRef.invokeMethodAsync('OnTime', a.currentTime);
+        a.onplay = () => dotnetRef.invokeMethodAsync('OnPlaying', true);
+        a.onpause = () => dotnetRef.invokeMethodAsync('OnPlaying', false);
+        a.onended = () => dotnetRef.invokeMethodAsync('OnEnded');
+        a.src = src;
+        if (startAt > 0) a.addEventListener('loadedmetadata', () => { a.currentTime = startAt; }, { once: true });
+        try {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({ title: title, artist: 'Learn Marathi' });
+                navigator.mediaSession.setActionHandler('play', () => a.play());
+                navigator.mediaSession.setActionHandler('pause', () => a.pause());
+                navigator.mediaSession.setActionHandler('seekbackward', () => { a.currentTime = Math.max(0, a.currentTime - 10); });
+            }
+        } catch (e) { }
+    }
+
+    const commuteReady = () => commuteAudio && commuteAudio.getAttribute('src');
+    function commutePlay() { return commuteReady() ? commuteAudio.play().then(() => true).catch(() => false) : false; }
+    function commutePause() { if (commuteReady()) commuteAudio.pause(); }
+    function commuteSeek(t) { if (commuteReady()) commuteAudio.currentTime = Math.max(0, t); }
+    function commuteSkip(delta) { if (commuteReady()) commuteAudio.currentTime = Math.max(0, commuteAudio.currentTime + delta); }
+    function commuteRate(r) { if (commuteAudio) commuteAudio.playbackRate = commuteAudio.defaultPlaybackRate = r; }
+    function commuteUnload() {
+        if (!commuteReady()) return;
+        commuteAudio.pause();
+        commuteAudio.ontimeupdate = commuteAudio.onplay = commuteAudio.onpause = commuteAudio.onended = null;
+        commuteAudio.removeAttribute('src');
+        commuteAudio.load();
+    }
+
+    function lmScrollIntoView(id) {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     // localStorage bridge for Blazor WASM (SRS, streaks, prefs)
     function lmStorageGet(key) {
         try { return window.localStorage.getItem(key); }

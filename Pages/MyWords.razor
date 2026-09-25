@@ -76,7 +76,7 @@
     private record WordRow(string Marathi, string English, string Pronunciation, string Category,
                            Mastery Mastery, int Correct, int Wrong, bool Due, int Order);
 
-    private static readonly HashSet<string> VocabDecks = new() { "words", "listen_words", "verbs", "listen_phrases" };
+    private static readonly HashSet<string> VocabDecks = new() { "words", "listen_words", "verbs", "listen_phrases", "commute" };
 
     private List<WordRow> items = new();
     private List<string> categories = new();
@@ -118,6 +118,7 @@
     {
         "verbs" => "Verbs",
         "listen_phrases" => "Phrases",
+        "commute" => "Commute",
         _ => card.Group.StartsWith("words:") ? card.Group["words:".Length..] : card.DeckLabel
     };
 

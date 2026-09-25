@@ -1,0 +1,3988 @@
+[
+ {
+  "id": "commute-1",
+  "title": "Buying a monthly pass",
+  "marathiTitle": "महिन्याचा पास काढणे",
+  "topic": "Commute",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Rahul",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Clerk",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "नमस्कार. मला दादर ते ठाणे महिन्याचा पास हवा आहे.",
+    "roman": "namaskaar. malaa daadar te thaane mahinyaachaa pass havaa aahe.",
+    "english": "Hello. I'd like a monthly pass from Dadar to Thane."
+   },
+   {
+    "speaker": "B",
+    "marathi": "सेकंड क्लास की फर्स्ट क्लास?",
+    "roman": "second class ki first class?",
+    "english": "Second class or first class?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "सेकंड क्लास. किती पैसे झाले?",
+    "roman": "second class. kiti paise jhaale?",
+    "english": "Second class. How much is it?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "दोनशे दहा रुपये. तुमच्याकडे ओळखपत्र आहे का?",
+    "roman": "donshe daha rupaye. tumchyaakade olakhpatra aahe kaa?",
+    "english": "Two hundred and ten rupees. Do you have an ID card?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, हे माझं आधार कार्ड.",
+    "roman": "ho, he maajha aadhaar card.",
+    "english": "Yes, here's my Aadhaar card."
+   },
+   {
+    "speaker": "B",
+    "marathi": "पास आजपासून सुरू करू का?",
+    "roman": "pass aajpaasun suru karu kaa?",
+    "english": "Shall I start the pass from today?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "नाही, उद्यापासून. आज माझ्याकडे तिकीट आहे.",
+    "roman": "naahi, udyaapaasun. aaj maajhyaakade ticket aahe.",
+    "english": "No, from tomorrow. I already have a ticket for today."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे. सुट्टे पैसे आहेत का?",
+    "roman": "theek aahe. sutte paise aahet kaa?",
+    "english": "Okay. Do you have exact change?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, हे घ्या दोनशे दहा रुपये.",
+    "roman": "ho, he ghyaa donshe daha rupaye.",
+    "english": "Yes, here you go, two hundred and ten rupees."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हा तुमचा पास. उद्यापासून एक महिना चालेल.",
+    "roman": "haa tumchaa pass. udyaapaasun ek mahinaa chaalel.",
+    "english": "Here's your pass. It's valid for one month from tomorrow."
+   },
+   {
+    "speaker": "A",
+    "marathi": "धन्यवाद. ठाण्याची ट्रेन कोणत्या प्लॅटफॉर्मवर येते?",
+    "roman": "dhanyavaad. thaanyaachi train konatyaa platformvar yete?",
+    "english": "Thanks. Which platform does the Thane train come on?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "प्लॅटफॉर्म नंबर चारवर. पुढची फास्ट ट्रेन पाच मिनिटांत येईल.",
+    "roman": "platform number chaarvar. pudhchi fast train paach minitaat yeil.",
+    "english": "On platform four. The next fast train will come in five minutes."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "महिन्याचा पास",
+    "roman": "mahinyaachaa pass",
+    "english": "monthly pass"
+   },
+   {
+    "marathi": "किती",
+    "roman": "kiti",
+    "english": "how much / how many"
+   },
+   {
+    "marathi": "ओळखपत्र",
+    "roman": "olakhpatra",
+    "english": "ID card"
+   },
+   {
+    "marathi": "उद्यापासून",
+    "roman": "udyaapaasun",
+    "english": "from tomorrow"
+   },
+   {
+    "marathi": "सुट्टे पैसे",
+    "roman": "sutte paise",
+    "english": "small change"
+   },
+   {
+    "marathi": "कोणत्या",
+    "roman": "konatyaa",
+    "english": "which"
+   },
+   {
+    "marathi": "पुढची",
+    "roman": "pudhchi",
+    "english": "next"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Where is Rahul's pass for?",
+    "options": [
+     "Dadar to Thane",
+     "Pune to Lonavala",
+     "Thane to Churchgate"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "Why does Rahul want the pass to start tomorrow?",
+    "options": [
+     "He has no ID card",
+     "He already has a ticket for today",
+     "The ticket office is closing"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "Which platform does the Thane train come on?",
+    "options": [
+     "Platform one",
+     "Platform two",
+     "Platform four"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "commute-2",
+  "title": "My daily train",
+  "marathiTitle": "माझा रोजचा प्रवास",
+  "topic": "Commute",
+  "level": 1,
+  "speakers": {
+   "A": {
+    "name": "Priya",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "माझं नाव प्रिया. मी पुण्यात राहते.",
+    "roman": "maajha naav priyaa. mi punyaat raahte.",
+    "english": "My name is Priya. I live in Pune."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी रोज ट्रेनने ऑफिसला जाते.",
+    "roman": "mi roj trainne officelaa jaate.",
+    "english": "I go to the office by train every day."
+   },
+   {
+    "speaker": "A",
+    "marathi": "माझं घर स्टेशनजवळ आहे.",
+    "roman": "maajha ghar stationjaval aahe.",
+    "english": "My house is near the station."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी सकाळी आठ वाजता घरातून निघते.",
+    "roman": "mi sakaali aath vaajtaa gharaatun nighte.",
+    "english": "I leave home at eight in the morning."
+   },
+   {
+    "speaker": "A",
+    "marathi": "माझ्याकडे महिन्याचा पास आहे.",
+    "roman": "maajhyaakade mahinyaachaa pass aahe.",
+    "english": "I have a monthly pass."
+   },
+   {
+    "speaker": "A",
+    "marathi": "माझी ट्रेन प्लॅटफॉर्म नंबर दोनवर येते.",
+    "roman": "maajhi train platform number donvar yete.",
+    "english": "My train comes on platform two."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ट्रेनमध्ये खूप गर्दी असते.",
+    "roman": "trainmadhye khoop gardi aste.",
+    "english": "The train is always very crowded."
+   },
+   {
+    "speaker": "A",
+    "marathi": "कधी कधी मला बसायला जागा मिळते.",
+    "roman": "kadhi kadhi malaa basaaylaa jaagaa milte.",
+    "english": "Sometimes I get a seat."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी ट्रेनमध्ये गाणी ऐकते.",
+    "roman": "mi trainmadhye gaani aikte.",
+    "english": "I listen to songs on the train."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आज ट्रेन दहा मिनिटं उशिरा आली.",
+    "roman": "aaj train daha minita ushiraa aali.",
+    "english": "Today the train came ten minutes late."
+   },
+   {
+    "speaker": "A",
+    "marathi": "म्हणून मी ऑफिसला उशिरा पोहोचले.",
+    "roman": "mhanun mi officelaa ushiraa pohochle.",
+    "english": "So I reached the office late."
+   },
+   {
+    "speaker": "A",
+    "marathi": "पण माझे साहेब काही बोलले नाहीत!",
+    "roman": "pan maajhe saaheb kaahi bolle naahit!",
+    "english": "But my boss didn't say anything!"
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "रोज",
+    "roman": "roj",
+    "english": "every day"
+   },
+   {
+    "marathi": "स्टेशनजवळ",
+    "roman": "stationjaval",
+    "english": "near the station"
+   },
+   {
+    "marathi": "निघणे",
+    "roman": "nighne",
+    "english": "to leave, set off"
+   },
+   {
+    "marathi": "गर्दी",
+    "roman": "gardi",
+    "english": "crowd, rush"
+   },
+   {
+    "marathi": "जागा",
+    "roman": "jaagaa",
+    "english": "place, seat"
+   },
+   {
+    "marathi": "उशिरा",
+    "roman": "ushiraa",
+    "english": "late"
+   },
+   {
+    "marathi": "पोहोचणे",
+    "roman": "pohochne",
+    "english": "to reach, arrive"
+   }
+  ],
+  "questions": [
+   {
+    "question": "What time does Priya leave home?",
+    "options": [
+     "At seven",
+     "At eight",
+     "At nine"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What does Priya do on the train?",
+    "options": [
+     "Reads the newspaper",
+     "Sleeps",
+     "Listens to songs"
+    ],
+    "answer": 2
+   },
+   {
+    "question": "Why was Priya late today?",
+    "options": [
+     "The train was ten minutes late",
+     "She missed her train",
+     "She forgot her pass"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "commute-3",
+  "title": "The train is late",
+  "marathiTitle": "ट्रेन उशिरा आहे",
+  "topic": "Commute",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Sameer",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Meena",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "माफ करा, आत्ता अनाउन्समेंटमध्ये काय सांगितलं?",
+    "roman": "maaf karaa, aattaa announcementmadhye kaay saangitla?",
+    "english": "Excuse me, what did they say in the announcement just now?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "कल्याणची ट्रेन वीस मिनिटं उशिरा येणार आहे.",
+    "roman": "kalyaanchi train vees minita ushiraa yenaar aahe.",
+    "english": "The Kalyan train is going to be twenty minutes late."
+   },
+   {
+    "speaker": "A",
+    "marathi": "अरे बापरे! माझी नऊ वाजता मीटिंग आहे.",
+    "roman": "are baapre! maajhi nau vaajtaa meeting aahe.",
+    "english": "Oh no! I have a meeting at nine."
+   },
+   {
+    "speaker": "B",
+    "marathi": "पुढे सिग्नलमध्ये काहीतरी बिघाड झालाय, असं म्हणाले.",
+    "roman": "pudhe signalmadhye kaahitari bighaad jhaalaay, asa mhanaale.",
+    "english": "They said there's some fault with a signal up ahead."
+   },
+   {
+    "speaker": "A",
+    "marathi": "तुम्ही रोज याच ट्रेनने जाता का?",
+    "roman": "tumhi roj yaach trainne jaataa kaa?",
+    "english": "Do you take this same train every day?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, मी घाटकोपरला उतरते. तुम्ही कुठे उतरता?",
+    "roman": "ho, mi ghaatkoparlaa utarte. tumhi kuthe utartaa?",
+    "english": "Yes, I get off at Ghatkopar. Where do you get off?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी ठाण्याला उतरतो. माझं ऑफिस स्टेशनजवळच आहे.",
+    "roman": "mi thaanyaalaa utarto. maajha office stationjavalach aahe.",
+    "english": "I get off at Thane. My office is right near the station."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मग ऑफिसला फोन करून कळवा.",
+    "roman": "mag officelaa phone karun kalvaa.",
+    "english": "Then call the office and let them know."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, बरोबर आहे. मी आत्ता मेसेज करतो.",
+    "roman": "ho, barobar aahe. mi aattaa message karto.",
+    "english": "Yes, that's right. I'll send a message now."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ऐका, दुसरी अनाउन्समेंट होतेय. ट्रेन प्लॅटफॉर्म तीनवर येणार आहे.",
+    "roman": "aikaa, dusri announcement hotey. train platform teenvar yenaar aahe.",
+    "english": "Listen, there's another announcement. The train will come on platform three."
+   },
+   {
+    "speaker": "A",
+    "marathi": "म्हणजे आपल्याला पुलावरून जावं लागेल. चला, लवकर!",
+    "roman": "mhanje aaplyaalaa pulaavarun jaava laagel. chalaa, lavkar!",
+    "english": "That means we have to go over the bridge. Come on, quickly!"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हळू चला, जिन्यावर खूप गर्दी आहे.",
+    "roman": "halu chalaa, jinyaavar khoop gardi aahe.",
+    "english": "Go slowly, the stairs are very crowded."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "अनाउन्समेंट",
+    "roman": "announcement",
+    "english": "announcement"
+   },
+   {
+    "marathi": "उशिरा",
+    "roman": "ushiraa",
+    "english": "late"
+   },
+   {
+    "marathi": "बिघाड",
+    "roman": "bighaad",
+    "english": "fault, breakdown"
+   },
+   {
+    "marathi": "उतरणे",
+    "roman": "utarne",
+    "english": "to get off (a train)"
+   },
+   {
+    "marathi": "कळवणे",
+    "roman": "kalavne",
+    "english": "to inform, let someone know"
+   },
+   {
+    "marathi": "पुलावरून",
+    "roman": "pulaavarun",
+    "english": "over the (foot)bridge"
+   },
+   {
+    "marathi": "जिन्यावर",
+    "roman": "jinyaavar",
+    "english": "on the stairs"
+   },
+   {
+    "marathi": "हळू",
+    "roman": "halu",
+    "english": "slowly"
+   }
+  ],
+  "questions": [
+   {
+    "question": "How late is the Kalyan train?",
+    "options": [
+     "Ten minutes",
+     "Twenty minutes",
+     "Thirty minutes"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "Where does Meena get off?",
+    "options": [
+     "Ghatkopar",
+     "Thane",
+     "Kalyan"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "What does Meena suggest Sameer do?",
+    "options": [
+     "Take a bus",
+     "Go back home",
+     "Let his office know"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "commute-4",
+  "title": "An Auto from the Station",
+  "marathiTitle": "स्टेशनवरून ऑटो",
+  "topic": "Commute",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Ganesh",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Priya",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "B",
+    "marathi": "दादा, डेक्कनला येणार का?",
+    "roman": "daadaa, Deccan-laa yenaar kaa?",
+    "english": "Brother, will you go to Deccan?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, येतो. पण मीटरने नाही, एकशे वीस रुपये होतील.",
+    "roman": "ho, yeto. pan meter-ne naahi, ekshe vees rupaye hotil.",
+    "english": "Yes, I'll come. But not by the meter; it'll be a hundred and twenty rupees."
+   },
+   {
+    "speaker": "B",
+    "marathi": "एकशे वीस? मीटरने तर ऐंशी रुपये होतात.",
+    "roman": "ekshe vees? meter-ne tar ainshi rupaye hotaat.",
+    "english": "A hundred and twenty? By the meter it's only eighty rupees."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ताई, आत्ता खूप ट्रॅफिक आहे. आणि मला रिकामं परत यावं लागतं.",
+    "roman": "taai, aattaa khoop traffic aahe. aani malaa rikaama parat yaava laagta.",
+    "english": "Sister, there's a lot of traffic right now. And I have to come back empty."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मीटरनेच चला, मी वर दहा रुपये देते.",
+    "roman": "meter-nech chalaa, mi var daha rupaye dete.",
+    "english": "Just go by the meter, I'll give ten rupees extra."
+   },
+   {
+    "speaker": "A",
+    "marathi": "बरं, बसा. कोणत्या रस्त्याने जाऊ?",
+    "roman": "bara, basaa. konatyaa rastyaane jaaoo?",
+    "english": "Okay, get in. Which road should I take?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "पुलावरून जाऊ नका, तिथे खूप ट्रॅफिक असतं.",
+    "roman": "pulaavarun jaaoo nakaa, tithe khoop traffic asta.",
+    "english": "Don't go over the bridge, there's always a lot of traffic there."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मग जंगली महाराज रस्त्याने जातो. थोडं लांब पडेल.",
+    "roman": "mag Jangli Maharaj rastyaane jaato. thoda laamb padel.",
+    "english": "Then I'll go by Jangli Maharaj Road. It'll be a bit longer."
+   },
+   {
+    "speaker": "B",
+    "marathi": "चालेल, पण लवकर पोहोचायचं आहे. मला दहा वाजता मीटिंग आहे.",
+    "roman": "chaalel, pan lavkar pohochaaycha aahe. malaa daha vaajtaa meeting aahe.",
+    "english": "That's fine, but I need to get there quickly. I have a meeting at ten."
+   },
+   {
+    "speaker": "A",
+    "marathi": "काळजी करू नका, वीस मिनिटांत पोहोचू.",
+    "roman": "kaalji karoo nakaa, vees minitaant pohochoo.",
+    "english": "Don't worry, we'll get there in twenty minutes."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हे आलं डेक्कन. इथे थांबवू का?",
+    "roman": "he aala Deccan. ithe thaambavoo kaa?",
+    "english": "Here's Deccan. Shall I stop here?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, सिग्नलच्या पुढे थांबवा. मीटरवर किती झाले?",
+    "roman": "ho, signal-chyaa pudhe thaambavaa. meter-var kiti jhaale?",
+    "english": "Yes, stop just past the signal. How much is on the meter?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "पंच्याऐंशी रुपये झाले.",
+    "roman": "panchyaainshi rupaye jhaale.",
+    "english": "It's eighty-five rupees."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हे घ्या पंच्याण्णव. राहू द्या.",
+    "roman": "he ghyaa panchyaannav. raahoo dyaa.",
+    "english": "Here, take ninety-five. Keep it."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "रस्ता",
+    "roman": "rastaa",
+    "english": "road"
+   },
+   {
+    "marathi": "रिकामं",
+    "roman": "rikaama",
+    "english": "empty"
+   },
+   {
+    "marathi": "पूल",
+    "roman": "pool",
+    "english": "bridge"
+   },
+   {
+    "marathi": "लांब",
+    "roman": "laamb",
+    "english": "far, long (distance)"
+   },
+   {
+    "marathi": "पोहोचणे",
+    "roman": "pohochne",
+    "english": "to reach, to arrive"
+   },
+   {
+    "marathi": "थांबवणे",
+    "roman": "thaambavne",
+    "english": "to stop (a vehicle)"
+   },
+   {
+    "marathi": "काळजी",
+    "roman": "kaalji",
+    "english": "worry, care"
+   }
+  ],
+  "questions": [
+   {
+    "question": "How does Priya agree to pay?",
+    "options": [
+     "A fixed fare of 120 rupees",
+     "By the meter plus ten rupees",
+     "A fixed fare of 100 rupees"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "Why is Priya in a hurry?",
+    "options": [
+     "She has a meeting at ten",
+     "She has a train to catch",
+     "Her shop opens at ten"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "How much does she hand the driver at the end?",
+    "options": [
+     "Eighty rupees",
+     "Eighty-five rupees",
+     "Ninety-five rupees"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "commute-5",
+  "title": "Finding the Office",
+  "marathiTitle": "ऑफिस शोधताना",
+  "topic": "Commute",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Sunil kaka",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Neha",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "B",
+    "marathi": "माफ करा काका, सह्याद्री टॉवर कुठे आहे, माहीत आहे का?",
+    "roman": "maaf karaa kaakaa, Sahyadri Tower kuthe aahe, maahit aahe kaa?",
+    "english": "Excuse me, uncle, do you know where Sahyadri Tower is?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, जवळच आहे. तुम्ही स्टेशनच्या पश्चिमेला जा.",
+    "roman": "ho, javalach aahe. tumhi station-chyaa pashchimelaa jaa.",
+    "english": "Yes, it's quite close. Go to the west side of the station."
+   },
+   {
+    "speaker": "B",
+    "marathi": "पश्चिमेला म्हणजे पुलावरून जायचं का?",
+    "roman": "pashchimelaa mhanje pulaavarun jaaycha kaa?",
+    "english": "West side, so do I go over the bridge?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, पूल ओलांडा आणि सरळ जा.",
+    "roman": "ho, pool olaandaa aani saral jaa.",
+    "english": "Yes, cross the bridge and go straight."
+   },
+   {
+    "speaker": "B",
+    "marathi": "किती लांब आहे? चालत जाता येईल का?",
+    "roman": "kiti laamb aahe? chaalat jaataa yeil kaa?",
+    "english": "How far is it? Can I walk there?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, दहा मिनिटं लागतील. पहिल्या चौकातून डावीकडे वळा.",
+    "roman": "ho, daha minita laagtil. pahilyaa chaukaatun daavikade valaa.",
+    "english": "Yes, it'll take ten minutes. Turn left at the first junction."
+   },
+   {
+    "speaker": "B",
+    "marathi": "डावीकडे वळल्यावर पुढे काय?",
+    "roman": "daavikade valalyaavar pudhe kaay?",
+    "english": "And after turning left, what next?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "उजव्या हाताला एक बँक दिसेल. बँकेच्या शेजारीच काचेची मोठी इमारत आहे.",
+    "roman": "ujavyaa haataalaa ek bank disel. bankechyaa shejaareech kaachechi mothi imaarat aahe.",
+    "english": "You'll see a bank on your right. Right next to the bank is a big glass building."
+   },
+   {
+    "speaker": "B",
+    "marathi": "तीच सह्याद्री टॉवर का?",
+    "roman": "teech Sahyadri Tower kaa?",
+    "english": "Is that Sahyadri Tower?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, तीच. तुम्हाला कितव्या मजल्यावर जायचंय?",
+    "roman": "ho, teech. tumhaalaa kitavyaa majlyaavar jaaychay?",
+    "english": "Yes, that's the one. Which floor do you need to go to?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "सातव्या. माझी तिथे मुलाखत आहे.",
+    "roman": "saatavyaa. maajhi tithe mulaakhat aahe.",
+    "english": "The seventh. I have an interview there."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मग मागच्या बाजूची लिफ्ट घ्या. पुढची बरेचदा बंद असते.",
+    "roman": "mag maagchyaa baajuchi lift ghyaa. pudhchi barechdaa band aste.",
+    "english": "Then take the lift at the back. The front one is often out of order."
+   },
+   {
+    "speaker": "B",
+    "marathi": "बरं झालं सांगितलंत. खूप धन्यवाद, काका!",
+    "roman": "bara jhaala saangitlat. khoop dhanyavaad, kaakaa!",
+    "english": "Good thing you told me. Thanks a lot, uncle!"
+   },
+   {
+    "speaker": "A",
+    "marathi": "काही नाही. मुलाखतीसाठी शुभेच्छा!",
+    "roman": "kaahi naahi. mulaakhatisaathi shubhechchhaa!",
+    "english": "Not at all. Good luck with the interview!"
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "डावीकडे",
+    "roman": "daavikade",
+    "english": "to the left"
+   },
+   {
+    "marathi": "उजवा",
+    "roman": "ujavaa",
+    "english": "right (side)"
+   },
+   {
+    "marathi": "वळणे",
+    "roman": "valne",
+    "english": "to turn"
+   },
+   {
+    "marathi": "सरळ",
+    "roman": "saral",
+    "english": "straight"
+   },
+   {
+    "marathi": "ओलांडणे",
+    "roman": "olaandne",
+    "english": "to cross"
+   },
+   {
+    "marathi": "शेजारी",
+    "roman": "shejaari",
+    "english": "next to"
+   },
+   {
+    "marathi": "इमारत",
+    "roman": "imaarat",
+    "english": "building"
+   },
+   {
+    "marathi": "मजला",
+    "roman": "majlaa",
+    "english": "floor, storey"
+   }
+  ],
+  "questions": [
+   {
+    "question": "What should Neha do first?",
+    "options": [
+     "Cross the bridge to the west side",
+     "Take a bus to the east side",
+     "Wait outside the station"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "What is right next to Sahyadri Tower?",
+    "options": [
+     "A temple",
+     "A bank",
+     "A school"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "Why is Neha going to the building?",
+    "options": [
+     "To deliver a parcel",
+     "To meet a friend for lunch",
+     "For a job interview"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "commute-6",
+  "title": "Missed the Last Fast Train",
+  "marathiTitle": "शेवटची फास्ट ट्रेन चुकली",
+  "topic": "Commute",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Amit",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Sneha",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "हॅलो स्नेहा, मी अजून दादरलाच आहे.",
+    "roman": "hello Sneha, mi ajoon Dadar-laach aahe.",
+    "english": "Hello Sneha, I'm still at Dadar."
+   },
+   {
+    "speaker": "B",
+    "marathi": "अरे, एवढा उशीर? शेवटची फास्ट ट्रेन गेली का?",
+    "roman": "are, evdhaa ushir? shevatchi fast train geli kaa?",
+    "english": "Oh, so late? Has the last fast train gone?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, दोन मिनिटांनी चुकली. मी पोहोचलो तेव्हा ती सुटली होती.",
+    "roman": "ho, don minitaanni chukli. mi pohochlo tevhaa ti sutli hoti.",
+    "english": "Yes, I missed it by two minutes. It had left when I got there."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मग आता कसा येणार?",
+    "roman": "mag aataa kasaa yenaar?",
+    "english": "So how will you get home now?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "पावणे बाराची स्लो ट्रेन आहे, पण ती खूप वेळ घेईल.",
+    "roman": "paavne baaraachi slow train aahe, pan ti khoop vel gheil.",
+    "english": "There's a quarter-to-twelve slow train, but it'll take a long time."
+   },
+   {
+    "speaker": "B",
+    "marathi": "आणि बस? स्टेशनबाहेरून डोंबिवलीची बस मिळते ना?",
+    "roman": "aani bus? station-baaherun Dombivlichi bus milte naa?",
+    "english": "And the bus? You can get a Dombivli bus from outside the station, can't you?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "मिळते, पण रात्री ती कधी येईल सांगता येत नाही.",
+    "roman": "milte, pan raatri ti kadhi yeil saangtaa yet naahi.",
+    "english": "You can, but at night you can't tell when it'll come."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मग स्लो ट्रेनच पकड. निदान वेळेवर तरी येईल.",
+    "roman": "mag slow trainch pakad. nidaan velevar tari yeil.",
+    "english": "Then just catch the slow train. At least it'll be on time."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, तेच करतो. एकपर्यंत घरी पोहोचेन.",
+    "roman": "ho, tech karto. ekparyant ghari pohochen.",
+    "english": "Yes, I'll do that. I'll be home by one."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे. जेवलास का?",
+    "roman": "theek aahe. jevlaas kaa?",
+    "english": "Okay. Have you eaten?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "नाही, इथेच वडापाव खातो. तू झोप, माझी वाट बघू नकोस.",
+    "roman": "naahi, ithech vadaapaav khaato. tu jhop, maajhi vaat baghoo nakos.",
+    "english": "No, I'll have a vada pav here. You go to sleep, don't wait up for me."
+   },
+   {
+    "speaker": "B",
+    "marathi": "नको, मी जागीच आहे. डोंबिवलीला पोहोचलास की फोन कर.",
+    "roman": "nako, mi jaageech aahe. Dombivli-laa pohochlaas ki phone kar.",
+    "english": "No, I'm awake anyway. Call me when you reach Dombivli."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, नक्की करतो. चल, ठेवतो फोन.",
+    "roman": "ho, nakki karto. chal, thevto phone.",
+    "english": "Yes, I definitely will. Okay, I'm hanging up."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "शेवटची",
+    "roman": "shevatchi",
+    "english": "last"
+   },
+   {
+    "marathi": "चुकणे",
+    "roman": "chukne",
+    "english": "to be missed, to miss"
+   },
+   {
+    "marathi": "उशीर",
+    "roman": "ushir",
+    "english": "lateness, delay"
+   },
+   {
+    "marathi": "पकडणे",
+    "roman": "pakadne",
+    "english": "to catch"
+   },
+   {
+    "marathi": "निदान",
+    "roman": "nidaan",
+    "english": "at least"
+   },
+   {
+    "marathi": "वाट बघणे",
+    "roman": "vaat baghne",
+    "english": "to wait for"
+   },
+   {
+    "marathi": "जागा",
+    "roman": "jaagaa",
+    "english": "awake"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Why is Amit still at Dadar?",
+    "options": [
+     "His train broke down",
+     "He missed the last fast train by two minutes",
+     "He had to work late"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "How does Amit decide to travel home?",
+    "options": [
+     "By the quarter-to-twelve slow train",
+     "By bus from outside the station",
+     "By auto-rickshaw"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "What does Sneha ask him to do?",
+    "options": [
+     "Buy dinner for her",
+     "Take a taxi",
+     "Call her when he reaches Dombivli"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "work-1",
+  "title": "Morning at the office",
+  "marathiTitle": "ऑफिसमधली सकाळ",
+  "topic": "Work",
+  "level": 1,
+  "speakers": {
+   "A": {
+    "name": "Priya",
+    "voice": "female"
+   },
+   "B": {
+    "name": "Amit",
+    "voice": "male"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "गुड मॉर्निंग, अमित! कसा आहेस?",
+    "roman": "good morning, amit! kasa aahes?",
+    "english": "Good morning, Amit! How are you?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "मी मजेत आहे. तू कशी आहेस, प्रिया?",
+    "roman": "mi majet aahe. tu kashi aahes, priya?",
+    "english": "I'm doing well. How are you, Priya?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी पण बरी आहे. आज तू लवकर आलास!",
+    "roman": "mi pan bari aahe. aaj tu lavkar aalaas!",
+    "english": "I'm fine too. You came early today!"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, आज ट्रेनला गर्दी कमी होती.",
+    "roman": "ho, aaj trainla gardi kami hoti.",
+    "english": "Yes, the train was less crowded today."
+   },
+   {
+    "speaker": "A",
+    "marathi": "माझी ट्रेन आज दहा मिनिटं उशिरा आली.",
+    "roman": "maajhi train aaj daha minita ushira aali.",
+    "english": "My train came ten minutes late today."
+   },
+   {
+    "speaker": "B",
+    "marathi": "चहा घेणार का?",
+    "roman": "chaha ghenaar kaa?",
+    "english": "Will you have some tea?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, पण आधी लॅपटॉप चालू करते.",
+    "roman": "ho, pan aadhi laptop chaalu karte.",
+    "english": "Yes, but first I'll switch on my laptop."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे. मी दोन कप चहा आणतो.",
+    "roman": "theek aahe. mi don kap chaha aanto.",
+    "english": "Okay. I'll bring two cups of tea."
+   },
+   {
+    "speaker": "A",
+    "marathi": "थँक्स! आज खूप काम आहे.",
+    "roman": "thanks! aaj khoop kaam aahe.",
+    "english": "Thanks! There's a lot of work today."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, दुपारी मीटिंग पण आहे.",
+    "roman": "ho, dupaari meeting pan aahe.",
+    "english": "Yes, there's a meeting in the afternoon too."
+   },
+   {
+    "speaker": "A",
+    "marathi": "किती वाजता?",
+    "roman": "kiti vaajta?",
+    "english": "At what time?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "दोन वाजता.",
+    "roman": "don vaajta.",
+    "english": "At two o'clock."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "मजेत",
+    "roman": "majet",
+    "english": "well, happily (as in 'doing well')"
+   },
+   {
+    "marathi": "लवकर",
+    "roman": "lavkar",
+    "english": "early"
+   },
+   {
+    "marathi": "गर्दी",
+    "roman": "gardi",
+    "english": "crowd, crush"
+   },
+   {
+    "marathi": "उशिरा",
+    "roman": "ushira",
+    "english": "late"
+   },
+   {
+    "marathi": "चालू करणे",
+    "roman": "chaalu karne",
+    "english": "to switch on, to start"
+   },
+   {
+    "marathi": "खूप काम",
+    "roman": "khoop kaam",
+    "english": "a lot of work"
+   },
+   {
+    "marathi": "किती वाजता?",
+    "roman": "kiti vaajta?",
+    "english": "at what time?"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Why did Amit arrive early?",
+    "options": [
+     "He left home earlier than usual",
+     "The train was less crowded",
+     "He had an early meeting"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What does Priya want to do before having tea?",
+    "options": [
+     "Switch on her laptop",
+     "Call her manager",
+     "Read her emails"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "When is the meeting?",
+    "options": [
+     "At ten in the morning",
+     "At noon",
+     "At two in the afternoon"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "work-2",
+  "title": "Running late for the meeting",
+  "marathiTitle": "मीटिंगला उशीर",
+  "topic": "Work",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Sneha",
+    "voice": "female"
+   },
+   "B": {
+    "name": "Rahul",
+    "voice": "male"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "B",
+    "marathi": "हॅलो स्नेहा, कुठे आहेस? मीटिंग दहा वाजता आहे.",
+    "roman": "hello sneha, kuthe aahes? meeting daha vaajta aahe.",
+    "english": "Hello Sneha, where are you? The meeting is at ten."
+   },
+   {
+    "speaker": "A",
+    "marathi": "सॉरी राहुल, मी अजून ट्रेनमध्ये आहे.",
+    "roman": "sorry raahul, mi ajun trainmadhye aahe.",
+    "english": "Sorry Rahul, I'm still on the train."
+   },
+   {
+    "speaker": "A",
+    "marathi": "सिग्नल फेल झाल्यामुळे ट्रेन अर्धा तास थांबली होती.",
+    "roman": "signal fail jhaalyaamule train ardha taas thaambli hoti.",
+    "english": "The train was stopped for half an hour because of a signal failure."
+   },
+   {
+    "speaker": "B",
+    "marathi": "अरे बापरे! मग तू किती वाजता पोहोचशील?",
+    "roman": "are baapre! mag tu kiti vaajta pohochshil?",
+    "english": "Oh no! So what time will you get here?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "साधारण साडेदहा वाजेपर्यंत पोहोचेन.",
+    "roman": "saadhaaran saadedaha vaajeparyant pohochen.",
+    "english": "I'll get there by about half past ten."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे. मी सरांना सांगतो.",
+    "roman": "theek aahe. mi saraanna saangto.",
+    "english": "Okay. I'll tell the boss."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मीटिंग थोडी पुढे ढकलता येईल का?",
+    "roman": "meeting thodi pudhe dhakalta yeil kaa?",
+    "english": "Could the meeting be pushed back a bit?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "नाही, क्लायंट आधीच आले आहेत.",
+    "roman": "naahi, client aadhich aale aahet.",
+    "english": "No, the clients have already arrived."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मी सुरुवात करतो. तू फोनवरून जॉइन हो.",
+    "roman": "mi suruvaat karto. tu phonevarun join ho.",
+    "english": "I'll get started. You join from your phone."
+   },
+   {
+    "speaker": "A",
+    "marathi": "चालेल. मी हेडफोन लावून कॉलवर येते.",
+    "roman": "chaalel. mi headphone laavun callvar yete.",
+    "english": "That works. I'll put my headphones on and join the call."
+   },
+   {
+    "speaker": "B",
+    "marathi": "प्रेझेंटेशनची फाईल मला पाठवशील का?",
+    "roman": "presentationchi file mala paathavshil kaa?",
+    "english": "Can you send me the presentation file?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, आत्ताच ईमेल करते.",
+    "roman": "ho, aattaach email karte.",
+    "english": "Yes, I'll email it right now."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे, काळजी करू नकोस.",
+    "roman": "theek aahe, kaalji karu nakos.",
+    "english": "Okay, don't worry."
+   },
+   {
+    "speaker": "A",
+    "marathi": "थँक्स राहुल! ऑफिसमध्ये भेटू.",
+    "roman": "thanks raahul! officemadhye bhetu.",
+    "english": "Thanks Rahul! See you at the office."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "अजून",
+    "roman": "ajun",
+    "english": "still, yet"
+   },
+   {
+    "marathi": "थांबणे",
+    "roman": "thaambne",
+    "english": "to stop, to wait"
+   },
+   {
+    "marathi": "पोहोचणे",
+    "roman": "pohochne",
+    "english": "to arrive, to reach"
+   },
+   {
+    "marathi": "साडेदहा",
+    "roman": "saadedaha",
+    "english": "half past ten"
+   },
+   {
+    "marathi": "पुढे ढकलणे",
+    "roman": "pudhe dhakalne",
+    "english": "to postpone, to push back"
+   },
+   {
+    "marathi": "आधीच",
+    "roman": "aadhich",
+    "english": "already"
+   },
+   {
+    "marathi": "पाठवणे",
+    "roman": "paathavne",
+    "english": "to send"
+   },
+   {
+    "marathi": "काळजी करू नकोस",
+    "roman": "kaalji karu nakos",
+    "english": "don't worry"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Why is Sneha late?",
+    "options": [
+     "She overslept",
+     "Her train was held up by a signal failure",
+     "She missed her bus"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "Why can't the meeting be postponed?",
+    "options": [
+     "The boss is leaving early",
+     "The room is booked",
+     "The clients have already arrived"
+    ],
+    "answer": 2
+   },
+   {
+    "question": "What does Rahul ask Sneha to send him?",
+    "options": [
+     "The presentation file",
+     "The client's phone number",
+     "The meeting agenda"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "work-3",
+  "title": "Chai break and weekend plans",
+  "marathiTitle": "चहाचा ब्रेक आणि वीकेंडचे प्लॅन",
+  "topic": "Work",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Meera",
+    "voice": "female"
+   },
+   "B": {
+    "name": "Sachin",
+    "voice": "male"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "B",
+    "marathi": "चल मीरा, खाली चहा प्यायला जाऊया.",
+    "roman": "chal meera, khaali chaha pyaayla jaauya.",
+    "english": "Come on Meera, let's go downstairs for tea."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, चल. मला पण ब्रेक हवा आहे.",
+    "roman": "ho, chal. mala pan break hava aahe.",
+    "english": "Yes, let's go. I need a break too."
+   },
+   {
+    "speaker": "B",
+    "marathi": "या वीकेंडला काय प्लॅन आहे?",
+    "roman": "yaa weekendla kaay plan aahe?",
+    "english": "What's the plan for this weekend?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "शनिवारी आम्ही सिंहगडला ट्रेकला जाणार आहोत.",
+    "roman": "shanivaari aamhi sinhagadla trekla jaanaar aahot.",
+    "english": "On Saturday we're going on a trek to Sinhagad."
+   },
+   {
+    "speaker": "B",
+    "marathi": "छान! किती वाजता निघणार?",
+    "roman": "chhaan! kiti vaajta nighnaar?",
+    "english": "Nice! What time are you leaving?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "सकाळी पाच वाजता. लवकर उठावं लागेल.",
+    "roman": "sakaali paach vaajta. lavkar uthaava laagel.",
+    "english": "At five in the morning. I'll have to get up early."
+   },
+   {
+    "speaker": "A",
+    "marathi": "तुझं काय? तू काय करणार आहेस?",
+    "roman": "tujha kaay? tu kaay karnaar aahes?",
+    "english": "What about you? What are you going to do?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "मी घरीच आराम करणार. मी खूप दमलो आहे.",
+    "roman": "mi gharich aaraam karnaar. mi khoop damlo aahe.",
+    "english": "I'm just going to relax at home. I'm really tired."
+   },
+   {
+    "speaker": "B",
+    "marathi": "रविवारी संध्याकाळी मित्रांबरोबर क्रिकेट मॅच बघणार आहे.",
+    "roman": "ravivaari sandhyaakaali mitraambarobar cricket match baghnaar aahe.",
+    "english": "On Sunday evening I'm going to watch the cricket match with friends."
+   },
+   {
+    "speaker": "A",
+    "marathi": "अरे वा! भारताची मॅच आहे ना?",
+    "roman": "are vaa! bhaaratachi match aahe na?",
+    "english": "Oh nice! It's India's match, isn't it?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो. तू पण ये ना आमच्याबरोबर.",
+    "roman": "ho. tu pan ye na aamchyaabarobar.",
+    "english": "Yes. Why don't you come with us too?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "बघू. ट्रेकवरून परत आल्यावर सांगते.",
+    "roman": "baghu. trekvarun parat aalyaavar saangte.",
+    "english": "We'll see. I'll tell you after I get back from the trek."
+   },
+   {
+    "speaker": "B",
+    "marathi": "चल, चहा थंड होतोय.",
+    "roman": "chal, chaha thanda hotoy.",
+    "english": "Come on, the tea's getting cold."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "खाली",
+    "roman": "khaali",
+    "english": "down, downstairs"
+   },
+   {
+    "marathi": "शनिवारी",
+    "roman": "shanivaari",
+    "english": "on Saturday"
+   },
+   {
+    "marathi": "निघणे",
+    "roman": "nighne",
+    "english": "to leave, to set off"
+   },
+   {
+    "marathi": "उठावं लागेल",
+    "roman": "uthaava laagel",
+    "english": "will have to get up"
+   },
+   {
+    "marathi": "आराम करणे",
+    "roman": "aaraam karne",
+    "english": "to rest, to relax"
+   },
+   {
+    "marathi": "दमलो आहे",
+    "roman": "damlo aahe",
+    "english": "I am tired (male speaker)"
+   },
+   {
+    "marathi": "रविवारी",
+    "roman": "ravivaari",
+    "english": "on Sunday"
+   },
+   {
+    "marathi": "परत आल्यावर",
+    "roman": "parat aalyaavar",
+    "english": "after coming back"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Where is Meera going on Saturday?",
+    "options": [
+     "To her parents' house",
+     "On a trek to Sinhagad",
+     "To a cricket match"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What time will Meera set off?",
+    "options": [
+     "At five in the morning",
+     "At seven in the morning",
+     "At five in the evening"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "What is Sachin doing on Sunday evening?",
+    "options": [
+     "Going on a trek",
+     "Working from home",
+     "Watching the cricket with friends"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "work-4",
+  "title": "Asking for a Day's Leave",
+  "marathiTitle": "एका दिवसाची लीव्ह",
+  "topic": "Work",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Amit",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Joshi Madam",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "मॅडम, एक मिनिट बोलू का?",
+    "roman": "madam, ek minute boloo kaa?",
+    "english": "Madam, can I talk to you for a minute?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, ये ना अमित. काय झालं?",
+    "roman": "ho, ye naa amit. kaay jhaala?",
+    "english": "Yes, come in, Amit. What's up?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "पुढच्या शुक्रवारी मला एक दिवसाची लीव्ह हवी आहे.",
+    "roman": "pudhchyaa shukravaaree malaa ek divasaachee leave havee aahe.",
+    "english": "I need a day's leave next Friday."
+   },
+   {
+    "speaker": "B",
+    "marathi": "शुक्रवारी? का रे, काही विशेष?",
+    "roman": "shukravaaree? kaa re, kaahee vishesh?",
+    "english": "On Friday? Why, is there something special?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "माझ्या बहिणीचं लग्न आहे, मॅडम. गावाला जायचं आहे.",
+    "roman": "maajhyaa bahineecha lagna aahe, madam. gaavaalaa jaayacha aahe.",
+    "english": "It's my sister's wedding, madam. I have to go to my home town."
+   },
+   {
+    "speaker": "B",
+    "marathi": "अरे वा, अभिनंदन! पण त्या दिवशी क्लायंटची मीटिंग आहे ना?",
+    "roman": "are vaa, abhinandan! pan tyaa divashee client-chee meeting aahe naa?",
+    "english": "Oh wow, congratulations! But there's a client meeting that day, isn't there?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, म्हणून मी प्रेझेंटेशन गुरुवारीच पूर्ण करीन.",
+    "roman": "ho, mhanoon mee presentation guruvaareech poorna kareen.",
+    "english": "Yes, so I'll finish the presentation by Thursday itself."
+   },
+   {
+    "speaker": "B",
+    "marathi": "आणि मीटिंगला तुझ्याऐवजी कोण जाईल?",
+    "roman": "aani meeting-laa tujhyaa-aivajee kon jaaeel?",
+    "english": "And who will go to the meeting instead of you?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "प्रिया सगळं सांभाळेल. मी तिच्याशी बोललो आहे.",
+    "roman": "priyaa sagla saambhaalel. mee tichyaashee bolalo aahe.",
+    "english": "Priya will handle everything. I've already talked to her."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे. पोर्टलवर लीव्हचा अर्ज टाक, मी मंजूर करते.",
+    "roman": "theek aahe. portal-var leave-chaa arj taak, mee manjoor karte.",
+    "english": "OK. Put the leave application on the portal, I'll approve it."
+   },
+   {
+    "speaker": "A",
+    "marathi": "थँक यू, मॅडम. सोमवारी मी वेळेवर येईन.",
+    "roman": "thank you, madam. somvaaree mee velevar yeeen.",
+    "english": "Thank you, madam. I'll be back on time on Monday."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे. लग्नाची मजा कर!",
+    "roman": "theek aahe. lagnaachee majaa kar!",
+    "english": "Fine. Enjoy the wedding!"
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "शुक्रवार",
+    "roman": "shukravaar",
+    "english": "Friday"
+   },
+   {
+    "marathi": "लग्न",
+    "roman": "lagna",
+    "english": "wedding"
+   },
+   {
+    "marathi": "गाव",
+    "roman": "gaav",
+    "english": "home town, village"
+   },
+   {
+    "marathi": "अभिनंदन",
+    "roman": "abhinandan",
+    "english": "congratulations"
+   },
+   {
+    "marathi": "ऐवजी",
+    "roman": "aivajee",
+    "english": "instead of"
+   },
+   {
+    "marathi": "सांभाळणे",
+    "roman": "saambhaalne",
+    "english": "to handle, to look after"
+   },
+   {
+    "marathi": "अर्ज",
+    "roman": "arj",
+    "english": "application"
+   },
+   {
+    "marathi": "मंजूर करणे",
+    "roman": "manjoor karne",
+    "english": "to approve"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Why does Amit need a day's leave?",
+    "options": [
+     "His sister's wedding",
+     "He is unwell",
+     "He has a client visit"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "When will Amit finish the presentation?",
+    "options": [
+     "On Monday",
+     "On Thursday",
+     "On Friday"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "Who will handle the client meeting?",
+    "options": [
+     "Joshi Madam",
+     "Amit",
+     "Priya"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "work-5",
+  "title": "A New Colleague's First Day",
+  "marathiTitle": "नवीन सहकाऱ्याचा पहिला दिवस",
+  "topic": "Work",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Rohan",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Neha",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "नमस्कार! तुम्ही नवीन जॉईन झालात ना? मी रोहन.",
+    "roman": "namaskaar! tumhee naveen join jhaalaat naa? mee rohan.",
+    "english": "Hello! You've just joined, right? I'm Rohan."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, मी नेहा. आज माझा पहिला दिवस आहे.",
+    "roman": "ho, mee nehaa. aaj maajhaa pahilaa divas aahe.",
+    "english": "Yes, I'm Neha. Today is my first day."
+   },
+   {
+    "speaker": "A",
+    "marathi": "स्वागत आहे! चला, मी तुम्हाला ऑफिस दाखवतो.",
+    "roman": "swaagat aahe! chalaa, mee tumhaalaa office daakhavto.",
+    "english": "Welcome! Come on, I'll show you the office."
+   },
+   {
+    "speaker": "B",
+    "marathi": "थँक यू. मला थोडं टेन्शनच आलं होतं.",
+    "roman": "thank you. malaa thoda tension-ach aala hota.",
+    "english": "Thank you. I was actually a bit nervous."
+   },
+   {
+    "speaker": "A",
+    "marathi": "काळजी करू नका, इथे सगळे मदत करतात. ही आपली टीम.",
+    "roman": "kaaljee karoo nakaa, ithe sagle madat kartaat. hee aaplee team.",
+    "english": "Don't worry, everyone here helps out. This is our team."
+   },
+   {
+    "speaker": "B",
+    "marathi": "आणि माझी जागा कुठे आहे?",
+    "roman": "aani maajhee jaagaa kuthe aahe?",
+    "english": "And where is my seat?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "खिडकीजवळ, माझ्या शेजारीच. तुमचा लॅपटॉप टेबलावर ठेवलाय.",
+    "roman": "khidkeejaval, maajhyaa shejaareech. tumchaa laptop table-var thevlaay.",
+    "english": "By the window, right next to me. Your laptop is on the desk."
+   },
+   {
+    "speaker": "B",
+    "marathi": "छान! आणि कँटीन कुठे आहे?",
+    "roman": "chhaan! aani canteen kuthe aahe?",
+    "english": "Great! And where is the canteen?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "तिसऱ्या मजल्यावर. जेवण एक वाजता असतं, आपण बरोबर जाऊ.",
+    "roman": "tisryaa majlyaavar. jevan ek vaajtaa asta, aapan barobar jaaoo.",
+    "english": "On the third floor. Lunch is at one o'clock; we'll go together."
+   },
+   {
+    "speaker": "B",
+    "marathi": "चालेल. आयडी कार्ड कुठे मिळेल?",
+    "roman": "chaalel. ID card kuthe milel?",
+    "english": "Sounds good. Where will I get my ID card?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "एचआर डिपार्टमेंटमध्ये. दहा वाजता तिथे जा.",
+    "roman": "HR department-madhye. dahaa vaajtaa tithe jaa.",
+    "english": "In the HR department. Go there at ten o'clock."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे. तुम्ही खूप मदत केलीत, धन्यवाद!",
+    "roman": "theek aahe. tumhee khoop madat keleet, dhanyavaad!",
+    "english": "OK. You've been a big help, thank you!"
+   },
+   {
+    "speaker": "A",
+    "marathi": "त्यात काय! काही लागलं तर मला सांगा.",
+    "roman": "tyaat kaay! kaahee laagla tar malaa saangaa.",
+    "english": "It's nothing! If you need anything, just tell me."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "स्वागत",
+    "roman": "swaagat",
+    "english": "welcome"
+   },
+   {
+    "marathi": "दाखवणे",
+    "roman": "daakhavne",
+    "english": "to show"
+   },
+   {
+    "marathi": "काळजी",
+    "roman": "kaaljee",
+    "english": "worry, care"
+   },
+   {
+    "marathi": "जागा",
+    "roman": "jaagaa",
+    "english": "seat, place"
+   },
+   {
+    "marathi": "शेजारी",
+    "roman": "shejaaree",
+    "english": "next to"
+   },
+   {
+    "marathi": "मजला",
+    "roman": "majlaa",
+    "english": "floor (of a building)"
+   },
+   {
+    "marathi": "जेवण",
+    "roman": "jevan",
+    "english": "lunch, meal"
+   },
+   {
+    "marathi": "मदत",
+    "roman": "madat",
+    "english": "help"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Where is Neha's seat?",
+    "options": [
+     "Near the canteen",
+     "By the window, next to Rohan",
+     "On the third floor"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What time is lunch?",
+    "options": [
+     "At one o'clock",
+     "At ten o'clock",
+     "At twelve o'clock"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "Where will Neha get her ID card?",
+    "options": [
+     "From Rohan",
+     "At the canteen",
+     "In the HR department"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "work-6",
+  "title": "Fixing a Meeting by Phone",
+  "marathiTitle": "फोनवर मीटिंग ठरवणे",
+  "topic": "Work",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Mr Kulkarni",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Anjali",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "हॅलो, मी कुलकर्णी बोलतोय, सागर एंटरप्रायझेसमधून.",
+    "roman": "hello, mee kulkarnee boltoy, saagar enterprises-madhoon.",
+    "english": "Hello, this is Kulkarni speaking, from Sagar Enterprises."
+   },
+   {
+    "speaker": "B",
+    "marathi": "नमस्कार कुलकर्णी साहेब! मी अंजली. बोला ना.",
+    "roman": "namaskaar kulkarnee saaheb! mee anjalee. bolaa naa.",
+    "english": "Hello, Mr Kulkarni! This is Anjali. Go ahead."
+   },
+   {
+    "speaker": "A",
+    "marathi": "नवीन ऑर्डरबद्दल भेटायचं होतं. या आठवड्यात तुम्हाला वेळ आहे का?",
+    "roman": "naveen order-baddal bhetaayacha hota. yaa aathavdyaat tumhaalaa vel aahe kaa?",
+    "english": "I wanted to meet about the new order. Do you have time this week?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "बुधवारी जमेल का? सकाळी अकरा वाजता?",
+    "roman": "budhvaaree jamel kaa? sakaalee akraa vaajtaa?",
+    "english": "Would Wednesday work? At eleven in the morning?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "बुधवारी सकाळी मी बाहेर आहे. दुपारी तीन वाजता चालेल का?",
+    "roman": "budhvaaree sakaalee mee baaher aahe. dupaaree teen vaajtaa chaalel kaa?",
+    "english": "I'm out on Wednesday morning. Would three in the afternoon be OK?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, तीन वाजता चालेल. तुम्ही आमच्या ऑफिसला याल का?",
+    "roman": "ho, teen vaajtaa chaalel. tumhee aamchyaa office-laa yaal kaa?",
+    "english": "Yes, three is fine. Will you come to our office?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, नक्की. पत्ता एकदा सांगता का?",
+    "roman": "ho, nakkee. pattaa ekdaa saangtaa kaa?",
+    "english": "Yes, definitely. Could you tell me the address once more?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "बाणेर रोड, स्टेशनजवळ, दुसरा मजला. मी मेसेजवर पत्ता पाठवते.",
+    "roman": "baaner road, station-javal, dusraa majlaa. mee message-var pattaa paathavte.",
+    "english": "Baner Road, near the station, second floor. I'll send the address by message."
+   },
+   {
+    "speaker": "A",
+    "marathi": "छान. मी सॅम्पल्सपण घेऊन येतो.",
+    "roman": "chhaan. mee samples-pan gheoon yeto.",
+    "english": "Great. I'll bring the samples too."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, नक्की आणा. आमचे मॅनेजरपण मीटिंगला असतील.",
+    "roman": "ho, nakkee aanaa. aamche manager-pan meeting-laa asteel.",
+    "english": "Yes, please do bring them. Our manager will also be at the meeting."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ठीक आहे. मग बुधवारी तीन वाजता भेटू.",
+    "roman": "theek aahe. mag budhvaaree teen vaajtaa bhetoo.",
+    "english": "OK. Then we'll meet on Wednesday at three."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, भेटूया. धन्यवाद, कुलकर्णी साहेब!",
+    "roman": "ho, bhetooyaa. dhanyavaad, kulkarnee saaheb!",
+    "english": "Yes, see you then. Thank you, Mr Kulkarni!"
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "भेटणे",
+    "roman": "bhetne",
+    "english": "to meet"
+   },
+   {
+    "marathi": "आठवडा",
+    "roman": "aathavdaa",
+    "english": "week"
+   },
+   {
+    "marathi": "जमणे",
+    "roman": "jamne",
+    "english": "to work out, to be possible"
+   },
+   {
+    "marathi": "चालणे",
+    "roman": "chaalne",
+    "english": "to be OK, to work (for someone)"
+   },
+   {
+    "marathi": "दुपारी",
+    "roman": "dupaaree",
+    "english": "in the afternoon"
+   },
+   {
+    "marathi": "पत्ता",
+    "roman": "pattaa",
+    "english": "address"
+   },
+   {
+    "marathi": "पाठवणे",
+    "roman": "paathavne",
+    "english": "to send"
+   },
+   {
+    "marathi": "नक्की",
+    "roman": "nakkee",
+    "english": "definitely, for sure"
+   }
+  ],
+  "questions": [
+   {
+    "question": "When will they meet?",
+    "options": [
+     "Wednesday at eleven",
+     "Wednesday at three",
+     "Thursday at three"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "Where will the meeting be?",
+    "options": [
+     "At Anjali's office",
+     "At a café near the station",
+     "At Sagar Enterprises"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "What will Mr Kulkarni bring?",
+    "options": [
+     "The order form",
+     "His manager",
+     "The samples"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "home-1",
+  "title": "Calling Aai",
+  "marathiTitle": "आईला फोन",
+  "topic": "Home",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Sagar",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Aai",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "हॅलो आई, मी सागर बोलतोय.",
+    "roman": "hello aai, mi saagar boltoy.",
+    "english": "Hello Mum, it's Sagar speaking."
+   },
+   {
+    "speaker": "B",
+    "marathi": "अरे सागर! कसा आहेस? जेवलास का?",
+    "roman": "are saagar! kasa aahes? jevlaas kaa?",
+    "english": "Oh Sagar! How are you? Have you eaten?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, ऑफिसमध्ये डबा खाल्ला. तू कशी आहेस?",
+    "roman": "ho, officemadhye dabba khaalla. tu kashi aahes?",
+    "english": "Yes, I ate my lunchbox at the office. How are you?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "मी बरी आहे. पण बाबांचा पाय थोडा दुखतोय.",
+    "roman": "mi bari aahe. pan baabaancha paay thoda dukhtoy.",
+    "english": "I'm fine. But Dad's leg is hurting a bit."
+   },
+   {
+    "speaker": "A",
+    "marathi": "अरे बापरे! बाबा डॉक्टरकडे गेले होते का?",
+    "roman": "are baapre! baaba doctorkade gele hote kaa?",
+    "english": "Oh no! Did Dad go to the doctor?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, कालच गेलो होतो. डॉक्टर म्हणाले, आराम करा.",
+    "roman": "ho, kaalach gelo hoto. doctor mhanaale, aaraam kara.",
+    "english": "Yes, we went just yesterday. The doctor said to rest."
+   },
+   {
+    "speaker": "A",
+    "marathi": "बरं. मी या शनिवारी घरी येतो.",
+    "roman": "bara. mi yaa shanivaari ghari yeto.",
+    "english": "Okay. I'll come home this Saturday."
+   },
+   {
+    "speaker": "B",
+    "marathi": "छान! तुझ्यासाठी पुरणपोळी करते.",
+    "roman": "chhaan! tujhyaasaathi puranpoli karte.",
+    "english": "Lovely! I'll make puranpoli for you."
+   },
+   {
+    "speaker": "A",
+    "marathi": "वा! आणि बाबांना काळजी घ्यायला सांग.",
+    "roman": "vaa! aani baabaanna kaalji ghyaayla saang.",
+    "english": "Great! And tell Dad to take care."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, सांगते. तू पण वेळेवर जेव, हं.",
+    "roman": "ho, saangte. tu pan velevar jev, ha.",
+    "english": "Yes, I'll tell him. And you eat on time too, okay."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो आई. चल, माझं स्टेशन आलं.",
+    "roman": "ho aai. chal, maajha station aala.",
+    "english": "Yes Mum. Okay, my station has come."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे, सांभाळून जा. बाय!",
+    "roman": "theek aahe, saambhaalun jaa. bye!",
+    "english": "All right, go carefully. Bye!"
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "जेवलास का",
+    "roman": "jevlaas kaa",
+    "english": "have you eaten? (to a male)"
+   },
+   {
+    "marathi": "डबा",
+    "roman": "dabba",
+    "english": "lunchbox, tiffin"
+   },
+   {
+    "marathi": "दुखतोय",
+    "roman": "dukhtoy",
+    "english": "is hurting"
+   },
+   {
+    "marathi": "शनिवारी",
+    "roman": "shanivaari",
+    "english": "on Saturday"
+   },
+   {
+    "marathi": "पुरणपोळी",
+    "roman": "puranpoli",
+    "english": "sweet stuffed flatbread"
+   },
+   {
+    "marathi": "काळजी",
+    "roman": "kaalji",
+    "english": "care, worry"
+   },
+   {
+    "marathi": "वेळेवर",
+    "roman": "velevar",
+    "english": "on time"
+   },
+   {
+    "marathi": "सांभाळून जा",
+    "roman": "saambhaalun jaa",
+    "english": "go carefully, take care"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Where did Sagar eat lunch?",
+    "options": [
+     "At home",
+     "At the office, from his lunchbox",
+     "At a restaurant"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What is wrong with Sagar's father?",
+    "options": [
+     "His leg hurts",
+     "He has a fever",
+     "He has a headache"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "What will Aai make when Sagar comes home?",
+    "options": [
+     "Modak",
+     "Pohe",
+     "Puranpoli"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "home-2",
+  "title": "My Home",
+  "marathiTitle": "माझं घर",
+  "topic": "Home",
+  "level": 1,
+  "speakers": {
+   "A": {
+    "name": "Priya",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "नमस्कार, माझं नाव प्रिया आहे.",
+    "roman": "namaskaar, maajha naav priyaa aahe.",
+    "english": "Hello, my name is Priya."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी पुण्यात राहते.",
+    "roman": "mi punyaat raahte.",
+    "english": "I live in Pune."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आमचं घर लहान आहे, पण छान आहे.",
+    "roman": "aamcha ghar lahaan aahe, pan chhaan aahe.",
+    "english": "Our home is small, but it's nice."
+   },
+   {
+    "speaker": "A",
+    "marathi": "घरात दोन खोल्या आणि एक स्वयंपाकघर आहे.",
+    "roman": "gharaat don kholyaa aani ek swayampaakghar aahe.",
+    "english": "The house has two rooms and a kitchen."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आमच्या घरात चार माणसं आहेत.",
+    "roman": "aamchyaa gharaat chaar maansa aahet.",
+    "english": "There are four people in our home."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आई, बाबा, माझा भाऊ आणि मी.",
+    "roman": "aai, baaba, maajha bhaau aani mi.",
+    "english": "Mum, Dad, my brother and me."
+   },
+   {
+    "speaker": "A",
+    "marathi": "माझा भाऊ लहान आहे. तो शाळेत जातो.",
+    "roman": "maajha bhaau lahaan aahe. to shaalet jaato.",
+    "english": "My brother is young. He goes to school."
+   },
+   {
+    "speaker": "A",
+    "marathi": "बाबा बँकेत काम करतात.",
+    "roman": "baaba banket kaam kartaat.",
+    "english": "Dad works in a bank."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आई घरी असते. ती खूप छान स्वयंपाक करते.",
+    "roman": "aai ghari aste. ti khoop chhaan swayampaak karte.",
+    "english": "Mum stays at home. She cooks really well."
+   },
+   {
+    "speaker": "A",
+    "marathi": "रविवारी आम्ही सगळे एकत्र जेवतो.",
+    "roman": "ravivaari aamhi sagle ekatra jevto.",
+    "english": "On Sundays we all eat together."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मला माझं घर खूप आवडतं.",
+    "roman": "malaa maajha ghar khoop aavadta.",
+    "english": "I really love my home."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "घर",
+    "roman": "ghar",
+    "english": "home, house"
+   },
+   {
+    "marathi": "राहते",
+    "roman": "raahte",
+    "english": "(I) live (female speaker)"
+   },
+   {
+    "marathi": "खोल्या",
+    "roman": "kholyaa",
+    "english": "rooms"
+   },
+   {
+    "marathi": "स्वयंपाकघर",
+    "roman": "swayampaakghar",
+    "english": "kitchen"
+   },
+   {
+    "marathi": "भाऊ",
+    "roman": "bhaau",
+    "english": "brother"
+   },
+   {
+    "marathi": "शाळेत",
+    "roman": "shaalet",
+    "english": "to/at school"
+   },
+   {
+    "marathi": "एकत्र",
+    "roman": "ekatra",
+    "english": "together"
+   },
+   {
+    "marathi": "आवडतं",
+    "roman": "aavadta",
+    "english": "(I) like"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Which city does Priya live in?",
+    "options": [
+     "Mumbai",
+     "Nashik",
+     "Pune"
+    ],
+    "answer": 2
+   },
+   {
+    "question": "How many people live in Priya's home?",
+    "options": [
+     "Three",
+     "Four",
+     "Five"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "Where does Priya's father work?",
+    "options": [
+     "In a bank",
+     "In a school",
+     "In a hospital"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "home-3",
+  "title": "Getting Ready for Ganpati",
+  "marathiTitle": "गणपतीची तयारी",
+  "topic": "Home",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Neha",
+    "voice": "female"
+   },
+   "B": {
+    "name": "Amit",
+    "voice": "male"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "अमित, उद्या गणपती येणार. तयारी झाली का?",
+    "roman": "amit, udyaa ganpati yenaar. tayaari jhaali kaa?",
+    "english": "Amit, Ganpati arrives tomorrow. Are the preparations done?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "नाही गं, अजून सजावट बाकी आहे.",
+    "roman": "naahi ga, ajun sajaavat baaki aahe.",
+    "english": "No, the decorations are still left to do."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी आज ऑफिसमधून लवकर आले. मी मदत करते.",
+    "roman": "mi aaj officemadhun lavkar aale. mi madat karte.",
+    "english": "I came back from the office early today. I'll help."
+   },
+   {
+    "speaker": "B",
+    "marathi": "छान! तू फुलांच्या माळा आणि दिवे लाव.",
+    "roman": "chhaan! tu fulaanchyaa maalaa aani dive laav.",
+    "english": "Great! You put up the flower garlands and the lights."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ठीक आहे. मूर्ती कधी आणायची?",
+    "roman": "theek aahe. murti kadhi aanaaychi?",
+    "english": "Okay. When are we bringing the idol?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "उद्या सकाळी दहा वाजता. मी आणि बाबा जाणार आहोत.",
+    "roman": "udyaa sakaali dahaa vaajtaa. mi aani baaba jaanaar aahot.",
+    "english": "Tomorrow at ten in the morning. Dad and I are going."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आणि मोदक? आई करणार आहे का?",
+    "roman": "aani modak? aai karnaar aahe kaa?",
+    "english": "And the modaks? Is Mum making them?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, आजी आणि आई मिळून एकवीस मोदक करणार.",
+    "roman": "ho, aaji aani aai milun ekvees modak karnaar.",
+    "english": "Yes, Grandma and Mum will make twenty-one modaks together."
+   },
+   {
+    "speaker": "A",
+    "marathi": "वा! मला उकडीचे मोदक खूप आवडतात.",
+    "roman": "vaa! malaa ukdiche modak khoop aavadtaat.",
+    "english": "Wow! I really love steamed modaks."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मलाही. पण आधी काम, मग मोदक!",
+    "roman": "malaahi. pan aadhi kaam, mag modak!",
+    "english": "Me too. But work first, then modaks!"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो रे. आत्या आणि तिची मुलं पण येणार आहेत ना?",
+    "roman": "ho re. aatyaa aani tichi mula pan yenaar aahet naa?",
+    "english": "Yes, yes. Aunt and her kids are coming too, right?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, संध्याकाळी आरतीला सगळे येणार आहेत.",
+    "roman": "ho, sandhyaakaali aartila sagle yenaar aahet.",
+    "english": "Yes, everyone is coming for the aarti in the evening."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मग चल, लवकर काम संपवूया!",
+    "roman": "mag chal, lavkar kaam sampavuyaa!",
+    "english": "Then come on, let's finish the work quickly!"
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "तयारी",
+    "roman": "tayaari",
+    "english": "preparation"
+   },
+   {
+    "marathi": "सजावट",
+    "roman": "sajaavat",
+    "english": "decoration"
+   },
+   {
+    "marathi": "बाकी",
+    "roman": "baaki",
+    "english": "remaining, left to do"
+   },
+   {
+    "marathi": "दिवे",
+    "roman": "dive",
+    "english": "lights, lamps"
+   },
+   {
+    "marathi": "मूर्ती",
+    "roman": "murti",
+    "english": "idol"
+   },
+   {
+    "marathi": "मिळून",
+    "roman": "milun",
+    "english": "together"
+   },
+   {
+    "marathi": "आत्या",
+    "roman": "aatyaa",
+    "english": "father's sister, aunt"
+   },
+   {
+    "marathi": "आरती",
+    "roman": "aarti",
+    "english": "evening prayer ritual"
+   }
+  ],
+  "questions": [
+   {
+    "question": "When will the Ganpati idol be brought home?",
+    "options": [
+     "Tonight",
+     "Tomorrow at 10 a.m.",
+     "Tomorrow evening"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "Who is making the modaks?",
+    "options": [
+     "Neha",
+     "Amit and Dad",
+     "Mum and Grandma"
+    ],
+    "answer": 2
+   },
+   {
+    "question": "What job does Amit give Neha?",
+    "options": [
+     "Putting up flower garlands and lights",
+     "Fetching the idol",
+     "Cooking the modaks"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "food-1",
+  "title": "At the vegetable market",
+  "marathiTitle": "भाजी मंडईत",
+  "topic": "Food",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Neha",
+    "voice": "female"
+   },
+   "B": {
+    "name": "Bhajiwala",
+    "voice": "male"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "दादा, टोमॅटो कसे दिले?",
+    "roman": "daada, tomato kase dile?",
+    "english": "Brother, how much are the tomatoes?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "टोमॅटो साठ रुपये किलो, ताई. एकदम ताजे आहेत.",
+    "roman": "tomato saath rupaye kilo, taai. ekdam taaje aahet.",
+    "english": "Tomatoes are sixty rupees a kilo, sister. They're really fresh."
+   },
+   {
+    "speaker": "A",
+    "marathi": "साठ? खूप महाग आहेत. पन्नासला द्या ना.",
+    "roman": "saath? khoop mahaag aahet. pannaasla dyaa naa.",
+    "english": "Sixty? That's very expensive. Give them for fifty, come on."
+   },
+   {
+    "speaker": "B",
+    "marathi": "नाही ताई, आज भाव वाढलाय. पंचावन्नला घ्या.",
+    "roman": "naahi taai, aaj bhaav vaadhlaay. panchaavannla ghyaa.",
+    "english": "No sister, prices have gone up today. Take them for fifty-five."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ठीक आहे. मग एक किलो द्या.",
+    "roman": "theek aahe. mag ek kilo dyaa.",
+    "english": "Okay. Then give me one kilo."
+   },
+   {
+    "speaker": "B",
+    "marathi": "अजून काय देऊ? कांदे, बटाटे?",
+    "roman": "ajoon kaay deu? kaande, bataate?",
+    "english": "What else can I give you? Onions, potatoes?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "एक किलो कांदे आणि ही कोथिंबीर पण द्या.",
+    "roman": "ek kilo kaande aani hi kothimbeer pan dyaa.",
+    "english": "Give me a kilo of onions and this coriander too."
+   },
+   {
+    "speaker": "B",
+    "marathi": "कांदे चाळीस रुपये किलो. कोथिंबीर दहा रुपये जुडी.",
+    "roman": "kaande chaalees rupaye kilo. kothimbeer daha rupaye judi.",
+    "english": "Onions are forty rupees a kilo. Coriander is ten rupees a bunch."
+   },
+   {
+    "speaker": "A",
+    "marathi": "दादा, थोडी मिरची फुकट टाका ना.",
+    "roman": "daada, thodi mirchi phukat taakaa naa.",
+    "english": "Brother, throw in a few chillies for free, please."
+   },
+   {
+    "speaker": "B",
+    "marathi": "बरं, टाकतो. एकूण एकशे पाच रुपये झाले.",
+    "roman": "bara, taakto. ekoon ekshe paach rupaye jhaale.",
+    "english": "Okay, I'll add some. That's one hundred and five rupees in total."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हे घ्या एकशे दहा रुपये.",
+    "roman": "he ghyaa ekshe daha rupaye.",
+    "english": "Here, take one hundred and ten rupees."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हे घ्या पाच रुपये परत. पुन्हा या, ताई!",
+    "roman": "he ghyaa paach rupaye parat. punhaa yaa, taai!",
+    "english": "Here's five rupees back. Come again, sister!"
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "कसे दिले?",
+    "roman": "kase dile?",
+    "english": "how much are they? (at a market)"
+   },
+   {
+    "marathi": "महाग",
+    "roman": "mahaag",
+    "english": "expensive"
+   },
+   {
+    "marathi": "भाव",
+    "roman": "bhaav",
+    "english": "price, rate"
+   },
+   {
+    "marathi": "कांदे",
+    "roman": "kaande",
+    "english": "onions"
+   },
+   {
+    "marathi": "कोथिंबीर",
+    "roman": "kothimbeer",
+    "english": "coriander"
+   },
+   {
+    "marathi": "फुकट",
+    "roman": "phukat",
+    "english": "free, for nothing"
+   },
+   {
+    "marathi": "परत",
+    "roman": "parat",
+    "english": "back (returned)"
+   }
+  ],
+  "questions": [
+   {
+    "question": "What price did the seller first ask for the tomatoes?",
+    "options": [
+     "Fifty rupees a kilo",
+     "Sixty rupees a kilo",
+     "Fifty-five rupees a kilo"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What did Neha ask to get for free?",
+    "options": [
+     "Coriander",
+     "Onions",
+     "Chillies"
+    ],
+    "answer": 2
+   },
+   {
+    "question": "How much change did Neha get back?",
+    "options": [
+     "Five rupees",
+     "Ten rupees",
+     "Nothing"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "food-2",
+  "title": "At the vada pav stall",
+  "marathiTitle": "वडापावच्या गाडीवर",
+  "topic": "Food",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Rohan",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Mavshi",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "मावशी, दोन वडापाव द्या.",
+    "roman": "maavshi, don vadaapaav dyaa.",
+    "english": "Auntie, give me two vada pavs."
+   },
+   {
+    "speaker": "B",
+    "marathi": "इथे खाणार की पार्सल?",
+    "roman": "ithe khaanaar ki paarsal?",
+    "english": "Will you eat here or take away?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "एक इथेच खातो, एक पार्सल करा.",
+    "roman": "ek ithech khaato, ek paarsal karaa.",
+    "english": "I'll eat one right here, pack the other one."
+   },
+   {
+    "speaker": "B",
+    "marathi": "चटणी कोणती हवी? लाल की हिरवी?",
+    "roman": "chatni konti havi? laal ki hirvi?",
+    "english": "Which chutney do you want? Red or green?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "दोन्ही द्या. आणि तळलेली मिरची पण.",
+    "roman": "donhi dyaa. aani talleli mirchi pan.",
+    "english": "Give me both. And a fried chilli too."
+   },
+   {
+    "speaker": "B",
+    "marathi": "नवीन वडे तळतेय. पाच मिनिटं थांबा.",
+    "roman": "naveen vade taltey. paach minita thaambaa.",
+    "english": "I'm frying fresh vadas. Wait five minutes."
+   },
+   {
+    "speaker": "A",
+    "marathi": "चालेल. मला घाई नाहीये.",
+    "roman": "chaalel. malaa ghaai naahiye.",
+    "english": "That's fine. I'm not in a hurry."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हे घ्या, गरमागरम वडापाव.",
+    "roman": "he ghyaa, garamaagaram vadaapaav.",
+    "english": "Here you go, piping hot vada pav."
+   },
+   {
+    "speaker": "A",
+    "marathi": "वा! खूप छान झालाय. किती झाले?",
+    "roman": "vaa! khoop chhaan jhaalaay. kiti jhaale?",
+    "english": "Wow! It's really good. How much is it?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "एक वडापाव वीस रुपये. दोनचे चाळीस रुपये.",
+    "roman": "ek vadaapaav vees rupaye. donche chaalees rupaye.",
+    "english": "One vada pav is twenty rupees. Forty rupees for two."
+   },
+   {
+    "speaker": "A",
+    "marathi": "माझ्याकडे सुट्टे नाहीत. पाचशेची नोट चालेल का?",
+    "roman": "maajhyaakade sutte naaheet. paachshechi not chaalel kaa?",
+    "english": "I don't have change. Will a five-hundred note do?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "नाही हो, सकाळी सुट्टे नसतात. ऑनलाइन पाठवा ना.",
+    "roman": "naahi ho, sakaali sutte nastaat. online paathvaa naa.",
+    "english": "No, I don't have change in the morning. Just send it online."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ठीक आहे. पाठवले, बघा.",
+    "roman": "theek aahe. paathavle, bagha.",
+    "english": "Okay. I've sent it, have a look."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, आले. धन्यवाद! उद्या पण या.",
+    "roman": "ho, aale. dhanyavaad! udyaa pan yaa.",
+    "english": "Yes, it's come through. Thank you! Come tomorrow too."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "हवी",
+    "roman": "havi",
+    "english": "want, needed (feminine)"
+   },
+   {
+    "marathi": "दोन्ही",
+    "roman": "donhi",
+    "english": "both"
+   },
+   {
+    "marathi": "तळलेली मिरची",
+    "roman": "talleli mirchi",
+    "english": "fried chilli"
+   },
+   {
+    "marathi": "थांबा",
+    "roman": "thaambaa",
+    "english": "wait (polite)"
+   },
+   {
+    "marathi": "घाई",
+    "roman": "ghaai",
+    "english": "hurry"
+   },
+   {
+    "marathi": "सुट्टे",
+    "roman": "sutte",
+    "english": "small change"
+   },
+   {
+    "marathi": "किती झाले?",
+    "roman": "kiti jhaale?",
+    "english": "how much is it?"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Which chutney did Rohan want?",
+    "options": [
+     "Only red",
+     "Only green",
+     "Both red and green"
+    ],
+    "answer": 2
+   },
+   {
+    "question": "Why did Rohan have to wait?",
+    "options": [
+     "Fresh vadas were being fried",
+     "There was no bread",
+     "The stall was very crowded"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "How did Rohan pay in the end?",
+    "options": [
+     "With a five-hundred note",
+     "He sent the money online",
+     "With exact cash"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "food-3",
+  "title": "Morning chai at the station",
+  "marathiTitle": "स्टेशनवरचा चहा",
+  "topic": "Food",
+  "level": 1,
+  "speakers": {
+   "A": {
+    "name": "Amit",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Chaiwala",
+    "voice": "male"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "नमस्कार काका. एक चहा द्या.",
+    "roman": "namaskaar kaakaa. ek chahaa dyaa.",
+    "english": "Hello, uncle. One tea, please."
+   },
+   {
+    "speaker": "B",
+    "marathi": "कटिंग की फुल?",
+    "roman": "cutting ki full?",
+    "english": "Half glass or full?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "कटिंग. साखर कमी टाका.",
+    "roman": "cutting. saakhar kami taakaa.",
+    "english": "Half glass. Put in less sugar."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे. आणि काही खाणार का?",
+    "roman": "theek aahe. aani kaahi khaanaar kaa?",
+    "english": "Okay. And will you eat something?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, दोन बिस्किटं द्या.",
+    "roman": "ho, don biskita dyaa.",
+    "english": "Yes, give me two biscuits."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हा घ्या तुमचा चहा.",
+    "roman": "haa ghyaa tumchaa chahaa.",
+    "english": "Here is your tea."
+   },
+   {
+    "speaker": "A",
+    "marathi": "चहा खूप छान आहे.",
+    "roman": "chahaa khoop chhaan aahe.",
+    "english": "The tea is very good."
+   },
+   {
+    "speaker": "B",
+    "marathi": "धन्यवाद. रोज सकाळी इथे येता का?",
+    "roman": "dhanyavaad. roj sakaali ithe yetaa kaa?",
+    "english": "Thank you. Do you come here every morning?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो, मी रोज आठ वाजताची ट्रेन पकडतो.",
+    "roman": "ho, mi roj aath vaajtaachi train pakadto.",
+    "english": "Yes, I catch the eight o'clock train every day."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मग लवकर प्या. ट्रेन पाच मिनिटांत येईल.",
+    "roman": "mag lavkar pyaa. train paach minitaat yeil.",
+    "english": "Then drink quickly. The train will come in five minutes."
+   },
+   {
+    "speaker": "A",
+    "marathi": "किती झाले, काका?",
+    "roman": "kiti jhaale, kaakaa?",
+    "english": "How much is it, uncle?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "चहा दहा रुपये, बिस्किटं दहा रुपये. वीस रुपये झाले.",
+    "roman": "chahaa daha rupaye, biskita daha rupaye. vees rupaye jhaale.",
+    "english": "Tea is ten rupees, biscuits ten rupees. That's twenty rupees."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हे घ्या वीस रुपये. उद्या भेटू!",
+    "roman": "he ghyaa vees rupaye. udyaa bhetoo!",
+    "english": "Here's twenty rupees. See you tomorrow!"
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "चहा",
+    "roman": "chahaa",
+    "english": "tea"
+   },
+   {
+    "marathi": "साखर",
+    "roman": "saakhar",
+    "english": "sugar"
+   },
+   {
+    "marathi": "कमी",
+    "roman": "kami",
+    "english": "less"
+   },
+   {
+    "marathi": "रोज",
+    "roman": "roj",
+    "english": "every day"
+   },
+   {
+    "marathi": "लवकर",
+    "roman": "lavkar",
+    "english": "quickly, early"
+   },
+   {
+    "marathi": "प्या",
+    "roman": "pyaa",
+    "english": "drink (polite)"
+   },
+   {
+    "marathi": "उद्या भेटू",
+    "roman": "udyaa bhetoo",
+    "english": "see you tomorrow"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Which train does Amit catch every day?",
+    "options": [
+     "The seven o'clock train",
+     "The eight o'clock train",
+     "The nine o'clock train"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "How much did Amit pay in total?",
+    "options": [
+     "Ten rupees",
+     "Thirty rupees",
+     "Twenty rupees"
+    ],
+    "answer": 2
+   },
+   {
+    "question": "How did Amit want his tea?",
+    "options": [
+     "With less sugar",
+     "With extra sugar",
+     "Without milk"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "town-1",
+  "title": "At the Doctor's Clinic",
+  "marathiTitle": "डॉक्टरांच्या दवाखान्यात",
+  "topic": "Town",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Dr Kulkarni",
+    "voice": "female"
+   },
+   "B": {
+    "name": "Rohan",
+    "voice": "male"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "या, बसा. काय होतंय तुम्हाला?",
+    "roman": "yaa, basaa. kaay hotay tumhaalaa?",
+    "english": "Come in, sit down. What's the trouble?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "दोन दिवसांपासून सर्दी आहे आणि रात्री ताप येतोय.",
+    "roman": "don divasaanpaasoon sardi aahe aani raatri taap yetoy.",
+    "english": "I've had a cold for two days, and I get a fever at night."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ताप किती आहे? तुम्ही थर्मामीटरने तपासलं का?",
+    "roman": "taap kiti aahe? tumhi thermometer-ne tapaasla kaa?",
+    "english": "How high is the fever? Did you check it with a thermometer?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, काल रात्री एकशे एक होता. घसाही खूप दुखतोय.",
+    "roman": "ho, kaal raatri ekshe ek hotaa. ghasaahi khoop dukhtoy.",
+    "english": "Yes, last night it was a hundred and one. My throat hurts a lot too."
+   },
+   {
+    "speaker": "A",
+    "marathi": "खोकला पण आहे का?",
+    "roman": "khoklaa pan aahe kaa?",
+    "english": "Do you have a cough as well?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो, थोडा कोरडा खोकला आहे. आणि अंग दुखतंय.",
+    "roman": "ho, thodaa kordaa khoklaa aahe. aani ang dukhtay.",
+    "english": "Yes, a slight dry cough. And my body aches."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ठीक आहे. जरा तोंड उघडा, 'आ' करा. घसा लाल झालाय.",
+    "roman": "theek aahe. jaraa tond ughdaa, 'aa' karaa. ghasaa laal jhaalaay.",
+    "english": "Okay. Open your mouth, say 'aah'. Your throat is red."
+   },
+   {
+    "speaker": "B",
+    "marathi": "काही गंभीर तर नाही ना, डॉक्टर?",
+    "roman": "kaahi gambheer tar naahi naa, doctor?",
+    "english": "It's nothing serious, is it, doctor?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "नाही, व्हायरल ताप आहे. मी तीन दिवसांची औषधं देते.",
+    "roman": "naahi, viral taap aahe. mi teen divasaanchi aushadha dete.",
+    "english": "No, it's a viral fever. I'll give you medicine for three days."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ही औषधं कधी घ्यायची?",
+    "roman": "hi aushadha kadhi ghyaaychi?",
+    "english": "When should I take these medicines?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "जेवणानंतर, दिवसातून दोनदा. आणि भरपूर पाणी प्या.",
+    "roman": "jevanaanantar, divasaatoon dondaa. aani bharpoor paani pyaa.",
+    "english": "After meals, twice a day. And drink plenty of water."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मी ऑफिसला जाऊ शकतो का?",
+    "roman": "mi office-laa jaaoo shakto kaa?",
+    "english": "Can I go to the office?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "दोन दिवस घरीच आराम करा. बरं नाही वाटलं तर परत या.",
+    "roman": "don divas gharich aaraam karaa. bara naahi vaatla tar parat yaa.",
+    "english": "Rest at home for two days. If you don't feel better, come back."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ठीक आहे. धन्यवाद, डॉक्टर.",
+    "roman": "theek aahe. dhanyavaad, doctor.",
+    "english": "Okay. Thank you, doctor."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "सर्दी",
+    "roman": "sardi",
+    "english": "a cold"
+   },
+   {
+    "marathi": "ताप",
+    "roman": "taap",
+    "english": "fever"
+   },
+   {
+    "marathi": "घसा",
+    "roman": "ghasaa",
+    "english": "throat"
+   },
+   {
+    "marathi": "खोकला",
+    "roman": "khoklaa",
+    "english": "cough"
+   },
+   {
+    "marathi": "दुखणे",
+    "roman": "dukhne",
+    "english": "to hurt, to ache"
+   },
+   {
+    "marathi": "औषध",
+    "roman": "aushadh",
+    "english": "medicine"
+   },
+   {
+    "marathi": "आराम",
+    "roman": "aaraam",
+    "english": "rest"
+   }
+  ],
+  "questions": [
+   {
+    "question": "How long has Rohan had a cold?",
+    "options": [
+     "One week",
+     "Two days",
+     "Since this morning"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "How should he take the medicine?",
+    "options": [
+     "After meals, twice a day",
+     "Before breakfast only",
+     "Three times a day with milk"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "What does the doctor say about going to work?",
+    "options": [
+     "He can go tomorrow",
+     "He should work half days",
+     "He should rest at home for two days"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "town-2",
+  "title": "Monsoon Rain and a Power Cut",
+  "marathiTitle": "मुसळधार पाऊस आणि लाईट गेली",
+  "topic": "Town",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Sunita kaku",
+    "voice": "female"
+   },
+   "B": {
+    "name": "Amit",
+    "voice": "male"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "अरे अमित, भिजलास का? बाहेर केवढा पाऊस पडतोय!",
+    "roman": "are amit, bhijlaas kaa? baaher kevdhaa paaus padtoy!",
+    "english": "Oh Amit, did you get soaked? It's pouring outside!"
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो काकू, स्टेशनपासून चालत आलो. पूर्ण भिजलो.",
+    "roman": "ho kaakoo, station-paasoon chaalat aalo. poorna bhijlo.",
+    "english": "Yes, aunty, I walked from the station. I'm completely soaked."
+   },
+   {
+    "speaker": "A",
+    "marathi": "तुझ्याकडे छत्री नव्हती का?",
+    "roman": "tujhyaakade chhatri navhati kaa?",
+    "english": "Didn't you have an umbrella?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "होती, पण वाऱ्यामुळे ती उलटी झाली.",
+    "roman": "hoti, pan vaaryaamule ti ulti jhaali.",
+    "english": "I did, but the wind turned it inside out."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आमच्या इथे सकाळपासून लाईट नाहीये.",
+    "roman": "aamchyaa ithe sakaalpaasoon light naahiye.",
+    "english": "We've had no electricity here since the morning."
+   },
+   {
+    "speaker": "B",
+    "marathi": "हो का? मग फ्रिज आणि पंखा पण बंद असेल.",
+    "roman": "ho kaa? mag fridge aani pankhaa pan band asel.",
+    "english": "Really? Then the fridge and the fan must be off too."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो ना. लिफ्ट पण बंद आहे, मला पाच मजले चढावे लागले.",
+    "roman": "ho naa. lift pan band aahe, malaa paach majle chadhaave laagle.",
+    "english": "Exactly. The lift is off too, I had to climb five floors."
+   },
+   {
+    "speaker": "B",
+    "marathi": "अरे बापरे! सोसायटीने महावितरणला फोन केला का?",
+    "roman": "are baapre! society-ne mahaavitaran-laa phone kelaa kaa?",
+    "english": "Oh my! Did the society call the electricity board?"
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो. रस्त्यावर झाड पडलंय, संध्याकाळपर्यंत लाईट येईल म्हणाले.",
+    "roman": "ho. rastyaavar jhaad padlay, sandhyaakaalparyant light yeil mhanaale.",
+    "english": "Yes. A tree has fallen on the road; they said power will be back by evening."
+   },
+   {
+    "speaker": "B",
+    "marathi": "आणि खालच्या रस्त्यावर गुडघाभर पाणी साचलंय.",
+    "roman": "aani khaalchyaa rastyaavar gudghaabhar paani saachlay.",
+    "english": "And there's knee-deep water on the road below."
+   },
+   {
+    "speaker": "A",
+    "marathi": "उद्या पण मुसळधार पावसाचा इशारा आहे म्हणे.",
+    "roman": "udyaa pan musaldhaar paavsaachaa ishaaraa aahe mhane.",
+    "english": "Apparently there's a heavy rain warning for tomorrow too."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मग उद्या मी घरूनच काम करतो.",
+    "roman": "mag udyaa mi gharoonach kaam karto.",
+    "english": "Then I'll just work from home tomorrow."
+   },
+   {
+    "speaker": "A",
+    "marathi": "बरोबर. तुझ्याकडे मेणबत्ती आहे ना? नसेल तर मी देते.",
+    "roman": "barobar. tujhyaakade menbatti aahe naa? nasel tar mi dete.",
+    "english": "Good idea. You have a candle, right? If not, I'll give you one."
+   },
+   {
+    "speaker": "B",
+    "marathi": "आहे काकू, धन्यवाद. आधी कपडे बदलतो!",
+    "roman": "aahe kaakoo, dhanyavaad. aadhi kapde badalto!",
+    "english": "I have one, aunty, thanks. First I'll change my clothes!"
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "पाऊस",
+    "roman": "paaus",
+    "english": "rain"
+   },
+   {
+    "marathi": "भिजणे",
+    "roman": "bhijne",
+    "english": "to get wet"
+   },
+   {
+    "marathi": "छत्री",
+    "roman": "chhatri",
+    "english": "umbrella"
+   },
+   {
+    "marathi": "लाईट",
+    "roman": "light",
+    "english": "electricity, power"
+   },
+   {
+    "marathi": "मजला",
+    "roman": "majlaa",
+    "english": "floor, storey"
+   },
+   {
+    "marathi": "साचणे",
+    "roman": "saachne",
+    "english": "to collect (of water)"
+   },
+   {
+    "marathi": "मुसळधार",
+    "roman": "musaldhaar",
+    "english": "torrential"
+   },
+   {
+    "marathi": "मेणबत्ती",
+    "roman": "menbatti",
+    "english": "candle"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Why didn't Amit's umbrella help?",
+    "options": [
+     "The wind turned it inside out",
+     "He left it at the office",
+     "It was already broken"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "When is the power expected to come back?",
+    "options": [
+     "Tomorrow morning",
+     "By evening",
+     "In an hour"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What does Amit plan to do tomorrow?",
+    "options": [
+     "Catch an early train",
+     "Buy candles",
+     "Work from home"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "town-3",
+  "title": "A Maharashtrian Thali",
+  "marathiTitle": "महाराष्ट्रीयन थाळी",
+  "topic": "Town",
+  "level": 2,
+  "speakers": {
+   "A": {
+    "name": "Sameer",
+    "voice": "male"
+   },
+   "B": {
+    "name": "Priya",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "B",
+    "marathi": "समीर, इथली महाराष्ट्रीयन थाळी खूप प्रसिद्ध आहे.",
+    "roman": "sameer, ithli mahaaraashtriyan thaali khoop prasiddha aahe.",
+    "english": "Sameer, the Maharashtrian thali here is very famous."
+   },
+   {
+    "speaker": "A",
+    "marathi": "हो का? मेनू दाखव बरं. थाळीत काय काय आहे?",
+    "roman": "ho kaa? menu daakhav bara. thaalit kaay kaay aahe?",
+    "english": "Really? Show me the menu. What all comes in the thali?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "दोन भाज्या, वरण-भात, पोळी, कोशिंबीर आणि पापड.",
+    "roman": "don bhaajyaa, varan-bhaat, poli, koshimbeer aani paapad.",
+    "english": "Two vegetable dishes, dal and rice, chapati, salad and papad."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आणि गोड काय आहे?",
+    "roman": "aani god kaay aahe?",
+    "english": "And what's the sweet?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "आज श्रीखंड आहे. पुरणपोळी फक्त रविवारी असते.",
+    "roman": "aaj shreekhand aahe. puranpoli phakta ravivaari aste.",
+    "english": "Today it's shrikhand. Puran poli is only on Sundays."
+   },
+   {
+    "speaker": "A",
+    "marathi": "वा! मला श्रीखंड खूप आवडतं. किंमत किती आहे?",
+    "roman": "vaa! malaa shreekhand khoop aavadta. kimmat kiti aahe?",
+    "english": "Great! I love shrikhand. How much is it?"
+   },
+   {
+    "speaker": "B",
+    "marathi": "दोनशे पन्नास रुपये, आणि अनलिमिटेड आहे.",
+    "roman": "donshe pannaas rupaye, aani unlimited aahe.",
+    "english": "Two hundred and fifty rupees, and it's unlimited."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मस्त! पण मला जास्त तिखट नको.",
+    "roman": "mast! pan malaa jaasta tikhat nako.",
+    "english": "Great! But I don't want it too spicy."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मी सांगते. दादा, दोन थाळ्या द्या, एक कमी तिखट.",
+    "roman": "mi saangte. daadaa, don thaalyaa dyaa, ek kami tikhat.",
+    "english": "I'll tell him. Excuse me, two thalis please, one less spicy."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आणि मला एक ताक पण हवंय.",
+    "roman": "aani malaa ek taak pan havay.",
+    "english": "And I'd like a buttermilk too."
+   },
+   {
+    "speaker": "B",
+    "marathi": "मी पण घेते. दादा, दोन ताक पण आणा.",
+    "roman": "mi pan ghete. daadaa, don taak pan aanaa.",
+    "english": "I'll have one too. Two buttermilks as well, please."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ही भाजी कसली आहे? छान वास येतोय.",
+    "roman": "hi bhaaji kasli aahe? chhaan vaas yetoy.",
+    "english": "What vegetable dish is this? It smells lovely."
+   },
+   {
+    "speaker": "B",
+    "marathi": "ती भरली वांगी आहेत. आणि ही बटाट्याची भाजी.",
+    "roman": "ti bharli vaangi aahet. aani hi bataatyaachi bhaaji.",
+    "english": "That's stuffed aubergine. And this one is potato."
+   },
+   {
+    "speaker": "A",
+    "marathi": "खूप चविष्ट! पुढच्या रविवारी पुरणपोळीसाठी परत येऊ.",
+    "roman": "khoop chavishta! pudhchyaa ravivaari puranpolisaathi parat yeoo.",
+    "english": "Delicious! Let's come back next Sunday for the puran poli."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "थाळी",
+    "roman": "thaali",
+    "english": "thali, set meal on a plate"
+   },
+   {
+    "marathi": "गोड",
+    "roman": "god",
+    "english": "sweet"
+   },
+   {
+    "marathi": "तिखट",
+    "roman": "tikhat",
+    "english": "spicy"
+   },
+   {
+    "marathi": "किंमत",
+    "roman": "kimmat",
+    "english": "price"
+   },
+   {
+    "marathi": "ताक",
+    "roman": "taak",
+    "english": "buttermilk"
+   },
+   {
+    "marathi": "वरण-भात",
+    "roman": "varan-bhaat",
+    "english": "dal and rice"
+   },
+   {
+    "marathi": "चविष्ट",
+    "roman": "chavishta",
+    "english": "tasty"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Which sweet is served today?",
+    "options": [
+     "Puran poli",
+     "Shrikhand",
+     "Gulab jamun"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "How much does the thali cost?",
+    "options": [
+     "Two hundred rupees",
+     "One hundred and fifty rupees",
+     "Two hundred and fifty rupees"
+    ],
+    "answer": 2
+   },
+   {
+    "question": "What does Sameer ask for?",
+    "options": [
+     "Less spicy food",
+     "Extra rice",
+     "A cold drink"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "story-1",
+  "title": "The lost wallet",
+  "marathiTitle": "हरवलेलं पाकीट",
+  "topic": "Stories",
+  "level": 3,
+  "speakers": {
+   "A": {
+    "name": "Narrator",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "गेल्या सोमवारी मी नेहमीप्रमाणे सकाळी लोकल ट्रेनने ऑफिसला गेले.",
+    "roman": "gelyaa somvaari mee nehmeepramaane sakaali local train-ne office-laa gele.",
+    "english": "Last Monday, as usual, I went to the office by local train in the morning."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ट्रेनमध्ये खूप गर्दी होती, म्हणून मी दाराजवळ उभी राहिले.",
+    "roman": "train-madhye khoop gardi hoti, mhanun mee daaraajaval ubhi raahile.",
+    "english": "The train was very crowded, so I stood near the door."
+   },
+   {
+    "speaker": "A",
+    "marathi": "दादर स्टेशनवर मी घाईघाईत उतरले आणि ऑफिसकडे चालू लागले.",
+    "roman": "daadar station-var mee ghaaighaait utarle aani office-kade chaaloo laagle.",
+    "english": "At Dadar station I got off in a hurry and started walking towards the office."
+   },
+   {
+    "speaker": "A",
+    "marathi": "ऑफिसमध्ये पोहोचल्यावर मला कळलं की माझं पाकीट माझ्याकडे नव्हतं.",
+    "roman": "office-madhye pohochlyaavar malaa kalla ki maajha paakeet maajhyaakade navhta.",
+    "english": "When I reached the office, I realised my wallet was not with me."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी खूप घाबरले, कारण पाकिटात पैसे आणि सगळी कार्डं होती.",
+    "roman": "mee khoop ghaabarle, kaaran paakitaat paise aani sagli cards hoti.",
+    "english": "I got very scared, because the wallet had my money and all my cards."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मला वाटलं, आता ते पाकीट परत कधीच मिळणार नाही.",
+    "roman": "malaa vaatla, aataa te paakeet parat kadheech milnaar naahi.",
+    "english": "I thought I would never get that wallet back now."
+   },
+   {
+    "speaker": "A",
+    "marathi": "तेवढ्यात माझा फोन वाजला आणि एका अनोळखी माणसाचा आवाज आला.",
+    "roman": "tevdhyaat maajhaa phone vaajlaa aani ekaa anolkhi maansaachaa aavaaj aalaa.",
+    "english": "Just then my phone rang and I heard the voice of a stranger."
+   },
+   {
+    "speaker": "A",
+    "marathi": "तो म्हणाला, \"तुमचं पाकीट मला ट्रेनमध्ये सापडलं आहे.\"",
+    "roman": "to mhanaalaa, \"tumcha paakeet malaa train-madhye saapadla aahe.\"",
+    "english": "He said, \"I have found your wallet on the train.\""
+   },
+   {
+    "speaker": "A",
+    "marathi": "पाकिटातल्या एका कार्डवर माझा नंबर होता, म्हणून त्याने मला फोन केला.",
+    "roman": "paakitaatlyaa ekaa card-var maajhaa number hotaa, mhanun tyaane malaa phone kelaa.",
+    "english": "My number was on one of the cards in the wallet, so he called me."
+   },
+   {
+    "speaker": "A",
+    "marathi": "त्यानंतर आम्ही संध्याकाळी सहा वाजता दादर स्टेशनवर भेटलो.",
+    "roman": "tyaanantar aamhi sandhyaakaali sahaa vaajtaa daadar station-var bhetlo.",
+    "english": "After that, we met at Dadar station at six o'clock in the evening."
+   },
+   {
+    "speaker": "A",
+    "marathi": "तो एक साधा, शांत माणूस होता आणि त्याचं नाव सुरेश होतं.",
+    "roman": "to ek saadhaa, shaant maanoos hotaa aani tyaacha naav suresh hota.",
+    "english": "He was a simple, calm man, and his name was Suresh."
+   },
+   {
+    "speaker": "A",
+    "marathi": "त्याने मला पाकीट दिलं, आणि पाकिटातलं काहीही हरवलं नव्हतं.",
+    "roman": "tyaane malaa paakeet dila, aani paakitaatla kaahihi haravla navhta.",
+    "english": "He gave me the wallet, and nothing in it was missing."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी त्याला बक्षीस द्यायचा प्रयत्न केला, पण त्याने नम्रपणे नकार दिला.",
+    "roman": "mee tyaalaa bakshees dyaaychaa prayatna kelaa, pan tyaane namrapane nakaar dilaa.",
+    "english": "I tried to give him a reward, but he politely refused."
+   },
+   {
+    "speaker": "A",
+    "marathi": "शेवटी आम्ही स्टेशनबाहेर एकत्र चहा प्यायलो.",
+    "roman": "shevati aamhi station-baaher ekatra chahaa pyaaylo.",
+    "english": "In the end, we drank tea together outside the station."
+   },
+   {
+    "speaker": "A",
+    "marathi": "त्या दिवशी मला कळलं की मुंबईत अजूनही प्रामाणिक माणसं आहेत.",
+    "roman": "tyaa divshi malaa kalla ki mumbait ajoonhi praamaanik maansa aahet.",
+    "english": "That day I learned that there are still honest people in Mumbai."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "पाकीट",
+    "roman": "paakeet",
+    "english": "wallet"
+   },
+   {
+    "marathi": "गर्दी",
+    "roman": "gardi",
+    "english": "crowd, rush"
+   },
+   {
+    "marathi": "घाबरणे",
+    "roman": "ghaabarne",
+    "english": "to get scared"
+   },
+   {
+    "marathi": "अनोळखी",
+    "roman": "anolkhi",
+    "english": "unknown, stranger"
+   },
+   {
+    "marathi": "सापडणे",
+    "roman": "saapadne",
+    "english": "to be found"
+   },
+   {
+    "marathi": "बक्षीस",
+    "roman": "bakshees",
+    "english": "reward, prize"
+   },
+   {
+    "marathi": "नकार",
+    "roman": "nakaar",
+    "english": "refusal"
+   },
+   {
+    "marathi": "प्रामाणिक",
+    "roman": "praamaanik",
+    "english": "honest"
+   }
+  ],
+  "questions": [
+   {
+    "question": "At which station did the narrator get off the train?",
+    "options": [
+     "Dadar",
+     "Thane",
+     "Churchgate"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "How did the stranger get the narrator's phone number?",
+    "options": [
+     "He asked at the station office",
+     "It was on a card in the wallet",
+     "A friend gave it to him"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What happened at the end of the story?",
+    "options": [
+     "Suresh took a reward",
+     "They went to the police",
+     "They drank tea together outside the station"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "story-2",
+  "title": "A day at grandfather's village",
+  "marathiTitle": "आजोबांच्या गावातला एक दिवस",
+  "topic": "Stories",
+  "level": 3,
+  "speakers": {
+   "A": {
+    "name": "Narrator",
+    "voice": "male"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "लहानपणी मी दर उन्हाळ्याच्या सुट्टीत आजोबांच्या गावी जायचो.",
+    "roman": "lahaanpani mee dar unhaalyaachyaa suttit aajobaanchyaa gaavi jaaycho.",
+    "english": "As a child, I used to go to my grandfather's village every summer holiday."
+   },
+   {
+    "speaker": "A",
+    "marathi": "एकदा मी आठ वर्षांचा असताना आई-बाबांसोबत एसटीने तिथे गेलो.",
+    "roman": "ekdaa mee aath varshaanchaa astaanaa aai-baabaansobat ST-ne tithe gelo.",
+    "english": "Once, when I was eight, I went there with my parents by ST bus."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आजोबांचं गाव कोकणात, एका छोट्या नदीच्या काठावर होतं.",
+    "roman": "aajobaancha gaav konkanaat, ekaa chhotyaa nadeechyaa kaathaavar hota.",
+    "english": "Grandfather's village was in the Konkan, on the bank of a small river."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आम्ही पोहोचलो तेव्हा आजोबा अंगणात आमची वाट पाहत होते.",
+    "roman": "aamhi pohochlo tevhaa aajobaa anganaat aamchi vaat paahat hote.",
+    "english": "When we arrived, Grandfather was waiting for us in the courtyard."
+   },
+   {
+    "speaker": "A",
+    "marathi": "दुसऱ्या दिवशी सकाळी ते मला त्यांच्या शेतावर घेऊन गेले.",
+    "roman": "dusryaa divshi sakaali te malaa tyaanchyaa shetaavar gheoon gele.",
+    "english": "The next morning, he took me to his farm."
+   },
+   {
+    "speaker": "A",
+    "marathi": "शेतात भाताची रोपं, आंब्याची झाडं आणि दोन मोठे बैल होते.",
+    "roman": "shetaat bhaataachi ropa, aambyaachi jhaada aani don mothe bail hote.",
+    "english": "On the farm there were rice plants, mango trees and two big bullocks."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आजोबांनी मला बैलगाडीत बसवलं आणि गावभर फिरवलं.",
+    "roman": "aajobaanni malaa bailgaadeet basavla aani gaavbhar phiravla.",
+    "english": "Grandfather sat me in the bullock cart and took me all around the village."
+   },
+   {
+    "speaker": "A",
+    "marathi": "दुपारी खूप ऊन होतं, म्हणून आम्ही नदीवर पोहायला गेलो.",
+    "roman": "dupaari khoop oon hota, mhanun aamhi nadeevar pohaayalaa gelo.",
+    "english": "In the afternoon it was very sunny, so we went to the river to swim."
+   },
+   {
+    "speaker": "A",
+    "marathi": "नदीचं पाणी थंड आणि इतकं स्वच्छ होतं की तळाचे दगड दिसत होते.",
+    "roman": "nadeecha paani thanda aani itka swachchha hota ki talaache dagad disat hote.",
+    "english": "The river water was cold and so clear that you could see the stones at the bottom."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मला पोहता येत नव्हतं, पण आजोबांनी मला हळूहळू शिकवलं.",
+    "roman": "malaa pohtaa yet navhta, pan aajobaanni malaa haloohaloo shikavla.",
+    "english": "I couldn't swim, but Grandfather taught me slowly."
+   },
+   {
+    "speaker": "A",
+    "marathi": "त्यानंतर आम्ही घरी परत आलो; आजीने गरम जेवण तयार ठेवलं होतं.",
+    "roman": "tyaanantar aamhi ghari parat aalo; aajeene garam jevan tayaar thevla hota.",
+    "english": "After that we came back home; Grandmother had kept a hot meal ready."
+   },
+   {
+    "speaker": "A",
+    "marathi": "जेवणात चुलीवरची भाकरी, पिठलं आणि आंब्याचा रस होता.",
+    "roman": "jevnaat chuleevarchi bhaakri, pithla aani aambyaachaa ras hotaa.",
+    "english": "For the meal there was bhakri from the wood stove, pithla and mango pulp."
+   },
+   {
+    "speaker": "A",
+    "marathi": "तेवढ्यात बाहेर पाऊस सुरू झाला आणि मातीचा सुगंध सगळीकडे पसरला.",
+    "roman": "tevdhyaat baaher paaoos suroo jhaalaa aani maateechaa sugandh sagleekade pasarlaa.",
+    "english": "Just then it started raining outside, and the smell of the earth spread everywhere."
+   },
+   {
+    "speaker": "A",
+    "marathi": "रात्री आजोबांनी मला त्यांच्या लहानपणीच्या गोष्टी सांगितल्या.",
+    "roman": "raatri aajobaanni malaa tyaanchyaa lahaanpaneechyaa goshti saangitlyaa.",
+    "english": "At night, Grandfather told me stories from his childhood."
+   },
+   {
+    "speaker": "A",
+    "marathi": "शेवटी सुट्टी संपली आणि मी रडत रडत मुंबईला परत आलो.",
+    "roman": "shevati sutti sampli aani mee radat radat mumbaeelaa parat aalo.",
+    "english": "Finally the holiday ended, and I came back to Mumbai crying."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आजही मला त्या गावाची, नदीची आणि आजोबांची खूप आठवण येते.",
+    "roman": "aajahi malaa tyaa gaavaachi, nadeechi aani aajobaanchi khoop aathvan yete.",
+    "english": "Even today I really miss that village, the river and my grandfather."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "शेत",
+    "roman": "shet",
+    "english": "farm, field"
+   },
+   {
+    "marathi": "नदी",
+    "roman": "nadi",
+    "english": "river"
+   },
+   {
+    "marathi": "अंगण",
+    "roman": "angan",
+    "english": "courtyard"
+   },
+   {
+    "marathi": "बैल",
+    "roman": "bail",
+    "english": "bullock, ox"
+   },
+   {
+    "marathi": "पोहणे",
+    "roman": "pohne",
+    "english": "to swim"
+   },
+   {
+    "marathi": "भाकरी",
+    "roman": "bhaakri",
+    "english": "flatbread (jowar/bajra)"
+   },
+   {
+    "marathi": "सुगंध",
+    "roman": "sugandh",
+    "english": "fragrance, smell"
+   },
+   {
+    "marathi": "आठवण",
+    "roman": "aathvan",
+    "english": "memory, missing someone"
+   }
+  ],
+  "questions": [
+   {
+    "question": "How did the narrator travel to the village?",
+    "options": [
+     "By train",
+     "By ST bus",
+     "By car"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What did Grandfather teach the narrator at the river?",
+    "options": [
+     "How to swim",
+     "How to catch fish",
+     "How to drive the bullock cart"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "What happened while they were having their meal?",
+    "options": [
+     "Guests arrived",
+     "Grandfather fell asleep",
+     "It started to rain"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "story-3",
+  "title": "The first monsoon rain",
+  "marathiTitle": "पहिला पाऊस",
+  "topic": "Stories",
+  "level": 3,
+  "speakers": {
+   "A": {
+    "name": "Narrator",
+    "voice": "female"
+   }
+  },
+  "lines": [
+   {
+    "speaker": "A",
+    "marathi": "जूनच्या पहिल्या आठवड्यात मुंबईत खूप उकाडा होता.",
+    "roman": "joonchyaa pahilyaa aathvadyaat mumbait khoop ukaadaa hotaa.",
+    "english": "In the first week of June, it was very hot and humid in Mumbai."
+   },
+   {
+    "speaker": "A",
+    "marathi": "सगळे लोक पावसाची आतुरतेने वाट पाहत होते.",
+    "roman": "sagle lok paavsaachi aaturtene vaat paahat hote.",
+    "english": "Everyone was eagerly waiting for the rain."
+   },
+   {
+    "speaker": "A",
+    "marathi": "त्या दिवशी सकाळी आकाश निळं होतं, म्हणून मी छत्री घरीच ठेवली.",
+    "roman": "tyaa divshi sakaali aakaash nila hota, mhanun mee chhatri ghareech thevli.",
+    "english": "That morning the sky was blue, so I left my umbrella at home."
+   },
+   {
+    "speaker": "A",
+    "marathi": "पण संध्याकाळी अचानक आकाशात काळे ढग जमा झाले.",
+    "roman": "pan sandhyaakaali achaanak aakaashaat kaale dhag jamaa jhaale.",
+    "english": "But in the evening, dark clouds suddenly gathered in the sky."
+   },
+   {
+    "speaker": "A",
+    "marathi": "मी ऑफिसमधून बाहेर पडले, तेवढ्यात विजा चमकू लागल्या.",
+    "roman": "mee office-madhoon baaher padle, tevdhyaat vijaa chamkoo laaglyaa.",
+    "english": "I stepped out of the office, and just then lightning began to flash."
+   },
+   {
+    "speaker": "A",
+    "marathi": "काही क्षणांतच मुसळधार पाऊस सुरू झाला.",
+    "roman": "kaahi kshanaantach musaldhaar paaoos suroo jhaalaa.",
+    "english": "Within moments, heavy rain started pouring down."
+   },
+   {
+    "speaker": "A",
+    "marathi": "रस्त्यावर लगेच पाणी साचलं आणि कुठेच रिक्षा मिळेना.",
+    "roman": "rastyaavar lagech paani saachla aani kuthech rickshaw milenaa.",
+    "english": "Water quickly collected on the road, and I couldn't find a rickshaw anywhere."
+   },
+   {
+    "speaker": "A",
+    "marathi": "म्हणून मी स्टेशनपर्यंत चालत गेले आणि पूर्ण भिजले.",
+    "roman": "mhanun mee station-paryant chaalat gele aani poorna bhijle.",
+    "english": "So I walked all the way to the station and got completely soaked."
+   },
+   {
+    "speaker": "A",
+    "marathi": "माझे केस, कपडे, बूट, सगळं ओलं चिंब झालं.",
+    "roman": "maajhe kes, kapde, boot, sagla ola chimb jhaala.",
+    "english": "My hair, clothes, shoes, everything was dripping wet."
+   },
+   {
+    "speaker": "A",
+    "marathi": "पण खरं सांगायचं तर, पावसात भिजताना मला खूप मजा आली.",
+    "roman": "pan khara saangaaycha tar, paavsaat bhijtaanaa malaa khoop majaa aali.",
+    "english": "But to tell the truth, I really enjoyed getting wet in the rain."
+   },
+   {
+    "speaker": "A",
+    "marathi": "लहान मुलं रस्त्यावरच्या पाण्यात उड्या मारत होती आणि हसत होती.",
+    "roman": "lahaan mula rastyaavarchyaa paanyaat udyaa maarat hoti aani hasat hoti.",
+    "english": "Little children were jumping in the water on the street and laughing."
+   },
+   {
+    "speaker": "A",
+    "marathi": "घरी पोहोचल्यावर आईने मला लगेच टॉवेल दिला.",
+    "roman": "ghari pohochlyaavar aaeene malaa lagech towel dilaa.",
+    "english": "When I got home, my mother immediately gave me a towel."
+   },
+   {
+    "speaker": "A",
+    "marathi": "त्यानंतर तिने गरम गरम चहा आणि कांद्याची भजी केली.",
+    "roman": "tyaanantar tine garam garam chahaa aani kaandyaachi bhaji keli.",
+    "english": "After that she made piping hot tea and onion bhajis."
+   },
+   {
+    "speaker": "A",
+    "marathi": "आम्ही खिडकीजवळ बसलो आणि पाऊस बघत भजी खाल्ली.",
+    "roman": "aamhi khidkeejaval baslo aani paaoos baghat bhaji khaalli.",
+    "english": "We sat by the window and ate bhajis while watching the rain."
+   },
+   {
+    "speaker": "A",
+    "marathi": "शेवटी मला वाटलं, पावसाळ्याची खरी सुरुवात आज झाली.",
+    "roman": "shevati malaa vaatla, paavsaalyaachi khari suruvaat aaj jhaali.",
+    "english": "In the end I felt that the monsoon had truly begun that day."
+   }
+  ],
+  "vocab": [
+   {
+    "marathi": "उकाडा",
+    "roman": "ukaadaa",
+    "english": "sultry heat"
+   },
+   {
+    "marathi": "छत्री",
+    "roman": "chhatri",
+    "english": "umbrella"
+   },
+   {
+    "marathi": "ढग",
+    "roman": "dhag",
+    "english": "cloud"
+   },
+   {
+    "marathi": "मुसळधार",
+    "roman": "musaldhaar",
+    "english": "torrential (rain)"
+   },
+   {
+    "marathi": "भिजणे",
+    "roman": "bhijne",
+    "english": "to get wet, soaked"
+   },
+   {
+    "marathi": "ओलं चिंब",
+    "roman": "ola chimb",
+    "english": "drenched, dripping wet"
+   },
+   {
+    "marathi": "भजी",
+    "roman": "bhaji",
+    "english": "fritters (bhajis)"
+   },
+   {
+    "marathi": "खिडकी",
+    "roman": "khidki",
+    "english": "window"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Why did the narrator leave her umbrella at home?",
+    "options": [
+     "The sky was blue in the morning",
+     "She had lost it",
+     "Her mother had borrowed it"
+    ],
+    "answer": 0
+   },
+   {
+    "question": "How did she get to the station?",
+    "options": [
+     "By rickshaw",
+     "She walked",
+     "By bus"
+    ],
+    "answer": 1
+   },
+   {
+    "question": "What did her mother make when she got home?",
+    "options": [
+     "Soup and toast",
+     "Vada pav",
+     "Tea and onion bhajis"
+    ],
+    "answer": 2
+   }
+  ]
+ }
+]

@@ -5,7 +5,7 @@
 {
     @* One-line header while a quiz is running, so the answers fit on screen. *@
     <div style="padding:4px 20px 0;display:flex;align-items:center;gap:14px;">
-        <span @onclick='() => NavigationManager.NavigateTo(BackUrl)' style="cursor:pointer;display:inline-flex;">
+        <span @onclick="GoBack" style="cursor:pointer;display:inline-flex;">
             <Icon Name="arrow-left" Size="20" Color="@Theme.Cream" />
         </span>
         <span style="font-family:@Theme.Serif;font-size:22px;color:@Theme.Cream;letter-spacing:-0.5px;">@Title</span>
@@ -16,7 +16,7 @@
 else
 {
     <div style="padding:4px 20px 0;display:flex;align-items:center;justify-content:space-between;">
-        <span @onclick='() => NavigationManager.NavigateTo(BackUrl)' style="cursor:pointer;display:inline-flex;">
+        <span @onclick="GoBack" style="cursor:pointer;display:inline-flex;">
             <Icon Name="arrow-left" Size="20" Color="@Theme.Cream" />
         </span>
         <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">@Eyebrow</span>
@@ -45,4 +45,12 @@ else
     [Parameter] public string Glyph { get; set; } = "sparkle";
     [Parameter] public string BackUrl { get; set; } = "/";
     [Parameter] public bool Compact { get; set; }
+    /// <summary>Overrides navigation, for pages whose "back" is an in-page view change.</summary>
+    [Parameter] public EventCallback OnBack { get; set; }
+
+    private async Task GoBack()
+    {
+        if (OnBack.HasDelegate) await OnBack.InvokeAsync();
+        else NavigationManager.NavigateTo(BackUrl);
+    }
 }

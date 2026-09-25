@@ -16,3 +16,7 @@ node_modules/
 .vscode/
 .idea/
 *.user
+
+# Commute audio tool
+tools/commute/.cache/
+tools/commute/.venv

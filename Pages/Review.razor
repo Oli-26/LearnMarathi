@@ -159,7 +159,7 @@
     private enum ReviewMode { Recognise, Produce, Listen, Say }
 
     // Decks whose fronts are single words or short verbs; the recogniser copes badly with long sentences.
-    private static readonly HashSet<string> SayDecks = new() { "words", "verbs" };
+    private static readonly HashSet<string> SayDecks = new() { "words", "verbs", "commute" };
 
     private bool speechOk;
     private bool listening;

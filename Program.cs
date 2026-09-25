@@ -15,6 +15,7 @@ builder.Services.AddScoped<IPhraseRepository, PhraseRepository>();
 builder.Services.AddScoped<INumberRepository, NumberRepository>();
 builder.Services.AddScoped<IVerbRepository, VerbRepository>();
 builder.Services.AddScoped<ISentenceRepository, SentenceRepository>();
+builder.Services.AddScoped<ICommuteRepository, CommuteRepository>();
 builder.Services.AddScoped<ISrsService, SrsService>();
 builder.Services.AddScoped<IStreakService, StreakService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
