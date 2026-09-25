@@ -7,4 +7,5 @@ public class BasicWord
     public string EnglishTranslation { get; set; } = string.Empty;
     public string Pronunciation { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty; // Greetings, Numbers, Colors, etc.
+    public int Frequency { get; set; } = 999; // 1 = most common; lower = more frequent
 }

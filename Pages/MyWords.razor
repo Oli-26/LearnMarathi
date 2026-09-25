@@ -1,0 +1,132 @@
+@page "/mywords"
+@using LearnMarathi.Services
+@inject IReviewService ReviewService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>My words · Learn Marathi</PageTitle>
+
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+
+    <PageHead Title="My words" Marathi="माझे शब्द" Eyebrow="Progress" Glyph="book"
+              Blurb="Every word, verb and phrase in the app, and how well each one has stuck. Weakest first." />
+
+    @if (isLoading)
+    {
+        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+    }
+    else
+    {
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:20px 24px 4px;">
+            @foreach (var m in new[] { Mastery.Learning, Mastery.Known, Mastery.New })
+            {
+                var active = masteryFilter == m;
+                <div @onclick="() => masteryFilter = active ? null : m"
+                     style="padding:12px 10px;border-radius:12px;cursor:pointer;border:1px solid @(active ? MasteryColor(m) : Theme.MutedDk + "40");background:@(active ? MasteryColor(m) + "18" : Theme.Ink2);">
+                    <div style="font-family:@Theme.Serif;font-size:28px;line-height:1;color:@MasteryColor(m);">@items.Count(i => i.Mastery == m)</div>
+                    <div style="font-family:@Theme.Mono;font-size:9px;letter-spacing:1.5px;color:@Theme.Muted;text-transform:uppercase;margin-top:6px;">@m</div>
+                </div>
+            }
+        </div>
+
+        <div style="display:flex;gap:8px;padding:12px 24px;overflow-x:auto;">
+            @foreach (var c in categories.Prepend("All"))
+            {
+                var active = category == c;
+                <span @onclick="() => category = c"
+                      style="flex:0 0 auto;padding:7px 13px;border-radius:100px;white-space:nowrap;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-size:12px;cursor:pointer;">@c</span>
+            }
+        </div>
+
+        <div style="padding:4px 24px 24px;">
+            @if (!Visible.Any())
+            {
+                <div style="padding:30px 0;text-align:center;font-size:13px;color:@Theme.Muted;">Nothing here yet.</div>
+            }
+            @foreach (var w in Visible)
+            {
+                <div @onclick="() => Speak(w.Marathi)"
+                     style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid @(Theme.MutedDk + "30");cursor:pointer;">
+                    <div style="width:4px;align-self:stretch;border-radius:2px;background:@MasteryColor(w.Mastery);"></div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+                            <span style="font-family:@Theme.Deva;font-size:22px;color:@Theme.Cream;line-height:1.3;">@w.Marathi</span>
+                            <span style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;">@w.Pronunciation</span>
+                        </div>
+                        <div style="font-size:13px;color:@Theme.Muted;margin-top:2px;">@w.English</div>
+                    </div>
+                    <div style="text-align:right;flex-shrink:0;">
+                        @if (w.Mastery != Mastery.New)
+                        {
+                            <div style="font-family:@Theme.Mono;font-size:12px;color:@Theme.Cream;">@w.Correct/@(w.Correct + w.Wrong)</div>
+                        }
+                        @if (w.Due)
+                        {
+                            <div style="font-family:@Theme.Mono;font-size:9px;letter-spacing:1.5px;color:@Theme.Gold;text-transform:uppercase;margin-top:4px;">Due</div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <NavBar />
+</div>
+
+@code {
+    private record WordRow(string Marathi, string English, string Pronunciation, string Category,
+                           Mastery Mastery, int Correct, int Wrong, bool Due, int Order);
+
+    private static readonly HashSet<string> VocabDecks = new() { "words", "listen_words", "verbs", "listen_phrases" };
+
+    private List<WordRow> items = new();
+    private List<string> categories = new();
+    private Mastery? masteryFilter;
+    private string category = "All";
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var progress = await ReviewService.GetProgressAsync();
+
+        // A word lives in both the Words and Listening decks; merge them and report the weaker of the two.
+        items = progress
+            .Where(p => VocabDecks.Contains(p.Card.Deck))
+            .Select((p, i) => (p, i))
+            .GroupBy(t => t.p.Card.Front)
+            .Select(g =>
+            {
+                var card = g.First().p.Card;
+                var seen = g.Where(t => t.p.Mastery != Mastery.New).Select(t => t.p).ToList();
+                var mastery = seen.Count == 0 ? Mastery.New : seen.Min(p => p.Mastery);
+                return new WordRow(card.Front, card.Back, card.Pronunciation, CategoryOf(card), mastery,
+                    g.Sum(t => t.p.Correct), g.Sum(t => t.p.Wrong), g.Any(t => t.p.Due), g.First().i);
+            })
+            .ToList();
+
+        categories = items.Select(i => i.Category).Distinct().OrderBy(c => c).ToList();
+        isLoading = false;
+    }
+
+    private IEnumerable<WordRow> Visible => items
+        .Where(i => masteryFilter == null || i.Mastery == masteryFilter)
+        .Where(i => category == "All" || i.Category == category)
+        .OrderBy(i => i.Mastery switch { Mastery.Learning => 0, Mastery.Known => 1, _ => 2 })
+        .ThenBy(i => i.Correct + i.Wrong == 0 ? 1.0 : (double)i.Correct / (i.Correct + i.Wrong))
+        .ThenBy(i => i.Order);
+
+    private static string CategoryOf(ReviewCard card) => card.Deck switch
+    {
+        "verbs" => "Verbs",
+        "listen_phrases" => "Phrases",
+        _ => card.Group.StartsWith("words:") ? card.Group["words:".Length..] : card.DeckLabel
+    };
+
+    private static string MasteryColor(Mastery m) => m switch
+    {
+        Mastery.Known => Theme.Gold,
+        Mastery.Learning => Theme.Cream,
+        _ => Theme.MutedDk
+    };
+
+    private async Task Speak(string text) => await JSRuntime.InvokeVoidAsync("speakMarathi", text);
+}

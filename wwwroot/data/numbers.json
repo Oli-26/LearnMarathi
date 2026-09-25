@@ -1,0 +1,702 @@
+[
+ {
+  "value": 1,
+  "marathi": "एक",
+  "pronunciation": "ek",
+  "digits": "१",
+  "verified": true
+ },
+ {
+  "value": 2,
+  "marathi": "दोन",
+  "pronunciation": "don",
+  "digits": "२",
+  "verified": true
+ },
+ {
+  "value": 3,
+  "marathi": "तीन",
+  "pronunciation": "teen",
+  "digits": "३",
+  "verified": true
+ },
+ {
+  "value": 4,
+  "marathi": "चार",
+  "pronunciation": "chaar",
+  "digits": "४",
+  "verified": true
+ },
+ {
+  "value": 5,
+  "marathi": "पाच",
+  "pronunciation": "paach",
+  "digits": "५",
+  "verified": true
+ },
+ {
+  "value": 6,
+  "marathi": "सहा",
+  "pronunciation": "saha",
+  "digits": "६",
+  "verified": true
+ },
+ {
+  "value": 7,
+  "marathi": "सात",
+  "pronunciation": "saat",
+  "digits": "७",
+  "verified": true
+ },
+ {
+  "value": 8,
+  "marathi": "आठ",
+  "pronunciation": "aath",
+  "digits": "८",
+  "verified": true
+ },
+ {
+  "value": 9,
+  "marathi": "नऊ",
+  "pronunciation": "nau",
+  "digits": "९",
+  "verified": true
+ },
+ {
+  "value": 10,
+  "marathi": "दहा",
+  "pronunciation": "daha",
+  "digits": "१०",
+  "verified": true
+ },
+ {
+  "value": 11,
+  "marathi": "अकरा",
+  "pronunciation": "akra",
+  "digits": "११",
+  "verified": true
+ },
+ {
+  "value": 12,
+  "marathi": "बारा",
+  "pronunciation": "baara",
+  "digits": "१२",
+  "verified": true
+ },
+ {
+  "value": 13,
+  "marathi": "तेरा",
+  "pronunciation": "tera",
+  "digits": "१३",
+  "verified": true
+ },
+ {
+  "value": 14,
+  "marathi": "चौदा",
+  "pronunciation": "chauda",
+  "digits": "१४",
+  "verified": true
+ },
+ {
+  "value": 15,
+  "marathi": "पंधरा",
+  "pronunciation": "pandhra",
+  "digits": "१५",
+  "verified": true
+ },
+ {
+  "value": 16,
+  "marathi": "सोळा",
+  "pronunciation": "solaa",
+  "digits": "१६",
+  "verified": true
+ },
+ {
+  "value": 17,
+  "marathi": "सतरा",
+  "pronunciation": "satra",
+  "digits": "१७",
+  "verified": true
+ },
+ {
+  "value": 18,
+  "marathi": "अठरा",
+  "pronunciation": "athra",
+  "digits": "१८",
+  "verified": true
+ },
+ {
+  "value": 19,
+  "marathi": "एकोणीस",
+  "pronunciation": "ekonis",
+  "digits": "१९",
+  "verified": true
+ },
+ {
+  "value": 20,
+  "marathi": "वीस",
+  "pronunciation": "vees",
+  "digits": "२०",
+  "verified": true
+ },
+ {
+  "value": 21,
+  "marathi": "एकवीस",
+  "pronunciation": "ekvis",
+  "digits": "२१",
+  "verified": false
+ },
+ {
+  "value": 22,
+  "marathi": "बावीस",
+  "pronunciation": "baavis",
+  "digits": "२२",
+  "verified": false
+ },
+ {
+  "value": 23,
+  "marathi": "तेवीस",
+  "pronunciation": "tevis",
+  "digits": "२३",
+  "verified": false
+ },
+ {
+  "value": 24,
+  "marathi": "चोवीस",
+  "pronunciation": "chovis",
+  "digits": "२४",
+  "verified": false
+ },
+ {
+  "value": 25,
+  "marathi": "पंचवीस",
+  "pronunciation": "panchvis",
+  "digits": "२५",
+  "verified": false
+ },
+ {
+  "value": 26,
+  "marathi": "सव्वीस",
+  "pronunciation": "savvis",
+  "digits": "२६",
+  "verified": false
+ },
+ {
+  "value": 27,
+  "marathi": "सत्तावीस",
+  "pronunciation": "sattavis",
+  "digits": "२७",
+  "verified": false
+ },
+ {
+  "value": 28,
+  "marathi": "अठ्ठावीस",
+  "pronunciation": "aththavis",
+  "digits": "२८",
+  "verified": false
+ },
+ {
+  "value": 29,
+  "marathi": "एकोणतीस",
+  "pronunciation": "ekontis",
+  "digits": "२९",
+  "verified": false
+ },
+ {
+  "value": 30,
+  "marathi": "तीस",
+  "pronunciation": "tees",
+  "digits": "३०",
+  "verified": true
+ },
+ {
+  "value": 31,
+  "marathi": "एकतीस",
+  "pronunciation": "ektis",
+  "digits": "३१",
+  "verified": false
+ },
+ {
+  "value": 32,
+  "marathi": "बत्तीस",
+  "pronunciation": "battis",
+  "digits": "३२",
+  "verified": false
+ },
+ {
+  "value": 33,
+  "marathi": "तेहतीस",
+  "pronunciation": "tehtis",
+  "digits": "३३",
+  "verified": false
+ },
+ {
+  "value": 34,
+  "marathi": "चौतीस",
+  "pronunciation": "chautis",
+  "digits": "३४",
+  "verified": false
+ },
+ {
+  "value": 35,
+  "marathi": "पस्तीस",
+  "pronunciation": "pastis",
+  "digits": "३५",
+  "verified": false
+ },
+ {
+  "value": 36,
+  "marathi": "छत्तीस",
+  "pronunciation": "chhattis",
+  "digits": "३६",
+  "verified": false
+ },
+ {
+  "value": 37,
+  "marathi": "सदतीस",
+  "pronunciation": "sadtis",
+  "digits": "३७",
+  "verified": false
+ },
+ {
+  "value": 38,
+  "marathi": "अडतीस",
+  "pronunciation": "adtis",
+  "digits": "३८",
+  "verified": false
+ },
+ {
+  "value": 39,
+  "marathi": "एकोणचाळीस",
+  "pronunciation": "ekonchalis",
+  "digits": "३९",
+  "verified": false
+ },
+ {
+  "value": 40,
+  "marathi": "चाळीस",
+  "pronunciation": "chaalis",
+  "digits": "४०",
+  "verified": true
+ },
+ {
+  "value": 41,
+  "marathi": "एकेचाळीस",
+  "pronunciation": "ekechalis",
+  "digits": "४१",
+  "verified": false
+ },
+ {
+  "value": 42,
+  "marathi": "बेचाळीस",
+  "pronunciation": "bechalis",
+  "digits": "४२",
+  "verified": false
+ },
+ {
+  "value": 43,
+  "marathi": "त्रेचाळीस",
+  "pronunciation": "trechalis",
+  "digits": "४३",
+  "verified": false
+ },
+ {
+  "value": 44,
+  "marathi": "चव्वेचाळीस",
+  "pronunciation": "chavvechalis",
+  "digits": "४४",
+  "verified": false
+ },
+ {
+  "value": 45,
+  "marathi": "पंचेचाळीस",
+  "pronunciation": "panchechalis",
+  "digits": "४५",
+  "verified": false
+ },
+ {
+  "value": 46,
+  "marathi": "सेहेचाळीस",
+  "pronunciation": "sehechalis",
+  "digits": "४६",
+  "verified": false
+ },
+ {
+  "value": 47,
+  "marathi": "सत्तेचाळीस",
+  "pronunciation": "sattechalis",
+  "digits": "४७",
+  "verified": false
+ },
+ {
+  "value": 48,
+  "marathi": "अठ्ठेचाळीस",
+  "pronunciation": "aththechalis",
+  "digits": "४८",
+  "verified": false
+ },
+ {
+  "value": 49,
+  "marathi": "एकोणपन्नास",
+  "pronunciation": "ekonpannas",
+  "digits": "४९",
+  "verified": false
+ },
+ {
+  "value": 50,
+  "marathi": "पन्नास",
+  "pronunciation": "pannas",
+  "digits": "५०",
+  "verified": true
+ },
+ {
+  "value": 51,
+  "marathi": "एक्कावन्न",
+  "pronunciation": "ekkavann",
+  "digits": "५१",
+  "verified": false
+ },
+ {
+  "value": 52,
+  "marathi": "बावन्न",
+  "pronunciation": "baavann",
+  "digits": "५२",
+  "verified": false
+ },
+ {
+  "value": 53,
+  "marathi": "त्रेपन्न",
+  "pronunciation": "trepann",
+  "digits": "५३",
+  "verified": false
+ },
+ {
+  "value": 54,
+  "marathi": "चौपन्न",
+  "pronunciation": "chaupann",
+  "digits": "५४",
+  "verified": false
+ },
+ {
+  "value": 55,
+  "marathi": "पंचावन्न",
+  "pronunciation": "panchavann",
+  "digits": "५५",
+  "verified": false
+ },
+ {
+  "value": 56,
+  "marathi": "छप्पन्न",
+  "pronunciation": "chhappann",
+  "digits": "५६",
+  "verified": false
+ },
+ {
+  "value": 57,
+  "marathi": "सत्तावन्न",
+  "pronunciation": "sattavann",
+  "digits": "५७",
+  "verified": false
+ },
+ {
+  "value": 58,
+  "marathi": "अठ्ठावन्न",
+  "pronunciation": "aththavann",
+  "digits": "५८",
+  "verified": false
+ },
+ {
+  "value": 59,
+  "marathi": "एकोणसाठ",
+  "pronunciation": "ekonsath",
+  "digits": "५९",
+  "verified": false
+ },
+ {
+  "value": 60,
+  "marathi": "साठ",
+  "pronunciation": "saath",
+  "digits": "६०",
+  "verified": true
+ },
+ {
+  "value": 61,
+  "marathi": "एकसष्ट",
+  "pronunciation": "eksashth",
+  "digits": "६१",
+  "verified": false
+ },
+ {
+  "value": 62,
+  "marathi": "बासष्ट",
+  "pronunciation": "baasashth",
+  "digits": "६२",
+  "verified": false
+ },
+ {
+  "value": 63,
+  "marathi": "त्रेसष्ट",
+  "pronunciation": "tresashth",
+  "digits": "६३",
+  "verified": false
+ },
+ {
+  "value": 64,
+  "marathi": "चौसष्ट",
+  "pronunciation": "chausashth",
+  "digits": "६४",
+  "verified": false
+ },
+ {
+  "value": 65,
+  "marathi": "पासष्ट",
+  "pronunciation": "paasashth",
+  "digits": "६५",
+  "verified": false
+ },
+ {
+  "value": 66,
+  "marathi": "सहासष्ट",
+  "pronunciation": "sahasashth",
+  "digits": "६६",
+  "verified": false
+ },
+ {
+  "value": 67,
+  "marathi": "सदुसष्ट",
+  "pronunciation": "sadusashth",
+  "digits": "६७",
+  "verified": false
+ },
+ {
+  "value": 68,
+  "marathi": "अडुसष्ट",
+  "pronunciation": "adusashth",
+  "digits": "६८",
+  "verified": false
+ },
+ {
+  "value": 69,
+  "marathi": "एकोणसत्तर",
+  "pronunciation": "ekonsattar",
+  "digits": "६९",
+  "verified": false
+ },
+ {
+  "value": 70,
+  "marathi": "सत्तर",
+  "pronunciation": "sattar",
+  "digits": "७०",
+  "verified": true
+ },
+ {
+  "value": 71,
+  "marathi": "एकाहत्तर",
+  "pronunciation": "ekahattar",
+  "digits": "७१",
+  "verified": false
+ },
+ {
+  "value": 72,
+  "marathi": "बाहत्तर",
+  "pronunciation": "baahattar",
+  "digits": "७२",
+  "verified": false
+ },
+ {
+  "value": 73,
+  "marathi": "त्र्याहत्तर",
+  "pronunciation": "tryahattar",
+  "digits": "७३",
+  "verified": false
+ },
+ {
+  "value": 74,
+  "marathi": "चौऱ्याहत्तर",
+  "pronunciation": "chauryahattar",
+  "digits": "७४",
+  "verified": false
+ },
+ {
+  "value": 75,
+  "marathi": "पंच्याहत्तर",
+  "pronunciation": "panchyahattar",
+  "digits": "७५",
+  "verified": false
+ },
+ {
+  "value": 76,
+  "marathi": "शहात्तर",
+  "pronunciation": "shahattar",
+  "digits": "७६",
+  "verified": false
+ },
+ {
+  "value": 77,
+  "marathi": "सत्याहत्तर",
+  "pronunciation": "satyahattar",
+  "digits": "७७",
+  "verified": false
+ },
+ {
+  "value": 78,
+  "marathi": "अठ्ठ्याहत्तर",
+  "pronunciation": "aththyahattar",
+  "digits": "७८",
+  "verified": false
+ },
+ {
+  "value": 79,
+  "marathi": "एकोणऐंशी",
+  "pronunciation": "ekonainshi",
+  "digits": "७९",
+  "verified": false
+ },
+ {
+  "value": 80,
+  "marathi": "ऐंशी",
+  "pronunciation": "ainshi",
+  "digits": "८०",
+  "verified": true
+ },
+ {
+  "value": 81,
+  "marathi": "एक्याऐंशी",
+  "pronunciation": "ekyainshi",
+  "digits": "८१",
+  "verified": false
+ },
+ {
+  "value": 82,
+  "marathi": "ब्याऐंशी",
+  "pronunciation": "byainshi",
+  "digits": "८२",
+  "verified": false
+ },
+ {
+  "value": 83,
+  "marathi": "त्र्याऐंशी",
+  "pronunciation": "tryainshi",
+  "digits": "८३",
+  "verified": false
+ },
+ {
+  "value": 84,
+  "marathi": "चौऱ्याऐंशी",
+  "pronunciation": "chauryainshi",
+  "digits": "८४",
+  "verified": false
+ },
+ {
+  "value": 85,
+  "marathi": "पंच्याऐंशी",
+  "pronunciation": "panchyainshi",
+  "digits": "८५",
+  "verified": false
+ },
+ {
+  "value": 86,
+  "marathi": "शहाऐंशी",
+  "pronunciation": "shahainshi",
+  "digits": "८६",
+  "verified": false
+ },
+ {
+  "value": 87,
+  "marathi": "सत्त्याऐंशी",
+  "pronunciation": "sattyainshi",
+  "digits": "८७",
+  "verified": false
+ },
+ {
+  "value": 88,
+  "marathi": "अठ्ठ्याऐंशी",
+  "pronunciation": "aththyainshi",
+  "digits": "८८",
+  "verified": false
+ },
+ {
+  "value": 89,
+  "marathi": "एकोणनव्वद",
+  "pronunciation": "ekonnavvad",
+  "digits": "८९",
+  "verified": false
+ },
+ {
+  "value": 90,
+  "marathi": "नव्वद",
+  "pronunciation": "navvad",
+  "digits": "९०",
+  "verified": true
+ },
+ {
+  "value": 91,
+  "marathi": "एक्याण्णव",
+  "pronunciation": "ekyannav",
+  "digits": "९१",
+  "verified": false
+ },
+ {
+  "value": 92,
+  "marathi": "ब्याण्णव",
+  "pronunciation": "byannav",
+  "digits": "९२",
+  "verified": false
+ },
+ {
+  "value": 93,
+  "marathi": "त्र्याण्णव",
+  "pronunciation": "tryannav",
+  "digits": "९३",
+  "verified": false
+ },
+ {
+  "value": 94,
+  "marathi": "चौऱ्याण्णव",
+  "pronunciation": "chauryannav",
+  "digits": "९४",
+  "verified": false
+ },
+ {
+  "value": 95,
+  "marathi": "पंचाण्णव",
+  "pronunciation": "panchannav",
+  "digits": "९५",
+  "verified": false
+ },
+ {
+  "value": 96,
+  "marathi": "शहाण्णव",
+  "pronunciation": "shahannav",
+  "digits": "९६",
+  "verified": false
+ },
+ {
+  "value": 97,
+  "marathi": "सत्त्याण्णव",
+  "pronunciation": "sattyannav",
+  "digits": "९७",
+  "verified": false
+ },
+ {
+  "value": 98,
+  "marathi": "अठ्ठ्याण्णव",
+  "pronunciation": "aththyannav",
+  "digits": "९८",
+  "verified": false
+ },
+ {
+  "value": 99,
+  "marathi": "नव्याण्णव",
+  "pronunciation": "navyannav",
+  "digits": "९९",
+  "verified": false
+ },
+ {
+  "value": 100,
+  "marathi": "शंभर",
+  "pronunciation": "shambhar",
+  "digits": "१००",
+  "verified": true
+ }
+]

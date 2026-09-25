@@ -1,0 +1,265 @@
+@page "/barakhadi"
+@using LearnMarathi.Data
+@using LearnMarathi.Models
+@using LearnMarathi.Services
+@using static LearnMarathi.Data.BarakhadiData
+@inject IMarathiCharacterRepository Repository
+@inject ISrsService Srs
+@inject IStreakService Streak
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Barakhadi · Learn Marathi</PageTitle>
+
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+
+    <PageHead Title="Barakhadi" Marathi="बाराखडी" Eyebrow="Script 02" Glyph="cards" Compact="@(tab == "Drill")"
+              Blurb="Each consonant crossed with each vowel. This grid is how the alphabet turns into readable words." />
+
+    @if (isLoading)
+    {
+        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+    }
+    else
+    {
+        <div style="display:flex;gap:8px;padding:18px 24px 6px;">
+            @foreach (var t in new[] { "Grid", "Conjuncts", "Drill" })
+            {
+                var active = tab == t;
+                <span @onclick="() => SwitchTab(t)"
+                      style="padding:8px 14px;border-radius:100px;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-size:12px;font-weight:500;cursor:pointer;">@t</span>
+            }
+        </div>
+
+        @if (tab == "Grid")
+        {
+            <div style="padding:10px 24px 0;font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">
+                Pick a consonant
+            </div>
+            <div style="display:flex;gap:8px;padding:12px 24px;overflow-x:auto;">
+                @foreach (var c in consonants)
+                {
+                    var active = selected?.Id == c.Id;
+                    <span @onclick="() => selected = c"
+                          style="flex:0 0 auto;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "50");background:@(active ? Theme.Gold : Theme.Ink2);color:@(active ? Theme.Ink : Theme.Cream);font-family:@Theme.Deva;font-size:22px;cursor:pointer;">@c.MarathiChar</span>
+                }
+            </div>
+
+            @if (selected != null)
+            {
+                <div style="padding:8px 24px 24px;">
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+                        @foreach (var m in Matras)
+                        {
+                            var syllable = selected.MarathiChar + m.Sign;
+                            var roman = RomanBase(selected) + m.Roman;
+                            <div @onclick="() => Speak(syllable)"
+                                 style="background:@Theme.Ink2;border:1px solid @(Theme.MutedDk + "30");border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;">
+                                <div style="font-family:@Theme.Deva;font-size:28px;color:@Theme.Cream;line-height:1.2;">@syllable</div>
+                                <div style="font-family:@Theme.Mono;font-size:10px;color:@Theme.Muted;margin-top:4px;">@roman</div>
+                            </div>
+                        }
+                    </div>
+
+                    <div style="margin-top:20px;padding:16px;border:1px solid @(Theme.MutedDk + "40");border-radius:12px;">
+                        <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Row reading</div>
+                        <div style="font-family:@Theme.Deva;font-size:20px;color:@Theme.Gold;margin-top:10px;line-height:1.8;">
+                            @string.Join("  ", Matras.Select(m => selected.MarathiChar + m.Sign))
+                        </div>
+                        <div @onclick="() => SpeakRow()" style="margin-top:12px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
+                            <Icon Name="speaker" Size="16" Color="@Theme.Cream" />
+                            <span style="font-size:12px;color:@Theme.Cream;">Hear the whole row</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else if (tab == "Conjuncts")
+        {
+            <div style="padding:14px 24px 24px;">
+                <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;line-height:1.6;margin-bottom:16px;">
+                    Two consonants fused with no vowel between them. These are the shapes that stop you reading a signboard even when you know every letter.
+                </div>
+                @foreach (var j in Conjuncts)
+                {
+                    <div style="margin:12px 0;padding:16px;background:@Theme.Ink2;border-radius:14px;border:1px solid @(Theme.MutedDk + "30");display:flex;align-items:center;gap:16px;">
+                        <div style="font-family:@Theme.Deva;font-size:34px;color:@Theme.Gold;min-width:56px;">@j.Glyph</div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;">@j.Parts · @j.Roman</div>
+                            <div style="font-family:@Theme.Deva;font-size:18px;color:@Theme.Cream;margin-top:6px;">@j.Example</div>
+                            <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;margin-top:2px;">@j.Meaning</div>
+                        </div>
+                        <span @onclick="() => Speak(j.Example)" style="cursor:pointer;display:inline-flex;padding:6px;">
+                            <Icon Name="speaker" Size="18" Color="@Theme.Cream" />
+                        </span>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div style="display:flex;gap:8px;padding:12px 24px 0;">
+                @foreach (var set in new[] { "Syllables", "Conjuncts" })
+                {
+                    var active = drillSet == set;
+                    <span @onclick="() => SwitchSet(set)"
+                          style="padding:6px 12px;border-radius:100px;border:1px solid @(active ? Theme.Cream : Theme.MutedDk + "60");color:@(active ? Theme.Cream : Theme.Muted);font-size:11px;cursor:pointer;">@set</span>
+                }
+            </div>
+
+            @if (current != null)
+            {
+                <div style="padding:18px 24px 24px;">
+                    <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">
+                        @(reverse ? "Which one reads" : "How does this read?") · @score correct
+                    </div>
+
+                    <div style="margin:22px 0;text-align:center;padding:30px 0;background:@Theme.Ink2;border-radius:18px;border:1px solid @(Theme.MutedDk + "30");">
+                        @if (reverse)
+                        {
+                            <div style="font-family:@Theme.Serif;font-size:40px;color:@Theme.Gold;line-height:1;">@current.Back</div>
+                        }
+                        else
+                        {
+                            <div style="font-family:@Theme.Deva;font-size:56px;color:@Theme.Gold;line-height:1.2;">@current.Front</div>
+                        }
+                        @if (answered && current.Hint != "")
+                        {
+                            <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;margin-top:12px;">@current.Hint</div>
+                        }
+                        <div @onclick="() => Speak(current.Front)" style="margin-top:12px;display:inline-flex;cursor:pointer;">
+                            <Icon Name="speaker" Size="18" Color="@Theme.Muted" />
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+                        @foreach (var opt in options)
+                        {
+                            var state = AnswerState(opt);
+                            <div @onclick="() => Answer(opt)"
+                                 style="padding:18px 10px;text-align:center;border-radius:14px;cursor:pointer;font-family:@(reverse ? Theme.Deva : Theme.Serif);font-size:@(reverse ? "30px" : "22px");
+                                        border:1px solid @(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.MutedDk + "50");
+                                        background:@(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.Ink2);
+                                        color:@(state == "right" ? Theme.Ink : Theme.Cream);">@opt</div>
+                        }
+                    </div>
+
+                    <QuizNext Visible="answered" OnClick="NextQuestion" />
+                </div>
+            }
+        }
+    }
+
+    <NavBar />
+</div>
+
+@code {
+    private record DrillItem(string Deck, string Id, string Front, string Back, string Group, string Hint);
+
+    private List<MarathiCharacter> consonants = new();
+    private MarathiCharacter? selected;
+    private string tab = "Grid";
+    private bool isLoading = true;
+
+    private List<DrillItem> syllableItems = new();
+    private List<DrillItem> conjunctItems = new();
+    private string drillSet = "Syllables";
+    private DrillItem? current;
+    private List<string> options = new();
+    private bool reverse;
+    private bool answered;
+    private string chosen = "";
+    private int score;
+    private readonly Random rng = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var all = await Repository.GetCharactersByTypeAsync("Consonant");
+        consonants = all.OrderBy(c => c.Id).ToList();
+        selected = consonants.FirstOrDefault();
+
+        // Grouped by consonant, so distractors differ only in the vowel sign (का vs की vs कू).
+        syllableItems = Syllables(consonants)
+            .Select(x => new DrillItem(SyllableDeck, x.Id, x.Text, x.Roman, x.ConsonantId.ToString(), ""))
+            .ToList();
+        conjunctItems = Conjuncts
+            .Select(j => new DrillItem(ConjunctDeck, j.Glyph, j.Glyph, j.Roman, "conjuncts", $"{j.Parts} · {j.Example} ({j.Meaning})"))
+            .ToList();
+
+        isLoading = false;
+    }
+
+    private List<DrillItem> Pool => drillSet == "Syllables" ? syllableItems : conjunctItems;
+
+    private async Task SwitchTab(string t)
+    {
+        tab = t;
+        if (t == "Drill" && current == null) await NextQuestion();
+    }
+
+    private async Task SwitchSet(string set)
+    {
+        if (drillSet == set) return;
+        drillSet = set;
+        await NextQuestion();
+    }
+
+    private string OptionText(DrillItem item) => reverse ? item.Front : item.Back;
+
+    private async Task NextQuestion()
+    {
+        var pool = Pool;
+        if (pool.Count < 4) return;
+
+        var deck = pool[0].Deck;
+        var due = await Srs.GetDueIdsAsync(deck, pool.Select(i => i.Id), Math.Max(5, pool.Count / 3));
+        var pickId = due.Count > 0 ? due[rng.Next(due.Count)] : pool[rng.Next(pool.Count)].Id;
+        current = pool.First(i => i.Id == pickId);
+        reverse = rng.Next(2) == 0;
+
+        var correct = OptionText(current);
+        options = pool.Where(i => i.Group == current.Group).OrderBy(_ => rng.Next())
+                      .Concat(pool.Where(i => i.Group != current.Group).OrderBy(_ => rng.Next()))
+                      .Select(OptionText)
+                      .Where(t => t != correct)
+                      .Distinct()
+                      .Take(3)
+                      .Append(correct)
+                      .OrderBy(_ => rng.Next())
+                      .ToList();
+        answered = false;
+        chosen = "";
+        StateHasChanged();
+    }
+
+    private string AnswerState(string opt)
+    {
+        if (!answered) return "";
+        if (opt == OptionText(current!)) return "right";
+        return opt == chosen ? "wrong" : "";
+    }
+
+    private async Task Answer(string opt)
+    {
+        if (answered || current == null) return;
+        answered = true;
+        chosen = opt;
+        var correct = opt == OptionText(current);
+        if (correct) score++;
+        await Srs.RecordAsync(current.Deck, current.Id, correct);
+        await Streak.TouchAsync();
+        await Speak(current.Front);
+
+        if (!correct) return;
+        var answeredItem = current;
+        await Task.Delay(QuizNext.AutoAdvanceMs);
+        if (current == answeredItem && answered) await NextQuestion();
+    }
+
+    private async Task Speak(string text) => await JSRuntime.InvokeVoidAsync("speakMarathi", text);
+
+    private async Task SpeakRow()
+    {
+        if (selected == null) return;
+        await Speak(string.Join(", ", Matras.Select(m => selected.MarathiChar + m.Sign)));
+    }
+}

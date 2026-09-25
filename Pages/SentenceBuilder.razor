@@ -1,0 +1,157 @@
+@page "/sentences"
+@using LearnMarathi.Data
+@using LearnMarathi.Models
+@using LearnMarathi.Services
+@inject ISentenceRepository Repository
+@inject ISrsService Srs
+@inject IStreakService Streak
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Sentence Builder · Learn Marathi</PageTitle>
+
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+
+    <PageHead Title="Sentences" Marathi="वाक्यरचना" Eyebrow="Practice" Glyph="plus" Compact="true"
+              Blurb="Build it yourself, word by word. Recognising Marathi is easy; producing it in the right order is the actual skill." />
+
+    @if (isLoading)
+    {
+        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+    }
+    else if (current != null)
+    {
+        <div style="padding:22px 24px 24px;">
+            <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">
+                Build this sentence · @score correct
+            </div>
+
+            <div style="margin:18px 0 20px;font-family:@Theme.Serif;font-size:28px;line-height:1.25;color:@Theme.Cream;letter-spacing:-0.4px;">
+                @current.English
+            </div>
+
+            @* Answer slot *@
+            <div style="min-height:64px;padding:14px;border-radius:14px;background:@Theme.Ink2;
+                        border:1px solid @(checkedAnswer ? (IsCorrect ? Theme.Gold : "#8B3A3A") : Theme.MutedDk + "40");
+                        display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;">
+                @if (placed.Count == 0)
+                {
+                    <span style="font-family:@Theme.Mono;font-size:11px;color:@Theme.MutedDk;letter-spacing:1px;text-transform:uppercase;align-self:center;">Tap words below</span>
+                }
+                @foreach (var t in placed)
+                {
+                    var token = t;
+                    <span @onclick="() => Unplace(token)"
+                          style="padding:9px 13px;border-radius:100px;background:@Theme.Gold;color:@Theme.Ink;font-family:@Theme.Deva;font-size:18px;cursor:pointer;">@token</span>
+                }
+            </div>
+
+            @* Token bank *@
+            <div style="display:flex;flex-wrap:wrap;gap:9px;margin-top:18px;">
+                @foreach (var t in bank)
+                {
+                    var token = t;
+                    <span @onclick="() => Place(token)"
+                          style="padding:11px 15px;border-radius:100px;border:1px solid @(Theme.MutedDk + "60");background:@Theme.Ink2;color:@Theme.Cream;font-family:@Theme.Deva;font-size:18px;cursor:pointer;">@token</span>
+                }
+            </div>
+
+            @if (!checkedAnswer)
+            {
+                <div @onclick="Check"
+                     style="margin-top:24px;padding:16px;text-align:center;border-radius:100px;
+                            background:@(placed.Count == current.Tokens.Count ? Theme.Cream : Theme.Ink2);
+                            color:@(placed.Count == current.Tokens.Count ? Theme.Ink : Theme.MutedDk);
+                            font-weight:600;cursor:@(placed.Count == current.Tokens.Count ? "pointer" : "default");">
+                    Check
+                </div>
+            }
+            else
+            {
+                <div style="margin-top:22px;padding:18px;border-radius:14px;border:1px solid @(Theme.MutedDk + "40");">
+                    <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:@(IsCorrect ? Theme.Gold : "#C86B6B");">
+                        @(IsCorrect ? "Correct" : "Not quite")
+                    </div>
+                    <div style="font-family:@Theme.Deva;font-size:23px;color:@Theme.Cream;margin-top:12px;line-height:1.4;">@current.Marathi</div>
+                    <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;margin-top:4px;">@current.Pronunciation</div>
+                    @if (!string.IsNullOrEmpty(current.Note))
+                    {
+                        <div style="font-size:12px;color:@Theme.Muted;line-height:1.65;margin-top:12px;padding-top:12px;border-top:1px solid @(Theme.MutedDk + "40");">@current.Note</div>
+                    }
+                    <div @onclick="() => Speak(current.Marathi)" style="margin-top:14px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
+                        <Icon Name="speaker" Size="16" Color="@Theme.Cream" />
+                        <span style="font-size:12px;color:@Theme.Cream;">Hear it</span>
+                    </div>
+                </div>
+
+                <QuizNext Visible="true" OnClick="NextQuestion" />
+            }
+        </div>
+    }
+
+    <NavBar />
+</div>
+
+@code {
+    private const string Deck = "sentences";
+
+    private List<SentenceDrill> sentences = new();
+    private SentenceDrill? current;
+    private List<string> bank = new();
+    private List<string> placed = new();
+    private bool checkedAnswer;
+    private int score;
+    private bool isLoading = true;
+    private readonly Random rng = new();
+
+    private bool IsCorrect => current != null && placed.SequenceEqual(current.Tokens);
+
+    protected override async Task OnInitializedAsync()
+    {
+        sentences = (await Repository.GetAllAsync()).ToList();
+        isLoading = false;
+        await NextQuestion();
+    }
+
+    private async Task NextQuestion()
+    {
+        if (sentences.Count == 0) return;
+
+        var due = await Srs.GetDueIdsAsync(Deck, sentences.Select(s => s.Id.ToString()), Math.Max(5, sentences.Count / 3));
+        var pickId = due.Count > 0 ? due[rng.Next(due.Count)] : sentences[rng.Next(sentences.Count)].Id.ToString();
+        current = sentences.First(s => s.Id.ToString() == pickId);
+
+        bank = current.Tokens.Concat(current.Distractors).OrderBy(_ => rng.Next()).ToList();
+        placed = new List<string>();
+        checkedAnswer = false;
+        StateHasChanged();
+    }
+
+    private void Place(string token)
+    {
+        if (checkedAnswer) return;
+        bank.Remove(token);
+        placed.Add(token);
+    }
+
+    private void Unplace(string token)
+    {
+        if (checkedAnswer) return;
+        // Remove the last occurrence placed, so repeated tokens behave predictably.
+        var idx = placed.LastIndexOf(token);
+        if (idx < 0) return;
+        placed.RemoveAt(idx);
+        bank.Add(token);
+    }
+
+    private async Task Check()
+    {
+        if (current == null || checkedAnswer || placed.Count != current.Tokens.Count) return;
+        checkedAnswer = true;
+        if (IsCorrect) score++;
+        await Srs.RecordAsync(Deck, current.Id.ToString(), IsCorrect);
+        await Streak.TouchAsync();
+        await Speak(current.Marathi);
+    }
+
+    private async Task Speak(string text) => await JSRuntime.InvokeVoidAsync("speakMarathi", text);
+}

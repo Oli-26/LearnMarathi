@@ -1,31 +1,32 @@
-using System.Data.SqlClient;
-using Dapper;
+using System.Net.Http.Json;
 using LearnMarathi.Models;
 
 namespace LearnMarathi.Data;
 
 public class MarathiCharacterRepository : IMarathiCharacterRepository
 {
-    private readonly string _connectionString;
+    private readonly HttpClient _http;
+    private List<MarathiCharacter>? _characters;
 
-    public MarathiCharacterRepository(IConfiguration configuration)
+    public MarathiCharacterRepository(HttpClient http)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection")
-                            ?? throw new ArgumentNullException("Connection string not found");
+        _http = http;
+    }
+
+    private async Task EnsureLoadedAsync()
+    {
+        _characters ??= await _http.GetFromJsonAsync<List<MarathiCharacter>>("data/characters.json");
     }
 
     public async Task<IEnumerable<MarathiCharacter>> GetAllCharactersAsync()
     {
-        using var connection = new SqlConnection(_connectionString);
-        connection.Open();
-        var query = "SELECT [Id],[MarathiChar] ,[EnglishTranslation] ,[Pronunciation], [CharacterType] FROM MarathiCharacters ORDER BY Id";
-        return await connection.QueryAsync<MarathiCharacter>(query);
+        await EnsureLoadedAsync();
+        return _characters!.OrderBy(c => c.Id);
     }
- 
+
     public async Task<IEnumerable<MarathiCharacter>> GetCharactersByTypeAsync(string type)
     {
-        using var connection = new SqlConnection(_connectionString);
-        var query = "SELECT * FROM MarathiCharacters WHERE CharacterType = @Type ORDER BY Id";
-        return await connection.QueryAsync<MarathiCharacter>(query, new { Type = type });
+        await EnsureLoadedAsync();
+        return _characters!.Where(c => c.CharacterType == type).OrderBy(c => c.Id);
     }
 }

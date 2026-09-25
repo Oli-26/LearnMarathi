@@ -1,0 +1,194 @@
+@page "/numbers"
+@using LearnMarathi.Data
+@using LearnMarathi.Models
+@using LearnMarathi.Services
+@inject INumberRepository Repository
+@inject ISrsService Srs
+@inject IStreakService Streak
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Numbers · Learn Marathi</PageTitle>
+
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+
+    <PageHead Title="Numbers" Marathi="अंक" Eyebrow="Lesson 05" Glyph="target" Compact="@(tab == "Drill")"
+              Blurb="Marathi has no decade pattern — every number from 1 to 100 is its own word. Learn them like vocabulary, not arithmetic." />
+
+    @if (isLoading)
+    {
+        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+    }
+    else
+    {
+        <div style="display:flex;gap:8px;padding:18px 24px 6px;">
+            @foreach (var t in new[] { "Browse", "Drill" })
+            {
+                var active = tab == t;
+                <span @onclick="() => SwitchTab(t)"
+                      style="padding:8px 14px;border-radius:100px;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-size:12px;font-weight:500;cursor:pointer;">@t</span>
+            }
+        </div>
+
+        @if (tab == "Browse")
+        {
+            <div style="display:flex;gap:8px;padding:12px 24px;overflow-x:auto;">
+                @foreach (var r in Ranges)
+                {
+                    var active = range == r.Label;
+                    <span @onclick="() => range = r.Label"
+                          style="padding:8px 14px;border-radius:100px;white-space:nowrap;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-size:12px;cursor:pointer;">@r.Label</span>
+                }
+            </div>
+
+            @if (InRange().Any(n => !n.Verified))
+            {
+                <div style="margin:6px 24px 0;padding:12px 14px;border:1px solid @(Theme.Gold + "50");border-radius:12px;background:@(Theme.Gold + "12");">
+                    <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:1.5px;color:@Theme.Gold;text-transform:uppercase;">Unverified</div>
+                    <div style="font-size:12px;color:@Theme.Muted;line-height:1.6;margin-top:6px;">
+                        Forms marked with a dot were written from memory and have not been checked by a native speaker. Confirm before drilling them in.
+                    </div>
+                </div>
+            }
+
+            <div style="padding:14px 24px 24px;">
+                @foreach (var n in InRange())
+                {
+                    <div @onclick="() => Speak(n.Marathi)"
+                         style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid @(Theme.MutedDk + "30");cursor:pointer;">
+                        <div style="font-family:@Theme.Mono;font-size:13px;color:@Theme.Muted;width:30px;">@n.Value</div>
+                        <div style="font-family:@Theme.Deva;font-size:22px;color:@Theme.Gold;width:44px;">@n.Digits</div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-family:@Theme.Deva;font-size:22px;color:@Theme.Cream;line-height:1.3;">@n.Marathi</div>
+                            <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;margin-top:2px;">@n.Pronunciation</div>
+                        </div>
+                        @if (!n.Verified)
+                        {
+                            <div title="unverified" style="width:6px;height:6px;border-radius:50%;background:@Theme.Gold;opacity:0.7;"></div>
+                        }
+                        <Icon Name="speaker" Size="16" Color="@Theme.MutedDk" />
+                    </div>
+                }
+            </div>
+        }
+        else if (current != null)
+        {
+            <div style="padding:22px 24px 24px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">
+                    Which number is this? · @score correct
+                </div>
+
+                <div style="margin:24px 0;text-align:center;padding:28px 0;background:@Theme.Ink2;border-radius:18px;border:1px solid @(Theme.MutedDk + "30");">
+                    <div style="font-family:@Theme.Deva;font-size:56px;color:@Theme.Gold;line-height:1;">@current.Digits</div>
+                    <div style="font-family:@Theme.Deva;font-size:26px;color:@Theme.Cream;margin-top:14px;">@current.Marathi</div>
+                    <div @onclick="() => Speak(current.Marathi)" style="margin-top:12px;display:inline-flex;cursor:pointer;">
+                        <Icon Name="speaker" Size="18" Color="@Theme.Muted" />
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+                    @foreach (var opt in options)
+                    {
+                        var state = AnswerState(opt);
+                        <div @onclick="() => Answer(opt)"
+                             style="padding:18px 10px;text-align:center;border-radius:14px;cursor:pointer;font-family:@Theme.Serif;font-size:26px;
+                                    border:1px solid @(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.MutedDk + "50");
+                                    background:@(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.Ink2);
+                                    color:@(state == "right" ? Theme.Ink : Theme.Cream);">@opt</div>
+                    }
+                </div>
+
+                <QuizNext Visible="answered" OnClick="NextQuestion" />
+            </div>
+        }
+    }
+
+    <NavBar />
+</div>
+
+@code {
+    private record Range(string Label, int Lo, int Hi);
+
+    private static readonly Range[] Ranges =
+    {
+        new("1–10", 1, 10), new("11–20", 11, 20), new("21–40", 21, 40),
+        new("41–60", 41, 60), new("61–80", 61, 80), new("81–100", 81, 100),
+    };
+
+    private const string Deck = "numbers";
+
+    private List<MarathiNumber> numbers = new();
+    private string tab = "Browse";
+    private string range = "1–10";
+    private bool isLoading = true;
+
+    private MarathiNumber? current;
+    private List<int> options = new();
+    private bool answered;
+    private int chosen;
+    private int score;
+    private readonly Random rng = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        numbers = (await Repository.GetAllAsync()).OrderBy(n => n.Value).ToList();
+        isLoading = false;
+    }
+
+    private IEnumerable<MarathiNumber> InRange()
+    {
+        var r = Ranges.First(x => x.Label == range);
+        return numbers.Where(n => n.Value >= r.Lo && n.Value <= r.Hi);
+    }
+
+    private async Task SwitchTab(string t)
+    {
+        tab = t;
+        if (t == "Drill" && current == null) await NextQuestion();
+    }
+
+    private async Task NextQuestion()
+    {
+        // Drill only the verified forms — no point burning reps on words that may be wrong.
+        var pool = numbers.Where(n => n.Verified).ToList();
+        if (pool.Count == 0) return;
+
+        var due = await Srs.GetDueIdsAsync(Deck, pool.Select(n => n.Value.ToString()), Math.Max(5, pool.Count / 3));
+        var pickId = due.Count > 0 ? due[rng.Next(due.Count)] : pool[rng.Next(pool.Count)].Value.ToString();
+        current = pool.First(n => n.Value.ToString() == pickId);
+
+        var wrong = pool.Where(n => n.Value != current.Value)
+                        .OrderBy(_ => rng.Next())
+                        .Take(3)
+                        .Select(n => n.Value);
+        options = wrong.Append(current.Value).OrderBy(_ => rng.Next()).ToList();
+        answered = false;
+        chosen = 0;
+        StateHasChanged();
+    }
+
+    private string AnswerState(int opt)
+    {
+        if (!answered) return "";
+        if (opt == current!.Value) return "right";
+        return opt == chosen ? "wrong" : "";
+    }
+
+    private async Task Answer(int opt)
+    {
+        if (answered || current == null) return;
+        answered = true;
+        chosen = opt;
+        var correct = opt == current.Value;
+        if (correct) score++;
+        await Srs.RecordAsync(Deck, current.Value.ToString(), correct);
+        await Streak.TouchAsync();
+        await Speak(current.Marathi);
+
+        if (!correct) return;
+        var answeredItem = current;
+        await Task.Delay(QuizNext.AutoAdvanceMs);
+        if (current == answeredItem && answered) await NextQuestion();
+    }
+
+    private async Task Speak(string text) => await JSRuntime.InvokeVoidAsync("speakMarathi", text);
+}

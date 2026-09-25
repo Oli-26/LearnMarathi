@@ -1,0 +1,15 @@
+@* Decorative dot strip motif *@
+
+<svg width="@Width" height="@Height" viewBox="0 0 200 30" style="display:block;opacity:@Opacity;">
+    @for (int i = 0; i < 25; i++)
+    {
+        <circle cx="@(4 + i * 8)" cy="15" r="1.2" fill="@Color"/>
+    }
+</svg>
+
+@code {
+    [Parameter] public string Width { get; set; } = "200";
+    [Parameter] public string Height { get; set; } = "30";
+    [Parameter] public string Color { get; set; } = "#000";
+    [Parameter] public double Opacity { get; set; } = 0.5;
+}

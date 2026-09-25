@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"/>
+    <meta name="theme-color" content="#0F1115"/>
+    <title>Learn Marathi</title>
+    <base href="/"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600;700&family=Tiro+Devanagari+Marathi&family=Mukta:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <link href="css/site.css" rel="stylesheet"/>
+    <style>
+        html, body { background: #0F1115; color: #F5F0E6; margin: 0; padding: 0; min-height: 100vh; font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+        /* Android 16 (targetSdk 36) forces edge-to-edge, so the webview draws under the
+           status bar and gesture pill. Inset #app, then claw back the same amount from
+           page roots that hard-code 100vh inline (needs !important to beat inline style). */
+        #app {
+            display: block;
+            box-sizing: border-box;
+            min-height: 100dvh;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        #app > * {
+            min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+        }
+        a { color: inherit; }
+        button { font-family: inherit; }
+        ::selection { background: #E8B14F; color: #0F1115; }
+        ::-webkit-scrollbar { width: 0; height: 0; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div style="text-align: center; padding: 60px 20px;">
+        <h2 style="color: #2d6a2d;">Loading Learn Marathi...</h2>
+        <p>Please wait while the application loads.</p>
+    </div>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+<script src="_framework/blazor.webassembly.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script>
+    var signaturePad;
+
+    function initSignaturePad() {
+        try {
+            const canvas = document.getElementById('signaturePad');
+            if (!canvas) {
+                console.error('Canvas element not found');
+                return;
+            }
+
+            canvas.addEventListener('touchstart', function (e) {
+                e.preventDefault();
+            }, {passive: false});
+
+            canvas.addEventListener('touchmove', function (e) {
+                e.preventDefault();
+            }, {passive: false});
+
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: '#fafafa',
+                penColor: '#2d6a2d',
+                minWidth: 4,
+                maxWidth: 8,
+                throttle: 0,
+                minDistance: 0,
+                velocityFilterWeight: 0.7
+            });
+
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                const rect = canvas.getBoundingClientRect();
+                const data = signaturePad.isEmpty() ? null : signaturePad.toData();
+
+                canvas.width = rect.width * ratio;
+                canvas.height = rect.height * ratio;
+                canvas.getContext('2d').scale(ratio, ratio);
+                canvas.style.width = rect.width + 'px';
+                canvas.style.height = rect.height + 'px';
+
+                if (data) {
+                    signaturePad.fromData(data);
+                } else {
+                    signaturePad.clear();
+                }
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+        } catch (error) {
+            console.error('Error initializing signature pad:', error);
+        }
+    }
+
+    function clearSignaturePad() {
+        if (signaturePad) {
+            signaturePad.clear();
+        }
+    }
+
+    function getSignaturePadData() {
+        if (signaturePad && !signaturePad.isEmpty()) {
+            return signaturePad.toDataURL();
+        }
+        return null;
+    }
+
+    // Android WebView has no Web Speech API, so the app uses the native recogniser plugin instead.
+    function getNativeRecogniser() {
+        const cap = window.Capacitor;
+        return cap && cap.isNativePlatform && cap.isNativePlatform() && cap.Plugins && cap.Plugins.SpeechRecognition
+            ? cap.Plugins.SpeechRecognition : null;
+    }
+
+    function speechAvailable() {
+        return !!(getNativeRecogniser() || window.SpeechRecognition || window.webkitSpeechRecognition);
+    }
+
+    // Listens for one utterance. Resolves { ok, matches: [best guess first], message }.
+    async function recogniseSpeech(lang) {
+        lang = lang || 'mr-IN';
+        const native = getNativeRecogniser();
+        if (native) {
+            try {
+                const { available } = await native.available();
+                if (!available) return { ok: false, matches: [], message: 'Speech recognition is not available on this phone' };
+                let perm = await native.checkPermissions();
+                if (perm.speechRecognition !== 'granted') perm = await native.requestPermissions();
+                if (perm.speechRecognition !== 'granted') return { ok: false, matches: [], message: 'Microphone permission was denied' };
+                const res = await native.start({ language: lang, maxResults: 5, partialResults: false, popup: false });
+                return { ok: true, matches: (res && res.matches) || [] };
+            } catch (e) {
+                return { ok: false, matches: [], message: String((e && e.message) || e) };
+            }
+        }
+
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) return Promise.resolve({ ok: false, matches: [], message: 'Speech recognition is not supported here' });
+        return new Promise(function (resolve) {
+            const rec = new SR();
+            rec.lang = lang;
+            rec.maxAlternatives = 5;
+            rec.interimResults = false;
+            // Only the first call to resolve counts, so onend after onresult is harmless.
+            rec.onresult = e => resolve({ ok: true, matches: Array.from(e.results[0]).map(a => a.transcript) });
+            rec.onerror = e => resolve({ ok: false, matches: [], message: 'Recognition error: ' + e.error });
+            rec.onend = () => resolve({ ok: true, matches: [] });
+            rec.start();
+        });
+    }
+
+    let nativePending = null;
+
+    // Web Speech API based voice recognition
+    let speechRecognition = null;
+    let speechResult = null;
+    let recognitionResolve = null;
+
+    function startVoiceRecording() {
+        if (getNativeRecogniser()) {
+            nativePending = recogniseSpeech('hi-IN');
+            return { success: true, message: 'Recording started' };
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            return { success: false, message: 'Speech recognition is not supported in this browser. Please use Chrome or Edge.' };
+        }
+
+        speechRecognition = new SpeechRecognition();
+        speechRecognition.lang = 'hi-IN';
+        speechRecognition.continuous = false;
+        speechRecognition.interimResults = false;
+        speechRecognition.maxAlternatives = 1;
+        speechResult = null;
+
+        speechRecognition.onresult = function(event) {
+            const result = event.results[0][0];
+            speechResult = {
+                success: true,
+                text: result.transcript,
+                confidence: result.confidence
+            };
+        };
+
+        speechRecognition.onerror = function(event) {
+            speechResult = {
+                success: false,
+                text: '',
+                confidence: 0,
+                message: 'Recognition error: ' + event.error
+            };
+            if (recognitionResolve) {
+                recognitionResolve(speechResult);
+                recognitionResolve = null;
+            }
+        };
+
+        speechRecognition.onend = function() {
+            if (recognitionResolve) {
+                recognitionResolve(speechResult || { success: false, text: '', confidence: 0, message: 'No speech detected' });
+                recognitionResolve = null;
+            }
+        };
+
+        speechRecognition.start();
+        return { success: true, message: 'Recording started' };
+    }
+
+    // localStorage bridge for Blazor WASM (SRS, streaks, prefs)
+    function lmStorageGet(key) {
+        try { return window.localStorage.getItem(key); }
+        catch (e) { console.error('lmStorageGet', e); return null; }
+    }
+
+    function lmStorageSet(key, value) {
+        try { window.localStorage.setItem(key, value); return true; }
+        catch (e) { console.error('lmStorageSet', e); return false; }
+    }
+
+    function lmStorageRemove(key) {
+        try { window.localStorage.removeItem(key); return true; }
+        catch (e) { console.error('lmStorageRemove', e); return false; }
+    }
+
+    // Text-to-speech for Marathi/Hindi words and characters
+    let cachedTtsVoice = null;
+
+    function pickTtsVoice() {
+        if (!window.speechSynthesis) return null;
+        const voices = window.speechSynthesis.getVoices();
+        if (!voices || voices.length === 0) return null;
+        return voices.find(v => v.lang === 'mr-IN')
+            || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('mr'))
+            || voices.find(v => v.lang === 'hi-IN')
+            || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('hi'))
+            || null;
+    }
+
+    if (window.speechSynthesis) {
+        cachedTtsVoice = pickTtsVoice();
+        window.speechSynthesis.onvoiceschanged = function () {
+            cachedTtsVoice = pickTtsVoice();
+        };
+    }
+
+    function getNativeTts() {
+        try {
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech) {
+                return window.Capacitor.Plugins.TextToSpeech;
+            }
+        } catch (e) {}
+        return null;
+    }
+
+    async function speakMarathi(text) {
+        if (!text) return false;
+        const native = getNativeTts();
+        if (native) {
+            try {
+                await native.stop().catch(() => {});
+                await native.speak({
+                    text: text,
+                    lang: 'mr-IN',
+                    rate: 0.9,
+                    pitch: 1.0,
+                    volume: 1.0,
+                    category: 'ambient'
+                });
+                return true;
+            } catch (e) {
+                console.warn('Native TTS mr-IN failed, retrying hi-IN:', e);
+                try {
+                    await native.speak({
+                        text: text,
+                        lang: 'hi-IN',
+                        rate: 0.9,
+                        pitch: 1.0,
+                        volume: 1.0
+                    });
+                    return true;
+                } catch (e2) {
+                    console.error('Native TTS hi-IN also failed:', e2);
+                    // fall through to web fallback
+                }
+            }
+        }
+        if (!window.speechSynthesis || typeof SpeechSynthesisUtterance === 'undefined') {
+            console.error('No TTS available (no native plugin and no speechSynthesis)');
+            return false;
+        }
+        try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voice = cachedTtsVoice || pickTtsVoice();
+            if (voice) {
+                utterance.voice = voice;
+                utterance.lang = voice.lang;
+            } else {
+                utterance.lang = 'mr-IN';
+            }
+            utterance.rate = 0.85;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            window.speechSynthesis.speak(utterance);
+            return true;
+        } catch (e) {
+            console.error('speakMarathi failed:', e);
+            return false;
+        }
+    }
+
+    async function stopVoiceRecording() {
+        const native = getNativeRecogniser();
+        if (native && nativePending) {
+            try { await native.stop(); } catch (e) { }
+            const r = await nativePending;
+            nativePending = null;
+            return r.ok && r.matches.length
+                ? { success: true, text: r.matches[0], confidence: 0.8 }
+                : { success: false, text: '', confidence: 0, message: r.message || 'No speech detected' };
+        }
+        return new Promise(function(resolve) {
+            if (!speechRecognition) {
+                resolve({ success: false, text: '', confidence: 0, message: 'No recording in progress' });
+                return;
+            }
+
+            if (speechResult) {
+                speechRecognition.stop();
+                resolve(speechResult);
+                return;
+            }
+
+            recognitionResolve = resolve;
+            speechRecognition.stop();
+
+            // Timeout fallback
+            setTimeout(function() {
+                if (recognitionResolve) {
+                    recognitionResolve({ success: false, text: '', confidence: 0, message: 'Recognition timed out' });
+                    recognitionResolve = null;
+                }
+            }, 5000);
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+@page "/phrases"
+@using LearnMarathi.Data
+@using LearnMarathi.Models
+@using Microsoft.JSInterop
+@inject IPhraseRepository Repository
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Phrases · Learn Marathi</PageTitle>
+
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+    <div style="padding:4px 20px 0;display:flex;align-items:center;justify-content:space-between;">
+        <span @onclick='() => Nav("/")' style="cursor:pointer;display:inline-flex;">
+            <Icon Name="arrow-left" Size="20" Color="@Theme.Cream" />
+        </span>
+        <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Lesson 03</span>
+        <Icon Name="sparkle" Size="18" Color="@Theme.Gold" />
+    </div>
+
+    <div style="padding:18px 24px 0;">
+        <div style="font-family:@Theme.Serif;font-size:36px;line-height:1;color:@Theme.Cream;letter-spacing:-1px;">Phrases</div>
+        <div style="font-family:@Theme.Deva;font-size:24px;color:@Theme.Gold;margin-top:6px;">वाक्ये</div>
+        <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;margin-top:14px;line-height:1.6;font-style:italic;max-width:300px;">
+            "Learning multi-word chunks beats word-by-word." — sorted by frequency.
+        </div>
+    </div>
+
+    <div style="margin:24px 24px 0;">
+        <Warli Width="100%" Height="14" Color="@Theme.Gold" Opacity="0.6" />
+    </div>
+
+    @if (isLoading)
+    {
+        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+    }
+    else
+    {
+        @* Category chips *@
+        <div style="display:flex;gap:8px;padding:18px 24px;overflow-x:auto;">
+            @{ var cats = new[] { "All" }.Concat(categories).ToArray(); }
+            @foreach (var c in cats)
+            {
+                var active = selectedCategory == c;
+                <span @onclick="() => selectedCategory = c"
+                      style="padding:8px 14px;border-radius:100px;white-space:nowrap;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-family:@Theme.Sans;font-size:12px;font-weight:500;cursor:pointer;">@c</span>
+            }
+        </div>
+
+        <div style="padding:4px 24px 24px;">
+            @foreach (var p in GetSorted())
+            {
+                <div style="margin:18px 0;padding:18px;background:@Theme.Ink2;border-radius:14px;border:1px solid @(Theme.MutedDk + "30");position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:14px;right:14px;display:flex;gap:6px;">
+                        @{ int tier = Math.Min(3, Math.Max(1, 6 - p.Frequency)); }
+                        @for (int j = 0; j < 3; j++)
+                        {
+                            <div style="width:6px;height:6px;border-radius:50%;background:@(j < tier ? Theme.Gold : Theme.MutedDk + "60");"></div>
+                        }
+                    </div>
+                    <div style="font-family:@Theme.Deva;font-size:26px;color:@Theme.Cream;line-height:1.3;padding-right:60px;">@p.MarathiPhrase</div>
+                    <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;margin-top:6px;">@p.Pronunciation</div>
+                    <div style="margin-top:14px;padding-top:14px;border-top:1px solid @(Theme.MutedDk + "40");display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-family:@Theme.Serif;font-size:18px;color:@Theme.Gold;">@p.EnglishTranslation</span>
+                        <span @onclick="() => Speak(p.MarathiPhrase)" style="cursor:pointer;display:inline-flex;padding:6px;">
+                            <Icon Name="speaker" Size="18" Color="@Theme.Cream" />
+                        </span>
+                    </div>
+                    <div style="font-family:@Theme.Mono;font-size:9px;color:@Theme.MutedDk;letter-spacing:1.5px;text-transform:uppercase;margin-top:10px;">@p.Category</div>
+                </div>
+            }
+        </div>
+    }
+
+    <NavBar />
+</div>
+
+@code {
+    private IEnumerable<Phrase> phrases = new List<Phrase>();
+    private List<string> categories = new();
+    private string selectedCategory = "All";
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        phrases = await Repository.GetAllAsync();
+        categories = phrases.Select(p => p.Category).Distinct().OrderBy(c => c).ToList();
+        isLoading = false;
+    }
+
+    private IEnumerable<Phrase> GetSorted()
+    {
+        var filtered = selectedCategory == "All" ? phrases : phrases.Where(p => p.Category == selectedCategory);
+        return filtered.OrderBy(p => p.Frequency).ThenBy(p => p.Id);
+    }
+
+    private async Task Speak(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+        await JSRuntime.InvokeVoidAsync("speakMarathi", text);
+    }
+
+    private void Nav(string url) => NavigationManager.NavigateTo(url);
+}

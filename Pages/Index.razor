@@ -1,39 +1,181 @@
-﻿@page "/"
+@page "/"
+@using LearnMarathi.Services
+@inject IStreakService Streak
+@inject IReviewService Review
+@inject NavigationManager NavigationManager
 
-<PageTitle>Learn Marathi - Home</PageTitle>
+<PageTitle>Learn Marathi</PageTitle>
 
-<div class="main-container">
-    <div class="header">
-        <h1>Learn Marathi</h1>
-        <p>Welcome to your journey of learning the beautiful Marathi language!</p>
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+    @* Masthead *@
+    <div style="padding:8px 24px 0;">
+        <div style="font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">@DateTime.Now.ToString("dddd · d MMMM")</div>
+        <div style="margin:18px 0 4px;font-family:@Theme.Serif;font-size:54px;line-height:1;letter-spacing:-1.5px;color:@Theme.Cream;">
+            Learn<br/>Marathi.
+        </div>
+        <div style="font-family:@Theme.Deva;font-size:34px;color:@Theme.Gold;margin-top:8px;">मराठी शिका</div>
+        <div style="margin:16px 0 24px;">
+            <Warli Width="220" Height="20" Color="@Theme.Gold" Opacity="0.8" />
+        </div>
     </div>
 
-    <div class="nav-card" @onclick='() => NavigateToPage("/characters")'>
-        <h3>📖 Marathi Characters & Pronunciation</h3>
-        <p>Learn the Devanagari script used in Marathi - vowels, consonants, and how to pronounce them correctly.</p>
+    @* Streak *@
+    <div style="margin:0 24px 28px;display:flex;align-items:flex-end;justify-content:space-between;border-top:1px solid @(Theme.MutedDk + "40");border-bottom:1px solid @(Theme.MutedDk + "40");padding:18px 0;">
+        <div>
+            <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Streak</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px;">
+                <span style="font-family:@Theme.Serif;font-size:46px;color:@Theme.Gold;line-height:1;">@CurrentStreakDisplay</span>
+                <span style="font-family:@Theme.Sans;font-size:13px;color:@Theme.Cream;">day@(streak?.CurrentStreak == 1 ? "" : "s")</span>
+            </div>
+            <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;margin-top:6px;">
+                @(streak?.ActiveToday == true ? "practiced today — keep going" : "practice today to keep your streak")
+            </div>
+            @if (streak != null && streak.LongestStreak > streak.CurrentStreak)
+            {
+                <div style="font-family:@Theme.Mono;font-size:10px;color:@Theme.MutedDk;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;">Best · @streak.LongestStreak days</div>
+            }
+        </div>
+        <div style="display:flex;gap:6px;">
+            @foreach (var (day, on) in StreakDays())
+            {
+                var today = day == DateTime.Now.Date;
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                    <div style="width:12px;height:@(on ? "32px" : "14px");border-radius:2px;background:@(on ? Theme.Gold : Theme.MutedDk + "80");margin-top:auto;"></div>
+                    <span style="font-family:@Theme.Mono;font-size:9px;color:@(today ? Theme.Gold : Theme.MutedDk);">@day.ToString("ddd")[0]</span>
+                </div>
+            }
+        </div>
     </div>
 
-    <div class="nav-card" @onclick='() => NavigateToPage("/commonwords")'>
-        <h3>📝 Common Words</h3>
-        <p>Start building your vocabulary with essential Marathi words and phrases.</p>
-    </div>
+    @* Sections *@
+    @foreach (var group in Groups)
+    {
+        <div style="padding:0 24px;margin-bottom:30px;">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;">
+                <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">@group.Title</span>
+                <span style="font-family:@Theme.Sans;font-size:11px;color:@Theme.MutedDk;">@group.Caption</span>
+            </div>
 
-    <div class="nav-card">
-        <h3>💬 Coming Soon: Common Phrases</h3>
-        <p>Learn everyday expressions and conversational phrases in Marathi.</p>
-    </div>
+            @for (int i = 0; i < group.Items.Length; i++)
+            {
+                var it = group.Items[i];
+                var last = i == group.Items.Length - 1;
+                <div @onclick="() => OpenLesson(it)"
+                     style="display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:@(last ? "none" : "1px solid " + Theme.MutedDk + "40");opacity:@(it.Soon ? "0.5" : "1");cursor:@(it.Soon ? "default" : "pointer");">
+                    <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Gold;width:24px;">@it.N</div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-family:@Theme.Serif;font-size:22px;color:@Theme.Cream;line-height:1.1;letter-spacing:-0.3px;">@it.T</span>
+                            @if (it.Url == "/review" && dueCount > 0)
+                            {
+                                <span style="font-family:@Theme.Mono;font-size:10px;font-weight:600;padding:3px 8px;border-radius:100px;background:@Theme.Gold;color:@Theme.Ink;">@dueCount</span>
+                            }
+                        </div>
+                        <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;margin-top:4px;">@it.Sub</div>
+                        @if (lessonProgress.TryGetValue(it.Url, out var lp) && lp.Seen > 0)
+                        {
+                            <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+                                <div style="flex:1;height:3px;border-radius:2px;background:@(Theme.MutedDk + "40");position:relative;overflow:hidden;">
+                                    <div style="position:absolute;left:0;top:0;bottom:0;width:@(lp.Seen * 100 / lp.Total)%;background:@(Theme.Gold + "50");"></div>
+                                    <div style="position:absolute;left:0;top:0;bottom:0;width:@(lp.Known * 100 / lp.Total)%;background:@Theme.Gold;"></div>
+                                </div>
+                                <span style="font-family:@Theme.Mono;font-size:10px;color:@Theme.Muted;white-space:nowrap;">@lp.Known/@lp.Total known</span>
+                            </div>
+                        }
+                    </div>
+                    <div style="font-family:@Theme.Deva;font-size:20px;color:@Theme.Gold;opacity:0.85;">@it.Deva</div>
+                    @if (!it.Soon)
+                    {
+                        <Icon Name="chevron-right" Size="18" Color="@Theme.Muted" />
+                    }
+                </div>
+            }
+        </div>
+    }
 
-    <div class="nav-card">
-        <h3>📚 Coming Soon: Grammar Lessons</h3>
-        <p>Understand the structure and rules of the Marathi language.</p>
-    </div>
+    <div style="height:40px;"></div>
+    <NavBar />
 </div>
 
 @code {
-    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    private StreakInfo? streak;
+    private int dueCount;
 
-    private void NavigateToPage(string url)
+    private Dictionary<string, (int Seen, int Known, int Total)> lessonProgress = new();
+
+    private string CurrentStreakDisplay => (streak?.CurrentStreak ?? 0).ToString();
+
+    private record Lesson(string N, string T, string Sub, string Deva, string Url, bool Soon);
+
+    // Which SRS decks count towards each lesson's progress bar.
+    private static readonly Dictionary<string, string[]> LessonDecks = new()
     {
-        NavigationManager.NavigateTo(url);
+        ["/listening"] = new[] { "listen_words", "listen_phrases" },
+        ["/sentences"] = new[] { "sentences" },
+        ["/characters"] = new[] { "characters" },
+        ["/barakhadi"] = new[] { "barakhadi", "conjuncts" },
+        ["/commonwords"] = new[] { "words" },
+        ["/numbers"] = new[] { "numbers" },
+        ["/phrases"] = new[] { "listen_phrases" },
+        ["/verbs"] = new[] { "verbs" },
+    };
+    private record Group(string Title, string Caption, Lesson[] Items);
+
+    private static readonly Group[] Groups =
+    {
+        new("Practice", "drills", new[] {
+            new Lesson("01", "Review",    "Everything due, all decks",   "उजळणी",    "/review",    false),
+            new Lesson("02", "Listening", "Sound first, no script",      "ऐकणे",     "/listening", false),
+            new Lesson("03", "Sentences", "Build it word by word",       "वाक्यरचना", "/sentences", false),
+        }),
+        new("Script", "reading", new[] {
+            new Lesson("04", "Characters", "Devanagari foundations",     "अक्षरे",   "/characters", false),
+            new Lesson("05", "Barakhadi",  "Vowel signs and conjuncts",  "बाराखडी",  "/barakhadi",  false),
+        }),
+        new("Vocabulary", "words", new[] {
+            new Lesson("06", "Common Words", "By category, by frequency", "शब्द",   "/commonwords", false),
+            new Lesson("07", "Numbers",      "One to a hundred",          "अंक",    "/numbers",     false),
+            new Lesson("08", "Phrases",      "Everyday chunks",           "वाक्ये",  "/phrases",     false),
+        }),
+        new("Structure", "grammar", new[] {
+            new Lesson("09", "Verbs",   "Endings that agree with you", "क्रियापदे", "/verbs",   false),
+            new Lesson("10", "Grammar", "Patterns and tenses",         "व्याकरण",   "/grammar", false),
+        }),
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            streak = await Streak.GetAsync();
+            dueCount = await Review.GetDueCountAsync();
+            var progress = await Review.GetProgressAsync();
+            lessonProgress = LessonDecks.ToDictionary(kv => kv.Key, kv =>
+            {
+                var cards = progress.Where(p => kv.Value.Contains(p.Card.Deck)).ToList();
+                return (cards.Count(p => p.Mastery != Mastery.New), cards.Count(p => p.Mastery == Mastery.Known), cards.Count);
+            });
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>The last 7 days, oldest first, flagged if they fall inside the current streak.</summary>
+    private IEnumerable<(DateTime Day, bool On)> StreakDays()
+    {
+        var today = DateTime.Now.Date;
+        var count = streak?.CurrentStreak ?? 0;
+        var last = streak?.LastActiveDate;
+        for (var i = 6; i >= 0; i--)
+        {
+            var day = today.AddDays(-i);
+            var on = last != null && day <= last && day > last.Value.AddDays(-count);
+            yield return (day, on);
+        }
+    }
+
+    private void OpenLesson(Lesson l)
+    {
+        if (l.Soon || string.IsNullOrEmpty(l.Url)) return;
+        NavigationManager.NavigateTo(l.Url);
     }
 }

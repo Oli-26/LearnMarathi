@@ -1,0 +1,271 @@
+@page "/grammar"
+@using Microsoft.JSInterop
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Grammar · Learn Marathi</PageTitle>
+
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+
+    <div style="padding:4px 20px 0;display:flex;align-items:center;justify-content:space-between;">
+        <span @onclick='() => Nav("/")' style="cursor:pointer;display:inline-flex;">
+            <Icon Name="arrow-left" Size="20" Color="@Theme.Cream" />
+        </span>
+        <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Lesson 04</span>
+        <Icon Name="book" Size="20" Color="@Theme.Gold" />
+    </div>
+
+    <div style="padding:18px 24px 6px;">
+        <div style="font-family:@Theme.Serif;font-size:36px;line-height:1;color:@Theme.Cream;letter-spacing:-1px;">Grammar</div>
+        <div style="font-family:@Theme.Deva;font-size:24px;color:@Theme.Gold;margin-top:6px;">व्याकरण</div>
+        <div style="font-family:@Theme.Sans;font-size:13px;color:@Theme.Muted;margin-top:10px;line-height:1.5;">Eight foundations to read, write, and think in Marathi.</div>
+    </div>
+
+    <div style="margin:18px 24px 0;">
+        <Warli Width="100%" Height="14" Color="@Theme.Gold" Opacity="0.6" />
+    </div>
+
+    @* Section index *@
+    <div style="padding:22px 24px 6px;">
+        <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;margin-bottom:12px;">Contents</div>
+        @{ int idx = 0; }
+        @foreach (var s in sections)
+        {
+            idx++;
+            var captured = s.Id;
+            <div @onclick="() => Toggle(captured)" style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid @(Theme.MutedDk + "30");cursor:pointer;">
+                <span style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Gold;width:22px;">@idx.ToString("D2")</span>
+                <span style="flex:1;font-family:@Theme.Serif;font-size:18px;color:@Theme.Cream;letter-spacing:-0.2px;">@s.Title</span>
+                <span style="font-family:@Theme.Deva;font-size:18px;color:@Theme.Gold;opacity:.85;">@s.Marathi</span>
+                <Icon Name="@(IsOpen(s.Id) ? "x" : "chevron-right")" Size="16" Color="@Theme.Muted" />
+            </div>
+        }
+    </div>
+
+    @* Sections *@
+    <div style="padding:14px 24px 0;">
+        @foreach (var s in sections)
+        {
+            <div id="@s.Id" style="margin:18px 0;background:@Theme.Ink2;border-radius:14px;border:1px solid @(Theme.MutedDk + "30");overflow:hidden;">
+                <div @onclick="() => Toggle(s.Id)" style="padding:18px;cursor:pointer;display:flex;align-items:flex-start;gap:14px;">
+                    <span style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Gold;margin-top:4px;flex-shrink:0;">§</span>
+                    <div style="flex:1;">
+                        <div style="font-family:@Theme.Serif;font-size:22px;color:@Theme.Cream;line-height:1.2;letter-spacing:-0.3px;">@s.Title</div>
+                        <div style="font-family:@Theme.Deva;font-size:18px;color:@Theme.Gold;margin-top:4px;">@s.Marathi</div>
+                        <div style="font-family:@Theme.Sans;font-size:13px;color:@Theme.Muted;margin-top:8px;line-height:1.55;">@s.Summary</div>
+                    </div>
+                    <Icon Name="@(IsOpen(s.Id) ? "x" : "plus")" Size="16" Color="@Theme.Muted" />
+                </div>
+
+                @if (IsOpen(s.Id))
+                {
+                    <div style="padding:0 18px 18px;">
+                        <div style="border-top:1px solid @(Theme.MutedDk + "30");padding-top:16px;">
+                            @((MarkupString)s.Body)
+                        </div>
+
+                        @if (s.Examples != null && s.Examples.Length > 0)
+                        {
+                            <div style="margin-top:18px;padding-top:14px;border-top:1px dashed @(Theme.MutedDk + "40");">
+                                <div style="font-family:@Theme.Mono;font-size:9px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;margin-bottom:10px;">Examples</div>
+                                @foreach (var ex in s.Examples)
+                                {
+                                    var captured = ex;
+                                    <div style="margin:10px 0;padding:14px;background:@Theme.Ink;border-left:2px solid @Theme.Gold;border-radius:2px 8px 8px 2px;">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <span style="flex:1;font-family:@Theme.Deva;font-size:22px;color:@Theme.Cream;line-height:1.3;">@ex.Marathi</span>
+                                            <span @onclick="() => Speak(captured.Marathi)" style="cursor:pointer;width:30px;height:30px;border-radius:50%;border:1px solid @Theme.Gold;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                                <Icon Name="speaker" Size="12" Color="@Theme.Gold" />
+                                            </span>
+                                        </div>
+                                        <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;margin-top:4px;">@ex.Pronunciation</div>
+                                        <div style="font-family:@Theme.Serif;font-size:15px;color:@Theme.Gold;margin-top:6px;letter-spacing:-0.2px;">@ex.English</div>
+                                        @if (!string.IsNullOrEmpty(ex.Note))
+                                        {
+                                            <div style="font-family:@Theme.Sans;font-size:11px;color:@Theme.MutedDk;margin-top:6px;line-height:1.4;">@ex.Note</div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private HashSet<string> openSections = new();
+
+    private bool IsOpen(string id) => openSections.Contains(id);
+
+    private void Toggle(string id)
+    {
+        if (!openSections.Add(id)) openSections.Remove(id);
+    }
+
+    private async Task Speak(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+        await JSRuntime.InvokeVoidAsync("speakMarathi", text);
+    }
+
+    private void Nav(string url) => NavigationManager.NavigateTo(url);
+
+    private record Example(string Marathi, string Pronunciation, string English, string Note = "");
+
+    private record Section(string Id, string Title, string Marathi, string Summary, string Body, Example[] Examples);
+
+    private static readonly Section[] sections = new[]
+    {
+        new Section(
+            "word-order",
+            "Word order: Subject–Object–Verb",
+            "वाक्यरचना",
+            "Marathi puts the verb at the end. English says \"I eat rice\"; Marathi says \"I rice eat\".",
+            @"<p style='font-family:Inter,sans-serif;font-size:14px;color:#F5F0E6;line-height:1.6;margin:0 0 10px;'>The structural pattern is rigid: <strong>Subject — Object — Verb</strong>. Once you internalise this, sentences feel natural to build.</p>
+              <p style='font-family:Inter,sans-serif;font-size:14px;color:#F5F0E6;line-height:1.6;margin:0;'>Adjectives go <em>before</em> the noun (like English). Postpositions follow the noun (unlike English prepositions).</p>",
+            new[] {
+                new Example("मी पाणी पितो.", "mi paani pito", "I drink water.", "Literally: I — water — drink."),
+                new Example("ती पुस्तक वाचते.", "ti pustak vaachte", "She reads a book.", "Literally: She — book — reads."),
+                new Example("तो घरी जातो.", "to ghari jaato", "He goes home.", "घरी = at/to home (postposition baked in)."),
+            }
+        ),
+        new Section(
+            "gender",
+            "Three genders",
+            "लिंग",
+            "Every noun is masculine, feminine, or neuter. Verbs and adjectives change shape to match.",
+            @"<p style='font-family:Inter,sans-serif;font-size:14px;color:#F5F0E6;line-height:1.6;margin:0 0 10px;'>Marathi has <strong>three</strong> genders: masculine (पुल्लिंग), feminine (स्त्रीलिंग), neuter (नपुंसकलिंग). Hindi has only two — Marathi keeps the older Sanskrit system.</p>
+              <p style='font-family:Inter,sans-serif;font-size:14px;color:#F5F0E6;line-height:1.6;margin:0 0 10px;'>Rough heuristic for endings:</p>
+              <ul style='font-family:Inter,sans-serif;font-size:13px;color:#B5AB97;line-height:1.7;margin:0;padding-left:18px;'>
+                <li>आ ending → often masculine (मुलगा = boy)</li>
+                <li>ई ending → often feminine (मुलगी = girl)</li>
+                <li>ए / ं ending → often neuter (पुस्तक = book, घर = house)</li>
+              </ul>",
+            new[] {
+                new Example("मुलगा खेळतो.", "mulgaa kheltó", "The boy plays.", "खेळतो = masculine verb form."),
+                new Example("मुलगी खेळते.", "mulgi kheltè", "The girl plays.", "खेळते = feminine verb form."),
+                new Example("मूल खेळते.", "mool kheltè", "The child plays.", "Neuter follows feminine pattern here."),
+            }
+        ),
+        new Section(
+            "pronouns",
+            "Pronouns",
+            "सर्वनाम",
+            "I, you, he, she, we, they — and the formal/informal split for \"you\".",
+            @"<table style='width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;color:#F5F0E6;'>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>I</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>मी</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>mi</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>You (informal)</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>तू</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>tu</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>You (formal/plural)</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>तुम्ही</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>tumhi</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>He</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>तो</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>to</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>She</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>ती</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>ti</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>It (n)</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>ते</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>te</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>We</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>आम्ही</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>aamhi</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>They</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>ते / त्या</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>te / tyaa</td></tr>
+              </table>
+              <p style='font-family:Inter,sans-serif;font-size:13px;color:#B5AB97;line-height:1.6;margin:14px 0 0;'>Use <strong>तुम्ही</strong> with elders, strangers, in formal contexts. <strong>तू</strong> with friends, family, children. Mixing them up is the most common politeness mistake.</p>",
+            new[] {
+                new Example("मी विद्यार्थी आहे.", "mi vidyaarthi aahe", "I am a student."),
+                new Example("तुम्ही कसे आहात?", "tumhi kase aahaat?", "How are you? (formal)"),
+                new Example("तू कसा आहेस?", "tu kasaa aahes?", "How are you? (informal masc.)"),
+            }
+        ),
+        new Section(
+            "to-be",
+            "The verb \"to be\" — आहे",
+            "होणे",
+            "One verb covers \"is / am / are\" — but it changes for person.",
+            @"<table style='width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;color:#F5F0E6;'>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;width:50%;'>I am</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>मी आहे</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>mi aahe</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>You are (inf.)</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>तू आहेस</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>tu aahes</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>You are (form.)</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>तुम्ही आहात</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>tumhi aahaat</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>He/She/It is</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>तो/ती/ते आहे</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>to/ti/te aahe</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>We are</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>आम्ही आहोत</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>aamhi aahot</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>They are</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>ते आहेत</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>te aahet</td></tr>
+              </table>
+              <p style='font-family:Inter,sans-serif;font-size:13px;color:#B5AB97;line-height:1.6;margin:14px 0 0;'>Negation: replace आहे with <strong>नाही</strong> (naahi). ""I am not"" → मी नाही (mi naahi).</p>",
+            new[] {
+                new Example("हे माझे घर आहे.", "he maajhe ghar aahe", "This is my house."),
+                new Example("ती डॉक्टर आहे.", "ti doctor aahe", "She is a doctor."),
+                new Example("मी इथे नाही.", "mi ithe naahi", "I am not here."),
+            }
+        ),
+        new Section(
+            "postpositions",
+            "Postpositions, not prepositions",
+            "शब्दयोगी अव्यय",
+            "Marathi puts \"to / from / with / of\" *after* the noun. Often glued on as a suffix.",
+            @"<table style='width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;color:#F5F0E6;'>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;width:35%;'>to / for (dative)</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>-ला</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>-laa</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>by / with (instrument)</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>-ने</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>-ne</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>from</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>-तून / -हून</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>-toon / -hoon</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>in / at</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>-त / -मध्ये</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>-t / -madhye</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>of (possession)</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>-चा / -ची / -चे</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>-chaa / -chi / -che</td></tr>
+              </table>
+              <p style='font-family:Inter,sans-serif;font-size:13px;color:#B5AB97;line-height:1.6;margin:14px 0 0;'>Possessives agree with the gender of the *thing owned*, not the owner. ""My book"" depends on whether ""book"" is masc/fem/neut.</p>",
+            new[] {
+                new Example("मी घरी जातो.", "mi ghari jaato", "I go home.", "घरी = घर + ी (dative)"),
+                new Example("बसने जा.", "bus-ne jaa", "Go by bus.", "-ने = means/instrument"),
+                new Example("रामचा मित्र", "Ram-chaa mitra", "Ram's friend (masc.)", "-चा agrees with मित्र (masc.)"),
+                new Example("रामची बहीण", "Ram-chi baheen", "Ram's sister (fem.)", "-ची agrees with बहीण (fem.)"),
+            }
+        ),
+        new Section(
+            "tense",
+            "Three tenses at a glance",
+            "काळ",
+            "Present, past, future — with the verb \"to do\" करणे (karne) as the model.",
+            @"<table style='width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;color:#F5F0E6;'>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;width:35%;'>I do</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>मी करतो / करते</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>karto/karte</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>I did</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>मी केले</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>kele</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>I will do</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>मी करेन</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>karen</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>I am doing</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>मी करत आहे</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>karat aahe</td></tr>
+              </table>
+              <p style='font-family:Inter,sans-serif;font-size:13px;color:#B5AB97;line-height:1.6;margin:14px 0 0;'>Verb endings track <strong>person + gender</strong>. Masculine speakers use <strong>-तो</strong>, feminine use <strong>-ते</strong>. The gender of the speaker matters — unlike English.</p>",
+            new[] {
+                new Example("मी काम करतो.", "mi kaam karto", "I work. (m)", "Speaker is male."),
+                new Example("मी काम करते.", "mi kaam karte", "I work. (f)", "Speaker is female."),
+                new Example("मी काल आलो.", "mi kaal aalo", "I came yesterday. (m)", "Past tense, masculine."),
+            }
+        ),
+        new Section(
+            "plural",
+            "Plurals",
+            "अनेकवचन",
+            "Most plurals just change the ending — patterns depend on gender.",
+            @"<table style='width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;color:#F5F0E6;'>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;width:25%;'>Masc. -आ</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>मुलगा → मुलगे</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>boy → boys</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>Fem. -ई</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>मुलगी → मुली</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>girl → girls</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>Neuter -ए</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>घर → घरे</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>house → houses</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>Consonant-end</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>पुस्तक → पुस्तके</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>book → books</td></tr>
+              </table>",
+            new[] {
+                new Example("दोन मुले खेळतात.", "don mule kheltaat", "Two children play.", "मुले = plural neuter."),
+                new Example("तीन घरे आहेत.", "teen ghare aahet", "There are three houses."),
+            }
+        ),
+        new Section(
+            "questions",
+            "Asking questions",
+            "प्रश्नवाचक",
+            "Add a question word at the start, or just raise intonation. No \"do\" / \"does\" auxiliary like English.",
+            @"<table style='width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;color:#F5F0E6;'>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;width:30%;'>What</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>काय</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>kaay</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>Who</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>कोण</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>kon</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>Where</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>कुठे</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>kuthe</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>When</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>केव्हा</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>kevhaa</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>Why</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>का</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>kaa</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>How</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>कसे</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>kase</td></tr>
+                <tr><td style='padding:6px 0;color:#B5AB97;font-family:JetBrains Mono,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;'>How much/many</td><td style='font-family:Tiro Devanagari Marathi,serif;font-size:18px;'>किती</td><td style='font-family:JetBrains Mono,monospace;color:#787063;'>kiti</td></tr>
+              </table>
+              <p style='font-family:Inter,sans-serif;font-size:13px;color:#B5AB97;line-height:1.6;margin:14px 0 0;'>For yes/no questions, just add <strong>का</strong> at the end of a statement: ""You are coming?"" → तू येतोस का?</p>",
+            new[] {
+                new Example("तू कुठे आहेस?", "tu kuthe aahes?", "Where are you?"),
+                new Example("किती वाजले?", "kiti vaajle?", "What time is it?"),
+                new Example("तुम्ही येणार का?", "tumhi yenaar kaa?", "Are you coming?", "Yes/no question with का at end."),
+            }
+        ),
+    };
+}

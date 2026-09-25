@@ -1,0 +1,20 @@
+@* Pinned above the tab bar so Next never ends up below the fold on a phone. *@
+@if (Visible)
+{
+    <div style="height:84px;"></div>
+    <div style="position:fixed;left:0;right:0;bottom:calc(@(NavBar.Height)px + env(safe-area-inset-bottom));z-index:19;padding:14px 24px 12px;background:linear-gradient(to bottom, transparent, @Theme.Ink 35%);">
+        <div @onclick="OnClick"
+             style="padding:16px;text-align:center;border-radius:100px;background:@Theme.Cream;color:@Theme.Ink;font-weight:600;cursor:pointer;">
+            @Label
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public string Label { get; set; } = "Next";
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    /// <summary>Pause after a correct answer before moving on, long enough to hear it and see the gold.</summary>
+    public const int AutoAdvanceMs = 900;
+}

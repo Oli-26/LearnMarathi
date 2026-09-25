@@ -1,0 +1,16 @@
+@* Faux Android status strip at top of every screen *@
+
+<div style="display:flex;justify-content:space-between;align-items:center;height:36px;padding:0 18px;font-size:13px;font-weight:500;color:@(Dark ? Theme.Cream : Theme.Ink);font-family:@Theme.Sans;">
+    <span>@DateTime.Now.ToString("HH:mm")</span>
+    <div style="display:flex;gap:6px;align-items:center;">
+        <span style="font-size:11px;opacity:.7;">•••</span>
+        <span style="font-size:11px;opacity:.7;">5G</span>
+        <span style="display:inline-block;width:22px;height:11px;border:1px solid @(Dark ? Theme.Cream : Theme.Ink);border-radius:2px;position:relative;opacity:.7;">
+            <span style="position:absolute;inset:1px;right:6px;background:@(Dark ? Theme.Cream : Theme.Ink);"></span>
+        </span>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool Dark { get; set; } = true;
+}

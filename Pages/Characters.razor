@@ -6,1219 +6,397 @@
 @inject IMarathiCharacterRepository Repository
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-@inject LearnMarathi.Services.IVoiceRecognitionService VoiceRecognitionService
+@inject ISrsService Srs
+@inject IStreakService Streak
 
-<PageTitle>Marathi Characters - Learn Marathi</PageTitle>
+<PageTitle>Characters · Learn Marathi</PageTitle>
 
-<div class="main-container">
-    <div class="header">
-        <h1>Marathi Characters & Pronunciation</h1>
-        <p>Learn the Devanagari script - the foundation of reading and writing Marathi</p>
-    </div>
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+    @if (showQuiz && currentQuestion != null)
+    {
+        @* ============= QUIZ ============= *@
+        <div style="padding:4px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:14px;">
+            <span @onclick="CloseQuiz" style="cursor:pointer;display:inline-flex;">
+                <Icon Name="x" Size="20" Color="@Theme.Cream" />
+            </span>
+            <div style="flex:1;height:3px;background:@(Theme.MutedDk + "60");border-radius:2px;position:relative;">
+                <div style="position:absolute;left:0;top:0;height:100%;width:@QuizProgressPct%;background:@Theme.Gold;border-radius:2px;"></div>
+            </div>
+            <span style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;">@correctAnswers/@(correctAnswers + wrongAnswers)</span>
+        </div>
 
-    <div style="text-align: center; margin-bottom: 20px;">
-        <button class="nav-button" @onclick='() => NavigateToPage("/")'>← Back to Home</button>
-        @if (characters != null && characters.Any())
+        <div style="padding:24px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div>
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Gold;text-transform:uppercase;">Question</div>
+                <div style="font-family:@Theme.Serif;font-size:22px;color:@Theme.Cream;margin-top:6px;line-height:1.2;letter-spacing:-0.4px;">@currentQuestion.QuestionText</div>
+            </div>
+            <select @bind="difficultyLevel" @bind:event="onchange"
+                    style="background:@Theme.Ink2;border:1px solid @(Theme.MutedDk + "80");color:@Theme.Cream;padding:6px 10px;border-radius:8px;font-family:@Theme.Mono;font-size:11px;">
+                <option value="2">2</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+                <option value="8">8</option>
+            </select>
+        </div>
+
+        <div style="margin:30px 24px;padding:30px 0;text-align:center;border-top:1px solid @Theme.Gold;border-bottom:1px solid @Theme.Gold;">
+            @{ bool charIsMarathi = ContainsDevanagari(currentQuestion.DisplayCharacter); }
+            <div style="font-family:@(charIsMarathi ? Theme.Deva : Theme.Serif);font-size:@(charIsMarathi ? 130 : 38)px;color:@Theme.Gold;line-height:1;letter-spacing:@(charIsMarathi ? "0" : "-0.5px");">@currentQuestion.DisplayCharacter</div>
+        </div>
+
+        <div style="padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            @{ int li = 0; var letters = new[] { "A","B","C","D","E","F","G","H" }; }
+            @foreach (var option in currentQuestion.Options)
+            {
+                var isCorrectOpt = answerSelected && option == currentQuestion.CorrectAnswer;
+                var isPicked = answerSelected && option == selectedAnswer;
+                var bg = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? "#5a2828" : "transparent");
+                var border = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? "#a04040" : Theme.MutedDk + "80");
+                var fg = isCorrectOpt ? Theme.Ink : Theme.Cream;
+                var letter = letters[li % letters.Length]; li++;
+                var captured = option;
+                var optMarathi = ContainsDevanagari(option);
+                <button @onclick="() => CheckAnswer(captured)" disabled="@answerSelected"
+                        style="padding:18px 16px;border-radius:12px;background:@bg;border:1px solid @border;color:@fg;display:flex;align-items:center;gap:12px;cursor:@(answerSelected ? "default" : "pointer");text-align:left;">
+                    <span style="width:26px;height:26px;border-radius:50%;border:1px solid @(isCorrectOpt ? Theme.Ink : Theme.Muted);display:flex;align-items:center;justify-content:center;font-family:@Theme.Mono;font-size:11px;flex-shrink:0;">@letter</span>
+                    <span style="font-family:@(optMarathi ? Theme.Deva : Theme.Serif);font-size:@(optMarathi ? 26 : 18)px;letter-spacing:-0.3px;flex:1;">@option</span>
+                </button>
+            }
+        </div>
+
+        @if (answerSelected)
         {
-            <button class="quiz-button" @onclick="StartQuiz">🎯 Take Quiz</button>
-            <button class="quiz-button" @onclick="StartDrawing">✏️ Drawing Practice</button>
-            <button class="quiz-button" @onclick="StartPronunciation">🎤 Pronunciation Practice</button>
+            <div style="margin:24px 24px 0;padding:16px 18px;background:@(isCorrect ? Theme.Gold + "18" : "#5a282818");border-left:2px solid @(isCorrect ? Theme.Gold : "#d96666");border-radius:2px 8px 8px 2px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@(isCorrect ? Theme.Gold : "#d96666");text-transform:uppercase;">@(isCorrect ? "✓ Correct" : "✗ Wrong")</div>
+                @if (!isCorrect)
+                {
+                    <div style="font-family:@Theme.Serif;font-size:16px;color:@Theme.Cream;margin-top:6px;">Answer: <span style="color:@Theme.Gold;">@currentQuestion.CorrectAnswer</span></div>
+                }
+            </div>
+            <QuizNext Visible="true" Label="Continue" OnClick="GenerateNewQuestion" />
         }
-    </div>
-
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div style="background: #ffebee; padding: 20px; border-radius: 10px; margin: 20px 0; color: #c62828;">
-            <h3>Error:</h3>
-            <p>@errorMessage</p>
-        </div>
-    }
-
-    @if (isLoading)
-    {
-        <div style="text-align: center; padding: 40px;">
-            <p>Loading characters...</p>
-        </div>
-    }
-    else if (characters == null || !characters.Any())
-    {
-        <div style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
-            <h2>No Characters Found</h2>
-            <p>Please make sure you've run the SQL setup script to create and populate the database.</p>
-        </div>
     }
     else if (showQuizReview)
     {
-        <div class="review-modal-overlay" @onclick="CloseReview">
-            <div class="review-modal" @onclick:stopPropagation="true">
-                <div class="review-header">
-                    <h2>📊 Quiz Results</h2>
-                    <button class="close-review-btn" @onclick="CloseReview">✕</button>
+        @* ============= QUIZ REVIEW ============= *@
+        <div style="padding:4px 20px 0;display:flex;align-items:center;justify-content:space-between;">
+            <span @onclick="CloseReview" style="cursor:pointer;display:inline-flex;">
+                <Icon Name="x" Size="20" Color="@Theme.Cream" />
+            </span>
+            <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Results</span>
+            <Icon Name="trophy" Size="20" Color="@Theme.Gold" />
+        </div>
+
+        <div style="padding:22px 24px 0;">
+            <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Gold;text-transform:uppercase;">Session complete</div>
+            <div style="font-family:@Theme.Serif;font-size:42px;color:@Theme.Cream;margin-top:10px;line-height:1;letter-spacing:-1px;">Well done.</div>
+            <div style="font-family:@Theme.Deva;font-size:22px;color:@Theme.Gold;margin-top:8px;">शाबास</div>
+        </div>
+
+        <div style="margin:26px 24px 0;padding:22px 0;border-top:1px solid @Theme.Gold;border-bottom:1px solid @Theme.Gold;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Score</div>
+                <div style="display:flex;align-items:baseline;gap:4px;margin-top:6px;">
+                    <span style="font-family:@Theme.Serif;font-size:64px;color:@Theme.Gold;line-height:0.9;letter-spacing:-2px;">@FinalScorePct</span>
+                    <span style="font-family:@Theme.Serif;font-size:24px;color:@Theme.Muted;">%</span>
                 </div>
-
-                <div class="review-summary">
-                    <div class="summary-card correct-card">
-                        <div class="summary-number">@correctAnswers</div>
-                        <div class="summary-label">Correct</div>
-                    </div>
-                    <div class="summary-card wrong-card">
-                        <div class="summary-number">@wrongAnswers</div>
-                        <div class="summary-label">Wrong</div>
-                    </div>
-                    <div class="summary-card score-card">
-                        <div class="summary-number">@((correctAnswers + wrongAnswers > 0 ? (int)((double)correctAnswers / (correctAnswers + wrongAnswers) * 100) : 0))%</div>
-                        <div class="summary-label">Score</div>
-                    </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-family:@Theme.Serif;font-size:22px;color:@Theme.Cream;">@correctAnswers.ToString("D2")</span>
+                    <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:1.5px;color:@Theme.Muted;text-transform:uppercase;">Correct</span>
                 </div>
-
-                <div class="chart-container">
-                    <h3>Performance by Character</h3>
-                    <div class="chart-legend">
-                        <span class="legend-item"><span class="legend-color correct-color"></span> Correct</span>
-                        <span class="legend-item"><span class="legend-color wrong-color"></span> Wrong</span>
-                    </div>
-
-                    <div class="bar-chart">
-                        @foreach (var stat in GetCharacterStats())
-                        {
-                            var totalForChar = stat.CorrectCount + stat.WrongCount;
-                            var maxTotal = GetCharacterStats().Max(s => s.CorrectCount + s.WrongCount);
-                            var correctHeight = maxTotal > 0 ? (stat.CorrectCount * 200.0 / maxTotal) : 0;
-                            var wrongHeight = maxTotal > 0 ? (stat.WrongCount * 200.0 / maxTotal) : 0;
-                            var accuracy = totalForChar > 0 ? (int)((double)stat.CorrectCount / totalForChar * 100) : 0;
-
-                            <div class="bar-item">
-                                <div class="bar-stack" style="height: 200px;">
-                                    @if (stat.CorrectCount > 0)
-                                    {
-                                        <div class="bar-segment correct-bar"
-                                             style="height: @(correctHeight)px;"
-                                             title="Correct: @stat.CorrectCount">
-                                            @if (correctHeight > 20)
-                                            {
-                                                <span class="bar-count">@stat.CorrectCount</span>
-                                            }
-                                        </div>
-                                    }
-                                    @if (stat.WrongCount > 0)
-                                    {
-                                        <div class="bar-segment wrong-bar"
-                                             style="height: @(wrongHeight)px;"
-                                             title="Wrong: @stat.WrongCount">
-                                            @if (wrongHeight > 20)
-                                            {
-                                                <span class="bar-count">@stat.WrongCount</span>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                                <div class="bar-label">
-                                    <div class="char-display">@stat.Character</div>
-                                    <div class="accuracy-display">@accuracy%</div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-                <div style="text-align: center; margin-top: 30px;">
-                    <button class="action-btn primary-btn" @onclick="RestartQuiz">🔄 Try Again</button>
-                    <button class="action-btn secondary-btn" @onclick="BackToLearning">📚 Back to Learning</button>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-family:@Theme.Serif;font-size:22px;color:@Theme.MutedDk;">@wrongAnswers.ToString("D2")</span>
+                    <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:1.5px;color:@Theme.Muted;text-transform:uppercase;">Wrong</span>
                 </div>
             </div>
         </div>
-    }
-    else if (showPronunciation)
-    {
-        <div class="pronunciation-container">
-            <div class="pronunciation-header">
-                <h2>Pronunciation Practice</h2>
-                <button class="close-quiz-btn" @onclick="ClosePronunciation">✕ Exit Practice</button>
-            </div>
 
-            <div class="score-board">
-                <span class="score-item">Correct: <strong>@pronunciationCorrect</strong></span>
-                <span class="score-item">Wrong: <strong>@pronunciationWrong</strong></span>
-            </div>
-
-            @if (currentPronunciationCharacter != null)
-            {
-                <div class="pronunciation-card">
-                    <h3>Say this character:</h3>
-                    <div class="question-display">@currentPronunciationCharacter.MarathiChar</div>
-                    <div class="pronunciation-hint">
-                        <strong>Pronunciation:</strong> @currentPronunciationCharacter.Pronunciation
-                    </div>
-                    <div class="pronunciation-hint">
-                        <strong>English:</strong> @currentPronunciationCharacter.EnglishTranslation
-                    </div>
-
-                    <div class="voice-controls">
-                        @if (!isRecording)
-                        {
-                            <button class="action-btn primary-btn record-btn" @onclick="StartRecording">
-                                🎤 Hold to Record
-                            </button>
-                        }
-                        else
-                        {
-                            <button class="action-btn recording-btn" @onclick="StopRecording">
-                                ⏹️ Stop Recording
-                            </button>
-                            <div class="recording-indicator">
-                                <span class="pulse"></span> Recording...
-                            </div>
-                        }
-                    </div>
-
-                    @if (!string.IsNullOrEmpty(pronunciationFeedback))
+        var stats = GetCharacterStats();
+        var maxAtt = stats.Any() ? stats.Max(s => s.CorrectCount + s.WrongCount) : 1;
+        @if (stats.Any())
+        {
+            <div style="padding:26px 24px 0;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;margin-bottom:16px;">By character</div>
+                <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;height:140px;border-bottom:1px solid @(Theme.MutedDk + "50");padding-bottom:6px;">
+                    @foreach (var s in stats.Take(8))
                     {
-                        <div class="validation-feedback @pronunciationFeedbackClass">
-                            <div class="validation-message">@pronunciationFeedback</div>
-                            @if (!string.IsNullOrEmpty(recognizedText))
-                            {
-                                <div class="validation-details">
-                                    <span>You said: <strong>@recognizedText</strong></span>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else if(isProcessingRecording)
-                    {
-                        <div>
-                            Processing....
-                        </div>
-                    }
-
-                    <div class="pronunciation-controls">
-                        <button class="action-btn secondary-btn" @onclick="NextPronunciationCharacter">➡️ Next Character</button>
-                    </div>
-
-                    <div class="pronunciation-note">
-                        <p><strong>💡 Tips for better recognition:</strong></p>
-                        <ul style="margin: 10px 0; padding-left: 20px;">
-                            <li>The model is trained on conversational Hindi, so it may recognize character sounds as Hindi words (e.g., "हाँ")</li>
-                            <li>Speak clearly and pronounce the full character sound (not just a quick syllable)</li>
-                            <li>The system uses phonetic matching, so close sounds will be accepted</li>
-                            <li>Check the console (F12) to see what was heard vs expected</li>
-                        </ul>
-                        <p style="margin-top: 10px;"><strong>Setup:</strong> Voice recognition requires a Vosk model. Download from <a href="https://alphacephei.com/vosk/models" target="_blank">alphacephei.com/vosk/models</a> and configure in Program.cs</p>
-                    </div>
-                </div>
-            }
-        </div>
-    }
-    else if (showDrawing)
-    {
-        <div class="drawing-container">
-            <div class="drawing-header">
-                <h2>Drawing Practice</h2>
-                <button class="close-quiz-btn" @onclick="CloseDrawing">✕ Exit Drawing</button>
-            </div>
-
-            <div class="score-board">
-                <span class="score-item">Practice Count: <strong>@drawingCount</strong></span>
-            </div>
-
-            @if (currentDrawingCharacter != null)
-            {
-                <div class="drawing-card">
-                    <h3>Practice drawing this character:</h3>
-                    <div class="quiz-settings">
-                        <label>Difficulty (Number of choices): </label>
-                        <select @bind="drawDifficultyLevel" @bind:event="onchange">
-                            <option value="1">Show Character</option>
-                            <option value="2">Hide Characher</option>
-                        </select>
-                    </div>
-                    
-                    @if(@drawDifficultyLevel == 1){
-                        <div class="question-display">@currentDrawingCharacter.MarathiChar</div>
-                    }
-                    <div class="pronunciation-hint">@currentDrawingCharacter.EnglishTranslation (@currentDrawingCharacter.Pronunciation)</div>
-
-                    <div class="canvas-container">
-                        <canvas id="signaturePad" width="250" height="250"></canvas>
-                    </div>
-
-                    <div class="drawing-controls">
-                        <button class="action-btn secondary-btn" @onclick="ClearCanvas">🗑️ Clear</button>
-                        @if (drawDifficultyLevel == 2)
-                        {
-                            <button class="action-btn primary-btn" @onclick="ValidateDrawing" >
-                                <span>✓ Check Answer</span>
-                            </button>  
-                        }
-                       
-                        <button class="action-btn primary-btn" @onclick="NextCharacter">➡️ Next Character</button>
-                    </div>
-
-                    @if (drawDifficultyLevel == 2 && showGoal)
-                    {
-                        <div class="goal-container">
-                            <div class="goal-display">
-                                <div class="goal-text">
-                                    <span>Draw this character:</span>
-                                    <div class="marathi-char">@currentDrawingCharacter.MarathiChar</div>
-                                </div>
+                        var okH = (s.CorrectCount / (double)maxAtt) * 110;
+                        var noH = (s.WrongCount / (double)maxAtt) * 110;
+                        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                            <div style="display:flex;flex-direction:column-reverse;width:100%;max-width:32px;">
+                                @if (s.CorrectCount > 0)
+                                {
+                                    <div style="height:@(okH)px;background:@Theme.Gold;border-radius:2px 2px 0 0;"></div>
+                                }
+                                @if (s.WrongCount > 0)
+                                {
+                                    <div style="height:@(noH)px;background:@(Theme.MutedDk + "cc");border-top:1px solid @Theme.Ink;"></div>
+                                }
                             </div>
                         </div>
                     }
                 </div>
-            }
-        </div>
-    }
-    else if (showQuiz)
-    {
-        <div class="quiz-container">
-            <div class="quiz-header">
-                <h2>Character Quiz</h2>
-                <button class="close-quiz-btn" @onclick="CloseQuiz">✕ Exit Quiz</button>
-            </div>
-
-            <div class="quiz-settings">
-                <label>Difficulty (Number of choices): </label>
-                <select @bind="difficultyLevel" @bind:event="onchange">
-                    <option value="2">Easy (2 choices)</option>
-                    <option value="4">Medium (4 choices)</option>
-                    <option value="6">Hard (6 choices)</option>
-                    <option value="8">Expert (8 choices)</option>
-                </select>
-            </div>
-
-            <div class="score-board">
-                <span class="score-item">Correct: <strong>@correctAnswers</strong></span>
-                <span class="score-item">Wrong: <strong>@wrongAnswers</strong></span>
-                <span class="score-item">Score: <strong>@((correctAnswers + wrongAnswers > 0 ? (int)((double)correctAnswers / (correctAnswers + wrongAnswers) * 100) : 0))%</strong></span>
-            </div>
-
-            @if (currentQuestion != null)
-            {
-                <div class="question-card">
-                    <h3>@currentQuestion.QuestionText</h3>
-                    <div class="question-display">@currentQuestion.DisplayCharacter</div>
-
-                    <div class="options-grid">
-                        @foreach (var option in currentQuestion.Options)
-                        {
-                            <button class="option-btn @GetOptionClass(option)"
-                                    @onclick="() => CheckAnswer(option)"
-                                    disabled="@(answerSelected)">
-                                @option
-                            </button>
-                        }
-                    </div>
-
-                    @if (answerSelected)
+                <div style="display:flex;justify-content:space-between;gap:10px;margin-top:8px;">
+                    @foreach (var s in stats.Take(8))
                     {
-                        <button class="next-btn" @onclick="GenerateNewQuestion">Next Question →</button>
-                        <div class="feedback @(isCorrect ? "correct" : "wrong")">
-                            @if (isCorrect)
-                            {
-                                <span>✓ Correct!</span>
-                            }
-                            else
-                            {
-                                <span>✗ Wrong! The correct answer is: @currentQuestion.CorrectAnswer</span>
-                            }
+                        var pct = s.CorrectCount + s.WrongCount > 0 ? (int)Math.Round(s.CorrectCount * 100.0 / (s.CorrectCount + s.WrongCount)) : 0;
+                        var charMarathi = ContainsDevanagari(s.Character);
+                        <div style="flex:1;text-align:center;">
+                            <div style="font-family:@(charMarathi ? Theme.Deva : Theme.Serif);font-size:22px;color:@Theme.Cream;line-height:1;">@s.Character</div>
+                            <div style="font-family:@Theme.Mono;font-size:9px;color:@Theme.Muted;margin-top:4px;">@(pct)%</div>
                         </div>
-                        
                     }
                 </div>
+            </div>
+        }
+
+        <div style="padding:22px 24px 6px;display:flex;gap:10px;">
+            <span style="display:flex;align-items:center;gap:6px;font-family:@Theme.Mono;font-size:10px;color:@Theme.Muted;letter-spacing:1.5px;text-transform:uppercase;">
+                <span style="width:10px;height:10px;background:@Theme.Gold;border-radius:2px;"></span>Correct
+            </span>
+            <span style="display:flex;align-items:center;gap:6px;font-family:@Theme.Mono;font-size:10px;color:@Theme.Muted;letter-spacing:1.5px;text-transform:uppercase;">
+                <span style="width:10px;height:10px;background:@(Theme.MutedDk + "cc");border-radius:2px;"></span>Wrong
+            </span>
+        </div>
+
+        <div style="padding:22px 24px;display:flex;gap:10px;">
+            <button @onclick="RestartQuiz"
+                    style="flex:1;padding:14px 16px;border-radius:12px;background:@Theme.Gold;color:@Theme.Ink;border:none;display:flex;align-items:center;justify-content:center;gap:8px;font-family:@Theme.Sans;font-weight:600;font-size:14px;cursor:pointer;">
+                Try again <Icon Name="arrow-right" Size="14" Color="@Theme.Ink" />
+            </button>
+            <button @onclick="BackToLearning"
+                    style="flex:1;padding:14px 16px;border-radius:12px;border:1px solid @Theme.Muted;background:transparent;color:@Theme.Cream;font-family:@Theme.Sans;font-weight:500;font-size:14px;cursor:pointer;">
+                Back
+            </button>
+        </div>
+    }
+    else if (showDrawing && currentDrawingCharacter != null)
+    {
+        @* ============= DRAWING ============= *@
+        <div style="padding:4px 20px 0;display:flex;align-items:center;justify-content:space-between;">
+            <span @onclick="CloseDrawing" style="cursor:pointer;display:inline-flex;">
+                <Icon Name="x" Size="20" Color="@Theme.Cream" />
+            </span>
+            <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Practice · @drawingCount.ToString("D2")</span>
+            <Icon Name="pencil" Size="18" Color="@Theme.Gold" />
+        </div>
+
+        <div style="padding:18px 24px 0;">
+            <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Gold;text-transform:uppercase;">Trace the character</div>
+            <div style="font-family:@Theme.Serif;font-size:24px;color:@Theme.Cream;margin-top:8px;line-height:1.2;letter-spacing:-0.4px;">
+                "@currentDrawingCharacter.Pronunciation" — @currentDrawingCharacter.EnglishTranslation
+            </div>
+        </div>
+
+        <div style="padding:18px 24px 0;display:flex;gap:8px;align-items:center;">
+            <span style="font-family:@Theme.Mono;font-size:11px;letter-spacing:1.5px;color:@Theme.Muted;text-transform:uppercase;">Mode</span>
+            <select @bind="drawDifficultyLevel"
+                    style="background:@Theme.Ink2;border:1px solid @(Theme.MutedDk + "80");color:@Theme.Cream;padding:6px 10px;border-radius:8px;font-family:@Theme.Mono;font-size:11px;">
+                <option value="1">Show character</option>
+                <option value="2">Hide character</option>
+            </select>
+        </div>
+
+        <div style="margin:18px 24px 0;position:relative;border:1px solid @(Theme.MutedDk + "80");border-radius:14px;background-color:@Theme.Ink2;background-image:repeating-linear-gradient(0deg, transparent 0 31px, @(Theme.MutedDk + "25") 31px 32px), repeating-linear-gradient(90deg, transparent 0 31px, @(Theme.MutedDk + "25") 31px 32px);aspect-ratio:1 / 1;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+            @if (drawDifficultyLevel == 1)
+            {
+                <div style="position:absolute;font-family:@Theme.Deva;font-size:200px;color:@Theme.Gold;opacity:0.18;line-height:1;pointer-events:none;">@currentDrawingCharacter.MarathiChar</div>
             }
+            <canvas id="signaturePad" width="280" height="280" style="position:relative;z-index:1;width:100%;height:100%;"></canvas>
+            <div style="position:absolute;top:12px;left:14px;font-family:@Theme.Mono;font-size:9px;color:@Theme.Muted;letter-spacing:1.5px;">GHOST · @(drawDifficultyLevel == 1 ? "ON" : "OFF")</div>
+        </div>
+
+        @if (drawDifficultyLevel == 2 && showGoal)
+        {
+            <div style="margin:18px 24px 0;padding:14px 16px;background:@(Theme.Gold + "12");border-left:2px solid @Theme.Gold;border-radius:2px 8px 8px 2px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Gold;text-transform:uppercase;">Answer</div>
+                <div style="font-family:@Theme.Deva;font-size:48px;color:@Theme.Cream;margin-top:6px;line-height:1;">@currentDrawingCharacter.MarathiChar</div>
+            </div>
+        }
+
+        <div style="padding:22px 24px 0;display:flex;gap:10px;">
+            <button @onclick="ClearCanvas"
+                    style="flex:1;padding:12px;border-radius:10px;border:1px solid @(Theme.MutedDk + "80");background:transparent;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:1.5px;color:@Theme.Cream;text-transform:uppercase;cursor:pointer;">Clear</button>
+            @if (drawDifficultyLevel == 2)
+            {
+                <button @onclick="ValidateDrawing"
+                        style="flex:1;padding:12px;border-radius:10px;border:1px solid @(Theme.MutedDk + "80");background:transparent;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:1.5px;color:@Theme.Cream;text-transform:uppercase;cursor:pointer;">Show</button>
+            }
+            <button @onclick="NextCharacter"
+                    style="flex:1.4;padding:12px;border-radius:10px;background:@Theme.Gold;color:@Theme.Ink;border:none;text-align:center;font-family:@Theme.Sans;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;">
+                Next <Icon Name="arrow-right" Size="14" Color="@Theme.Ink" />
+            </button>
+        </div>
+    }
+    else if (showPronunciation && currentPronunciationCharacter != null)
+    {
+        @* ============= PRONUNCIATION ============= *@
+        <div style="padding:4px 20px 0;display:flex;align-items:center;justify-content:space-between;">
+            <span @onclick="ClosePronunciation" style="cursor:pointer;display:inline-flex;">
+                <Icon Name="x" Size="20" Color="@Theme.Cream" />
+            </span>
+            <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Pronunciation · @pronunciationCorrect/@(pronunciationCorrect + pronunciationWrong)</span>
+            <Icon Name="mic" Size="18" Color="@Theme.Gold" />
+        </div>
+
+        <div style="padding:18px 24px 0;">
+            <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Gold;text-transform:uppercase;">Say this character</div>
+        </div>
+
+        <div style="margin:18px 24px 0;padding:34px 0;text-align:center;border-top:1px solid @Theme.Gold;border-bottom:1px solid @Theme.Gold;cursor:pointer;" @onclick="() => SpeakText(currentPronunciationCharacter.MarathiChar)">
+            <div style="font-family:@Theme.Deva;font-size:130px;color:@Theme.Gold;line-height:1;">@currentPronunciationCharacter.MarathiChar</div>
+            <div style="font-family:@Theme.Serif;font-size:24px;color:@Theme.Cream;margin-top:14px;letter-spacing:-0.3px;">"@currentPronunciationCharacter.Pronunciation"</div>
+            <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;margin-top:4px;font-style:italic;">@currentPronunciationCharacter.EnglishTranslation</div>
+        </div>
+
+        <div style="display:flex;justify-content:center;margin:32px 0 0;">
+            @if (!isRecording)
+            {
+                <button @onclick="StartRecording"
+                        style="width:84px;height:84px;border-radius:50%;background:@Theme.Gold;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px @(Theme.Gold + "25"), 0 0 0 18px @(Theme.Gold + "10");cursor:pointer;">
+                    <Icon Name="mic" Size="32" Color="@Theme.Ink" />
+                </button>
+            }
+            else
+            {
+                <button @onclick="StopRecording"
+                        style="width:84px;height:84px;border-radius:50%;background:#d96666;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px #d9666625, 0 0 0 18px #d9666610;cursor:pointer;animation:pulse 1.2s infinite;">
+                    <Icon Name="x" Size="32" Color="@Theme.Cream" />
+                </button>
+            }
+        </div>
+        <div style="text-align:center;margin-top:14px;font-family:@Theme.Serif;font-size:16px;color:@Theme.Cream;">
+            @(isRecording ? "Recording…" : (isProcessingRecording ? "Processing…" : "Tap to record"))
+        </div>
+
+        @if (!string.IsNullOrEmpty(pronunciationFeedback))
+        {
+            var ok = pronunciationFeedbackClass == "validation-correct";
+            <div style="margin:26px 24px 0;padding:16px 18px;border:1px solid @(ok ? Theme.Gold : "#d96666" + "60");background:@(ok ? Theme.Gold + "12" : "#5a282818");border-radius:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                    <div>
+                        <div style="font-family:@Theme.Mono;font-size:9px;letter-spacing:1.5px;color:@Theme.Muted;text-transform:uppercase;">You said</div>
+                        <div style="font-family:@Theme.Serif;font-size:20px;color:@Theme.Cream;margin-top:4px;">@(string.IsNullOrEmpty(recognizedText) ? "—" : recognizedText)</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <Icon Name="@(ok ? "check" : "x")" Size="16" Color="@(ok ? Theme.Gold : "#d96666")" />
+                        <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:1.5px;color:@(ok ? Theme.Gold : "#d96666");text-transform:uppercase;">@(ok ? "Match" : "Try again")</span>
+                    </div>
+                </div>
+                <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;margin-top:8px;line-height:1.5;">@pronunciationFeedback</div>
+            </div>
+        }
+
+        <div style="padding:24px;">
+            <button @onclick="NextPronunciationCharacter"
+                    style="width:100%;background:transparent;border:1px solid @(Theme.MutedDk + "80");color:@Theme.Cream;padding:14px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:@Theme.Sans;font-weight:500;font-size:14px;cursor:pointer;">
+                Next character <Icon Name="arrow-right" Size="14" Color="@Theme.Cream" />
+            </button>
         </div>
     }
     else
     {
-        <div style="margin-bottom: 30px;">
-            <button class="filter-btn @(selectedType == "All" ? "active" : "")" @onclick='() => FilterByType("All")'>All</button>
-            <button class="filter-btn @(selectedType == "Vowel" ? "active" : "")" @onclick='() => FilterByType("Vowel")'>Vowels (स्वर)</button>
-            <button class="filter-btn @(selectedType == "Consonant" ? "active" : "")" @onclick='() => FilterByType("Consonant")'>Consonants (व्यंजन)</button>
+        @* ============= LIST ============= *@
+        <div style="padding:4px 20px 0;display:flex;align-items:center;justify-content:space-between;">
+            <span @onclick='() => NavigateToPage("/")' style="cursor:pointer;display:inline-flex;">
+                <Icon Name="arrow-left" Size="20" Color="@Theme.Cream" />
+            </span>
+            <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Lesson 01</span>
+            <Icon Name="target" Size="20" Color="@Theme.Gold" />
         </div>
 
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
-            @foreach (var character in filteredCharacters)
-            {
-                <div class="character-card">
-                    <div class="marathi-char">@character.MarathiChar</div>
-                    <div class="transliteration">@character.EnglishTranslation</div>
-                    <div class="pronunciation">@character.Pronunciation</div>
+        <div style="padding:18px 24px 6px;">
+            <div style="font-family:@Theme.Serif;font-size:36px;line-height:1;color:@Theme.Cream;letter-spacing:-1px;">Characters</div>
+            <div style="font-family:@Theme.Deva;font-size:24px;color:@Theme.Gold;margin-top:6px;">देवनागरी</div>
+            <div style="font-family:@Theme.Sans;font-size:13px;color:@Theme.Muted;margin-top:10px;line-height:1.5;">The Devanagari script — foundation of reading and writing Marathi.</div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div style="margin:18px 24px;padding:16px;background:#5a282818;border-left:2px solid #d96666;border-radius:2px 8px 8px 2px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:#d96666;text-transform:uppercase;">Error</div>
+                <div style="font-family:@Theme.Sans;font-size:13px;color:@Theme.Cream;margin-top:4px;">@errorMessage</div>
+            </div>
+        }
+
+        @if (isLoading)
+        {
+            <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+        }
+        else if (characters.Any())
+        {
+            @* Tabs *@
+            <div style="display:flex;gap:24px;padding:18px 24px;border-bottom:1px solid @(Theme.MutedDk + "40");">
+                @{ var tabs = new[] { "All", "Vowel", "Consonant" }; }
+                @foreach (var t in tabs)
+                {
+                    var active = selectedType == t;
+                    var captured = t;
+                    <span @onclick="() => FilterByType(captured)"
+                          style="font-family:@Theme.Sans;font-size:13px;font-weight:@(active ? "600" : "400");color:@(active ? Theme.Cream : Theme.Muted);padding-bottom:10px;border-bottom:@(active ? "2px solid " + Theme.Gold : "2px solid transparent");cursor:pointer;">
+                        @(t == "Vowel" ? "Vowels" : (t == "Consonant" ? "Consonants" : "All"))
+                    </span>
+                }
+            </div>
+
+            var displayChars = filteredCharacters.ToList();
+            var label = selectedType == "Vowel" ? "स्वर — Vowels" : (selectedType == "Consonant" ? "व्यंजन — Consonants" : "अक्षरे — All");
+            <div style="padding:20px 24px 0;font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">@label · @displayChars.Count</div>
+
+            <div style="padding:14px 24px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                @{ int ci = 0; }
+                @foreach (var character in displayChars)
+                {
+                    ci++;
+                    var ch = character;
+                    <div style="background:@Theme.Ink2;border-radius:14px;padding:18px 16px;border:1px solid @(Theme.MutedDk + "30");position:relative;">
+                        <div style="position:absolute;top:10px;right:12px;font-family:@Theme.Mono;font-size:9px;color:@Theme.MutedDk;">@ci.ToString("D2")</div>
+                        <div style="font-family:@Theme.Deva;font-size:54px;color:@Theme.Gold;line-height:1;margin-top:4px;">@ch.MarathiChar</div>
+                        <div style="font-family:@Theme.Serif;font-size:18px;color:@Theme.Cream;margin-top:14px;">@ch.EnglishTranslation</div>
+                        <div style="font-family:@Theme.Sans;font-size:11px;color:@Theme.Muted;margin-top:4px;font-style:italic;">@ch.Pronunciation</div>
+                        <div @onclick="() => SpeakText(ch.MarathiChar)" style="display:flex;align-items:center;gap:6px;margin-top:14px;color:@Theme.Gold;cursor:pointer;">
+                            <Icon Name="speaker" Size="14" Color="@Theme.Gold" />
+                            <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Listen</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @* Practice modes *@
+            <div style="padding:24px;margin-top:8px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;margin-bottom:14px;">Practice</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div @onclick="StartQuiz" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid @(Theme.MutedDk + "40");border-radius:12px;cursor:pointer;">
+                        <Icon Name="target" Size="18" Color="@Theme.Gold" />
+                        <span style="font-family:@Theme.Serif;font-size:18px;color:@Theme.Cream;flex:1;">Multiple choice quiz</span>
+                        <Icon Name="arrow-right" Size="16" Color="@Theme.Muted" />
+                    </div>
+                    <div @onclick="StartDrawing" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid @(Theme.MutedDk + "40");border-radius:12px;cursor:pointer;">
+                        <Icon Name="pencil" Size="18" Color="@Theme.Gold" />
+                        <span style="font-family:@Theme.Serif;font-size:18px;color:@Theme.Cream;flex:1;">Drawing practice</span>
+                        <Icon Name="arrow-right" Size="16" Color="@Theme.Muted" />
+                    </div>
+                    <div @onclick="StartPronunciation" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid @(Theme.MutedDk + "40");border-radius:12px;cursor:pointer;">
+                        <Icon Name="mic" Size="18" Color="@Theme.Gold" />
+                        <span style="font-family:@Theme.Serif;font-size:18px;color:@Theme.Cream;flex:1;">Pronunciation</span>
+                        <Icon Name="arrow-right" Size="16" Color="@Theme.Muted" />
+                    </div>
                 </div>
-            }
-        </div>
-        <div>
-            "Reflexive" in Marathi phonetics typically refers to retroflex consonants - sounds produced by curling the tongue back towards the roof of the mouth. 
-            
-            
-
-            Aspirated - pronounced with an audible puff of air (marked with 'h' in transliteration)
-        </div>
-            
+            </div>
+        }
     }
+
+    <NavBar />
 </div>
 
 <style>
-    .main-container {
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .header {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-    .header h1 {
-        color: #2d6a2d;
-        margin-bottom: 10px;
-    }
-
-    .nav-button {
-        background: linear-gradient(135deg, #90ee90, #7cbd7c);
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .nav-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .filter-btn {
-        background: white;
-        border: 2px solid #90ee90;
-        color: #2d6a2d;
-        padding: 10px 20px;
-        margin: 5px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .filter-btn:hover {
-        background-color: #e8f5e8;
-    }
-
-    .filter-btn.active {
-        background: linear-gradient(135deg, #90ee90, #7cbd7c);
-        color: white;
-    }
-
-    .character-card {
-        background: white;
-        border: 2px solid #90ee90;
-        border-radius: 10px;
-        padding: 20px;
-        width: 150px;
-        text-align: center;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .character-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .marathi-char {
-        font-size: 48px;
-        font-weight: bold;
-        color: #2d6a2d;
-        margin-bottom: 10px;
-    }
-
-    .transliteration {
-        font-size: 20px;
-        color: #4a7c4a;
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
-
-    .pronunciation {
-        font-size: 14px;
-        color: #666;
-        font-style: italic;
-    }
-
-    .quiz-button {
-        background: linear-gradient(135deg, #7cbd7c, #5a9e5a);
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        margin-left: 10px;
-    }
-
-    .quiz-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .quiz-container {
-        background: white;
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .quiz-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #90ee90;
-    }
-
-    .quiz-header h2 {
-        color: #2d6a2d;
-        margin: 0;
-    }
-
-    .close-quiz-btn {
-        background: #ff6b6b;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .close-quiz-btn:hover {
-        background: #ff5252;
-        transform: scale(1.05);
-    }
-
-    .quiz-settings {
-        margin-bottom: 20px;
-        padding: 15px;
-        background: #f0f8f0;
-        border-radius: 8px;
-        text-align: center;
-    }
-
-    .quiz-settings label {
-        font-weight: 600;
-        color: #2d6a2d;
-        margin-right: 10px;
-    }
-
-    .quiz-settings select {
-        padding: 8px 15px;
-        border: 2px solid #90ee90;
-        border-radius: 5px;
-        font-size: 16px;
-        background: white;
-        cursor: pointer;
-    }
-
-    .score-board {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        margin-bottom: 30px;
-        padding: 15px;
-        background: linear-gradient(135deg, #90ee90, #7cbd7c);
-        border-radius: 10px;
-        color: white;
-    }
-
-    .score-item {
-        font-size: 18px;
-    }
-
-    .question-card {
-        text-align: center;
-    }
-
-    .question-card h3 {
-        color: #2d6a2d;
-        margin-bottom: 20px;
-    }
-
-    .question-display {
-        font-size: 72px;
-        font-weight: bold;
-        color: #2d6a2d;
-        margin: 30px 0;
-        padding: 20px;
-        background: #f0f8f0;
-        border-radius: 15px;
-    }
-
-    .options-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 15px;
-        margin: 30px 0;
-    }
-
-    .option-btn {
-        padding: 20px;
-        font-size: 20px;
-        background: white;
-        border: 2px solid #90ee90;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        color: #2d6a2d;
-    }
-
-    .option-btn:hover:not(:disabled) {
-        background: #e8f5e8;
-        transform: translateY(-3px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .option-btn.correct {
-        background: #4caf50;
-        color: white;
-        border-color: #4caf50;
-    }
-
-    .option-btn.wrong {
-        background: #ff6b6b;
-        color: white;
-        border-color: #ff6b6b;
-    }
-
-    .option-btn:disabled {
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-
-    .feedback {
-        padding: 20px;
-        border-radius: 10px;
-        margin: 20px 0;
-        font-size: 20px;
-        font-weight: 600;
-    }
-
-    .feedback.correct {
-        background: #c8e6c9;
-        color: #2e7d32;
-    }
-
-    .feedback.wrong {
-        background: #ffcdd2;
-        color: #c62828;
-    }
-
-    .next-btn {
-        background: linear-gradient(135deg, #90ee90, #7cbd7c);
-        color: white;
-        border: none;
-        padding: 15px 40px;
-        font-size: 18px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .next-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Review Modal Styles */
-    .review-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 20px;
-        overflow-y: auto;
-    }
-
-    .review-modal {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        max-width: 900px;
-        width: 100%;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        animation: modalSlideIn 0.3s ease-out;
-    }
-
-    .modalSlideIn {
-        from {
-            transform: translateY(-50px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    .review-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding-bottom: 15px;
-        border-bottom: 3px solid #90ee90;
-    }
-
-    .review-header h2 {
-        color: #2d6a2d;
-        margin: 0;
-        font-size: 28px;
-    }
-
-    .close-review-btn {
-        background: #ff6b6b;
-        color: white;
-        border: none;
-        padding: 10px 18px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 20px;
-        transition: all 0.3s ease;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .close-review-btn:hover {
-        background: #ff5252;
-        transform: rotate(90deg);
-    }
-
-    .review-summary {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 20px;
-        margin-bottom: 40px;
-    }
-
-    .summary-card {
-        text-align: center;
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-    }
-
-    .summary-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .correct-card {
-        background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
-    }
-
-    .wrong-card {
-        background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
-    }
-
-    .score-card {
-        background: linear-gradient(135deg, #90ee90, #7cbd7c);
-        color: white;
-    }
-
-    .summary-number {
-        font-size: 48px;
-        font-weight: bold;
-        color: #2d6a2d;
-    }
-
-    .score-card .summary-number {
-        color: white;
-    }
-
-    .summary-label {
-        font-size: 18px;
-        margin-top: 10px;
-        font-weight: 600;
-        color: #2d6a2d;
-    }
-
-    .score-card .summary-label {
-        color: white;
-    }
-
-    .chart-container {
-        margin-top: 40px;
-    }
-
-    .chart-container h3 {
-        color: #2d6a2d;
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 24px;
-    }
-
-    .chart-legend {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        margin-bottom: 30px;
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .legend-color {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
-    }
-
-    .correct-color {
-        background: #4caf50;
-    }
-
-    .wrong-color {
-        background: #ff6b6b;
-    }
-
-    .bar-chart {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        align-items: flex-end;
-        padding: 20px;
-        background: #f9f9f9;
-        border-radius: 15px;
-        overflow-x: auto;
-        min-height: 300px;
-    }
-
-    .bar-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-width: 60px;
-    }
-
-    .bar-stack {
-        display: flex;
-        flex-direction: column-reverse;
-        align-items: center;
-        justify-content: flex-end;
-        width: 50px;
-        margin-bottom: 10px;
-        position: relative;
-    }
-
-    .bar-segment {
-        width: 100%;
-        border-radius: 5px 5px 0 0;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .bar-segment:hover {
-        opacity: 0.8;
-        transform: scaleX(1.1);
-    }
-
-    .correct-bar {
-        background: linear-gradient(to top, #4caf50, #66bb6a);
-    }
-
-    .wrong-bar {
-        background: linear-gradient(to top, #ff6b6b, #ff8a80);
-        border-radius: 5px 5px 0 0;
-    }
-
-    .bar-segment:first-child {
-        border-radius: 5px 5px 0 0;
-    }
-
-    .bar-count {
-        color: white;
-        font-weight: bold;
-        font-size: 14px;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    .bar-label {
-        text-align: center;
-    }
-
-    .char-display {
-        font-size: 24px;
-        font-weight: bold;
-        color: #2d6a2d;
-        margin-bottom: 5px;
-    }
-
-    .accuracy-display {
-        font-size: 12px;
-        color: #666;
-        font-weight: 600;
-    }
-
-    .action-btn {
-        padding: 15px 30px;
-        font-size: 16px;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-        margin: 0 10px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .primary-btn {
-        background: linear-gradient(135deg, #90ee90, #7cbd7c);
-        color: white;
-    }
-
-    .secondary-btn {
-        background: white;
-        color: #2d6a2d;
-        border: 2px solid #90ee90;
-    }
-
-    .secondary-btn:hover {
-        background: #e8f5e8;
-    }
-
-    /* Pronunciation Mode Styles */
-    .pronunciation-container {
-        background: white;
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .pronunciation-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #90ee90;
-    }
-
-    .pronunciation-header h2 {
-        color: #2d6a2d;
-        margin: 0;
-    }
-
-    .pronunciation-card {
-        text-align: center;
-    }
-
-    .pronunciation-card h3 {
-        color: #2d6a2d;
-        margin-bottom: 20px;
-    }
-
-    .voice-controls {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        margin: 30px 0;
-    }
-
-    .record-btn {
-        font-size: 20px;
-        padding: 20px 50px;
-        background: linear-gradient(135deg, #ff6b6b, #ff5252);
-        animation: pulse-btn 2s infinite;
-    }
-
-    @@keyframes pulse-btn {
-        0%, 100% {
-            box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
-        }
-        50% {
-            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.6);
-        }
-    }
-
-    .recording-btn {
-        font-size: 20px;
-        padding: 20px 50px;
-        background: linear-gradient(135deg, #ff5252, #d32f2f);
-        animation: recording-pulse 1s infinite;
-    }
-
-    @@keyframes recording-pulse {
-        0%, 100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.7;
-        }
-    }
-
-    .recording-indicator {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #d32f2f;
-        font-weight: 600;
-        font-size: 18px;
-    }
-
-    .pulse {
-        width: 12px;
-        height: 12px;
-        background: #d32f2f;
-        border-radius: 50%;
-        animation: pulse-dot 1s infinite;
-    }
-
-    @@keyframes pulse-dot {
-        0%, 100% {
-            transform: scale(1);
-            opacity: 1;
-        }
-        50% {
-            transform: scale(1.3);
-            opacity: 0.5;
-        }
-    }
-
-    .pronunciation-controls {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin: 30px 0;
-    }
-
-    .pronunciation-note {
-        margin-top: 30px;
-        padding: 15px;
-        background: #e3f2fd;
-        border-left: 4px solid #2196f3;
-        border-radius: 5px;
-        text-align: left;
-    }
-
-    .pronunciation-note p {
-        margin: 0;
-        color: #1565c0;
-        font-size: 14px;
-    }
-
-    .pronunciation-note a {
-        color: #0d47a1;
-        text-decoration: underline;
-    }
-
-    /* Drawing Mode Styles */
-    .drawing-container {
-        background: white;
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .drawing-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #90ee90;
-    }
-
-    .drawing-header h2 {
-        color: #2d6a2d;
-        margin: 0;
-    }
-
-    .drawing-card {
-        text-align: center;
-    }
-
-    .drawing-card h3 {
-        color: #2d6a2d;
-        margin-bottom: 20px;
-    }
-
-    .pronunciation-hint {
-        font-size: 18px;
-        color: #666;
-        margin-bottom: 30px;
-    }
-
-    .canvas-container {
-        display: flex;
-        justify-content: center;
-        margin: 30px 0;
-    }
-
-    #signaturePad {
-        border: 3px solid #90ee90;
-        border-radius: 10px;
-        cursor: crosshair;
-        background: #fafafa;
-        touch-action: none;
-        max-width: 100%;
-        width: 250px;
-        height: 250px;
-    }
-
-    @@media (max-width: 768px) {
-        #signaturePad {
-            width: 70vw;
-            height: 70vw;
-            max-width: 250px;
-            max-height: 250px;
-        }
-
-        .drawing-container {
-            padding: 15px;
-        }
-
-        .question-display {
-            font-size: 48px !important;
-        }
-
-        .drawing-controls {
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .action-btn {
-            width: 100%;
-        }
-    }
-
-    .drawing-controls {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin: 30px 0;
-    }
-
-    .drawing-note {
-        margin-top: 30px;
-        padding: 15px;
-        background: #fff9e6;
-        border-left: 4px solid #ffc107;
-        border-radius: 5px;
-    }
-
-    .drawing-note p {
-        margin: 0;
-        color: #856404;
-        font-size: 14px;
-    }
-
-    /* Validation Feedback Styles */
-    .validation-feedback {
-        margin-top: 30px;
-        padding: 20px;
-        border-radius: 10px;
-        animation: slideIn 0.3s ease-out;
-    }
-
-    @@keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .validation-correct {
-        background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
-        border: 2px solid #4caf50;
-    }
-
-    .validation-wrong {
-        background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
-        border: 2px solid #f44336;
-    }
-
-    .validation-message {
-        font-size: 20px;
-        font-weight: 600;
-        margin-bottom: 15px;
-        color: #2d6a2d;
-    }
-
-    .validation-wrong .validation-message {
-        color: #c62828;
-    }
-
-    .validation-details {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        font-size: 16px;
-        flex-wrap: wrap;
-    }
-
-    .validation-details span {
-        color: #555;
-    }
-
-    .action-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    @@media (max-width: 768px) {
-        .validation-message {
-            font-size: 16px;
-        }
-
-        .validation-details {
-            flex-direction: column;
-            gap: 10px;
-        }
-    }
+    @@keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    canvas#signaturePad { touch-action: none; background: transparent; }
 </style>
 
 @code {
@@ -1259,6 +437,33 @@
     private string pronunciationFeedback = "";
     private string pronunciationFeedbackClass = "";
     private string recognizedText = "";
+
+    private int QuizProgressPct
+    {
+        get
+        {
+            var total = correctAnswers + wrongAnswers;
+            if (total == 0) return 0;
+            return Math.Min(100, (int)(total * 100.0 / 20));
+        }
+    }
+
+    private int FinalScorePct
+    {
+        get
+        {
+            var total = correctAnswers + wrongAnswers;
+            if (total == 0) return 0;
+            return (int)Math.Round(correctAnswers * 100.0 / total);
+        }
+    }
+
+    private static bool ContainsDevanagari(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return false;
+        foreach (var ch in s) if (ch >= 0x0900 && ch <= 0x097F) return true;
+        return false;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -1308,14 +513,18 @@
         NavigationManager.NavigateTo(url);
     }
 
-    private void StartQuiz()
+    private const string SrsDeckChars = "characters";
+    private int currentCorrectId;
+
+    private async Task StartQuiz()
     {
         showQuiz = true;
+        showQuizReview = false;
         correctAnswers = 0;
         wrongAnswers = 0;
-        GenerateNewQuestion();
         correctAnswersAggregate = new List<string>();
         wrongAnswersAggregate = new List<string>();
+        await GenerateNewQuestion();
     }
 
     private void CloseQuiz()
@@ -1326,7 +535,7 @@
         answerSelected = false;
     }
 
-    private void GenerateNewQuestion()
+    private async Task GenerateNewQuestion()
     {
         if (!characters.Any()) return;
 
@@ -1334,14 +543,24 @@
         isCorrect = false;
         selectedAnswer = "";
 
-        // Randomly decide if we ask for Marathi->English or English->Marathi
         bool askMarathiToEnglish = random.Next(2) == 0;
 
-        // Select a random character as the correct answer
         var charactersList = characters.ToList();
-        var correctChar = charactersList[random.Next(charactersList.Count)];
+        var allIds = charactersList.Select(c => c.Id.ToString()).ToList();
+        var prioritizedIds = await Srs.GetDueIdsAsync(SrsDeckChars, allIds, Math.Max(5, charactersList.Count / 4));
+        MarathiCharacter correctChar;
+        if (prioritizedIds.Count > 0)
+        {
+            var pickedId = prioritizedIds[random.Next(prioritizedIds.Count)];
+            correctChar = charactersList.FirstOrDefault(c => c.Id.ToString() == pickedId)
+                ?? charactersList[random.Next(charactersList.Count)];
+        }
+        else
+        {
+            correctChar = charactersList[random.Next(charactersList.Count)];
+        }
+        currentCorrectId = correctChar.Id;
 
-        // Generate wrong options
         var wrongOptions = charactersList
             .Where(c => c.Id != correctChar.Id)
             .OrderBy(x => random.Next())
@@ -1352,7 +571,6 @@
 
         if (askMarathiToEnglish)
         {
-            // Question: Show Marathi, ask for English
             allOptions.Add(correctChar.EnglishTranslation);
             allOptions.AddRange(wrongOptions.Select(c => c.EnglishTranslation));
 
@@ -1366,7 +584,6 @@
         }
         else
         {
-            // Question: Show English, ask for Marathi
             allOptions.Add(correctChar.MarathiChar);
             allOptions.AddRange(wrongOptions.Select(c => c.MarathiChar));
 
@@ -1380,7 +597,7 @@
         }
     }
 
-    private void CheckAnswer(string answer)
+    private async Task CheckAnswer(string answer)
     {
         if (answerSelected || currentQuestion == null) return;
 
@@ -1398,46 +615,37 @@
             wrongAnswersAggregate.Add(currentQuestion.CorrectAnswer);
             wrongAnswers++;
         }
+
+        await Srs.RecordAsync(SrsDeckChars, currentCorrectId.ToString(), isCorrect);
+        await Streak.TouchAsync();
+
+        if (!isCorrect) return;
+        var answeredQuestion = currentQuestion;
+        await Task.Delay(QuizNext.AutoAdvanceMs);
+        if (currentQuestion == answeredQuestion && answerSelected) await GenerateNewQuestion();
     }
 
     private string GetOptionClass(string option)
     {
         if (!answerSelected) return "";
-
-        if (option == currentQuestion?.CorrectAnswer)
-            return "correct";
-
-        if (option == selectedAnswer && !isCorrect)
-            return "wrong";
-
+        if (option == currentQuestion?.CorrectAnswer) return "correct";
+        if (option == selectedAnswer && !isCorrect) return "wrong";
         return "";
     }
 
     private List<CharacterStat> GetCharacterStats()
     {
         var stats = new Dictionary<string, CharacterStat>();
-
-        // Process correct answers
         foreach (var answer in correctAnswersAggregate)
         {
-            if (!stats.ContainsKey(answer))
-            {
-                stats[answer] = new CharacterStat { Character = answer };
-            }
+            if (!stats.ContainsKey(answer)) stats[answer] = new CharacterStat { Character = answer };
             stats[answer].CorrectCount++;
         }
-
-        // Process wrong answers
         foreach (var answer in wrongAnswersAggregate)
         {
-            if (!stats.ContainsKey(answer))
-            {
-                stats[answer] = new CharacterStat { Character = answer };
-            }
+            if (!stats.ContainsKey(answer)) stats[answer] = new CharacterStat { Character = answer };
             stats[answer].WrongCount++;
         }
-
-        // Sort by total attempts (most attempted first), then by accuracy
         return stats.Values
             .OrderByDescending(s => s.CorrectCount + s.WrongCount)
             .ThenByDescending(s => s.CorrectCount)
@@ -1451,10 +659,10 @@
         wrongAnswersAggregate.Clear();
     }
 
-    private void RestartQuiz()
+    private async Task RestartQuiz()
     {
         showQuizReview = false;
-        StartQuiz();
+        await StartQuiz();
     }
 
     private void BackToLearning()
@@ -1464,13 +672,13 @@
         wrongAnswersAggregate.Clear();
     }
 
-    // Drawing Mode Methods
+    // Drawing
     private async Task StartDrawing()
     {
         showDrawing = true;
         drawingCount = 0;
         SelectRandomCharacter();
-        await Task.Delay(100); // Small delay to ensure DOM is ready
+        await Task.Delay(100);
         await InitializeSignaturePad();
     }
 
@@ -1501,24 +709,25 @@
         await JSRuntime.InvokeVoidAsync("clearSignaturePad");
     }
 
+    private async Task SpeakText(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+        await JSRuntime.InvokeVoidAsync("speakMarathi", text);
+    }
+
     private async Task InitializeSignaturePad()
     {
         await JSRuntime.InvokeVoidAsync("initSignaturePad");
     }
 
-    private async Task ValidateDrawing()
+    private void ValidateDrawing()
     {
         if (currentDrawingCharacter == null) return;
         showGoal = true;
-
         StateHasChanged();
-
-
-
-
     }
 
-    // Pronunciation Practice Methods
+    // Pronunciation
     private void StartPronunciation()
     {
         showPronunciation = true;
@@ -1575,93 +784,39 @@
         {
             isRecording = false;
             isProcessingRecording = true;
-            
-            StateHasChanged(); // Update UI immediately
+            StateHasChanged();
 
-            // Add a small delay to ensure recording stops cleanly
-            await Task.Delay(100);
+            var result = await JSRuntime.InvokeAsync<SpeechRecognitionResult>("stopVoiceRecording");
+            isProcessingRecording = false;
 
-                // Increase timeout for large audio data transfer
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            var result = await JSRuntime.InvokeAsync<VoiceRecordingResult>("stopVoiceRecording", cts.Token);
-
-            if (result?.Success == true && !string.IsNullOrEmpty(result.AudioData))
+            if (result?.Success == true && !string.IsNullOrEmpty(result.Text))
             {
-                try
+                recognizedText = result.Text;
+                var expectedPronunciation = currentPronunciationCharacter?.Pronunciation ?? "";
+                var expectedEnglish = currentPronunciationCharacter?.EnglishTranslation ?? "";
+
+                bool ok = ValidatePronunciation(result.Text, expectedEnglish);
+
+                if (ok)
                 {
-                    Console.WriteLine($"Received audio data: {result.AudioData?.Length ?? 0} base64 chars");
-
-                    // Convert base64 to byte array
-                    byte[] audioData = Convert.FromBase64String(result.AudioData);
-                    Console.WriteLine($"Decoded audio data: {audioData.Length} bytes");
-
-                    // Use injected Vosk service (model is cached in memory)
-                    var recognitionResult = await VoiceRecognitionService.RecognizeSpeechAsync(audioData);
-                    isProcessingRecording = false;
-                    if (recognitionResult.Success && !string.IsNullOrEmpty(recognitionResult.Text))
-                    {
-                        recognizedText = recognitionResult.Text;
-                        var expectedPronunciation = currentPronunciationCharacter?.Pronunciation ?? "";
-                        var expectedEnglish = currentPronunciationCharacter?.EnglishTranslation ?? "";
-
-                        bool isCorrect = ValidatePronunciation(recognitionResult.Text, expectedEnglish);
-
-                        if (isCorrect)
-                        {
-                            pronunciationCorrect++;
-                            pronunciationFeedback = $"✓ Great! Recognized: '{recognitionResult.Text}' (Confidence: {recognitionResult.Confidence:P0})";
-                            pronunciationFeedbackClass = "validation-correct";
-                        }
-                        else
-                        {
-                            pronunciationWrong++;
-                            pronunciationFeedback = $"Not quite right. Heard: '{recognitionResult.Text}', Expected: '{expectedPronunciation}' ({expectedEnglish})";
-                            pronunciationFeedbackClass = "validation-wrong";
-                        }
-                    }
-                    else
-                    {
-                        pronunciationFeedback = recognitionResult.Error ?? "Could not recognize speech. Please try again.";
-                        pronunciationFeedbackClass = "validation-wrong";
-                        recognizedText = "Not recognized";
-                    }
+                    pronunciationCorrect++;
+                    pronunciationFeedback = $"Recognized: '{result.Text}' (Confidence: {result.Confidence:P0})";
+                    pronunciationFeedbackClass = "validation-correct";
                 }
-                catch (FormatException fex)
+                else
                 {
-                    isProcessingRecording = false;
-                    Console.WriteLine($"Format exception: {fex.Message}");
-                    pronunciationFeedback = $"Invalid audio data format: {fex.Message}";
-                    pronunciationFeedbackClass = "validation-wrong";
-                }
-                catch (Exception ex)
-                {
-                    isProcessingRecording = false;
-                    Console.WriteLine($"Audio processing error: {ex.Message}");
-                    pronunciationFeedback = $"Audio processing error: {ex.Message}";
+                    pronunciationWrong++;
+                    pronunciationFeedback = $"Heard: '{result.Text}', Expected: '{expectedPronunciation}'";
                     pronunciationFeedbackClass = "validation-wrong";
                 }
             }
             else
-
             {
                 isProcessingRecording = false;
-                pronunciationFeedback = result?.Message ?? "Failed to record audio";
+                pronunciationFeedback = result?.Message ?? "Could not recognize speech.";
                 pronunciationFeedbackClass = "validation-wrong";
+                recognizedText = "Not recognized";
             }
-        }
-        catch (JSException jsEx)
-        {
-            pronunciationFeedback = $"JavaScript error: {jsEx.Message}";
-            pronunciationFeedbackClass = "validation-wrong";
-            isRecording = false;
-            isProcessingRecording = false;
-        }
-        catch (TaskCanceledException)
-        {
-            pronunciationFeedback = "Recording was cancelled or timed out";
-            pronunciationFeedbackClass = "validation-wrong";
-            isRecording = false;
-            isProcessingRecording = false;
         }
         catch (Exception ex)
         {
@@ -1678,34 +833,16 @@
 
     private bool ValidatePronunciation(string recognizedText, string expectedText)
     {
-        if (string.IsNullOrEmpty(recognizedText) || string.IsNullOrEmpty(expectedText))
-            return false;
+        if (string.IsNullOrEmpty(recognizedText) || string.IsNullOrEmpty(expectedText)) return false;
 
-        // Normalize and compare
         var recognized = recognizedText.ToLower().Trim();
         var expected = expectedText.ToLower().Trim();
 
-        Console.WriteLine($"Validating: Recognized='{recognized}', Expected='{expected}'");
+        if (recognized == expected) return true;
+        if (recognized.Contains(expected) || expected.Contains(recognized)) return true;
 
-        // 1. Exact match
-        if (recognized == expected)
-        {
-            Console.WriteLine("Match: Exact");
-            return true;
-        }
-
-        // 2. Contains match
-        if (recognized.Contains(expected) || expected.Contains(recognized))
-        {
-            Console.WriteLine("Match: Contains");
-            return true;
-        }
-
-        // 3. Phonetic matching for Marathi/Hindi characters
-        // Map common Devanagari sounds to their phonetic equivalents
         var phoneticMappings = new Dictionary<string, string[]>
         {
-            // Vowels
             { "a", new[] { "aa", "ah", "uh", "आ", "अ" } },
             { "aa", new[] { "a", "ah", "आ", "अ" } },
             { "i", new[] { "ee", "ई", "इ" } },
@@ -1714,8 +851,6 @@
             { "oo", new[] { "u", "ऊ", "उ" } },
             { "e", new[] { "ay", "ए", "ऐ" } },
             { "o", new[] { "oh", "ओ", "औ" } },
-
-            // Common confusions with हाँ (haan/yes)
             { "ka", new[] { "क", "kaa", "kah" } },
             { "kha", new[] { "ख", "khaa", "khah" } },
             { "ga", new[] { "ग", "gaa", "gah" } },
@@ -1736,51 +871,25 @@
             { "ha", new[] { "ह", "haa", "hah", "हाँ", "हा" } },
         };
 
-        // Check if recognized text phonetically matches expected
         foreach (var mapping in phoneticMappings)
         {
             if (expected.Contains(mapping.Key))
             {
                 foreach (var variant in mapping.Value)
                 {
-                    if (recognized.Contains(variant))
-                    {
-                        Console.WriteLine($"Match: Phonetic ({mapping.Key} ~ {variant})");
-                        return true;
-                    }
+                    if (recognized.Contains(variant)) return true;
                 }
             }
         }
 
-        // 4. Fuzzy match with Levenshtein distance (very lenient for short sounds)
         int distance = LevenshteinDistance(recognized, expected);
         int maxLength = Math.Max(recognized.Length, expected.Length);
         double similarity = 1.0 - ((double)distance / maxLength);
 
-        Console.WriteLine($"Levenshtein: distance={distance}, similarity={similarity:P0}");
+        if (maxLength <= 3 && similarity >= 0.4) return true;
+        if (similarity >= 0.6) return true;
+        if (expected.Length <= 2 && recognized.Length > 0 && expected[0] == recognized[0]) return true;
 
-        // For very short expected text (1-3 chars), be more lenient
-        if (maxLength <= 3 && similarity >= 0.4)
-        {
-            Console.WriteLine("Match: Short text fuzzy match");
-            return true;
-        }
-
-        // For longer text, require higher similarity
-        if (similarity >= 0.6)
-        {
-            Console.WriteLine("Match: Fuzzy match");
-            return true;
-        }
-
-        // 5. Check first character/sound match (for single character sounds)
-        if (expected.Length <= 2 && recognized.Length > 0 && expected[0] == recognized[0])
-        {
-            Console.WriteLine("Match: First character");
-            return true;
-        }
-
-        Console.WriteLine("No match found");
         return false;
     }
 
@@ -1790,7 +899,6 @@
         if (string.IsNullOrEmpty(s2)) return s1.Length;
 
         int[,] d = new int[s1.Length + 1, s2.Length + 1];
-
         for (int i = 0; i <= s1.Length; i++) d[i, 0] = i;
         for (int j = 0; j <= s2.Length; j++) d[0, j] = j;
 
@@ -1802,23 +910,15 @@
                 d[i, j] = Math.Min(Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1), d[i - 1, j - 1] + cost);
             }
         }
-
         return d[s1.Length, s2.Length];
     }
 
-    private class VoiceRecordingResult
+    private class SpeechRecognitionResult
     {
         public bool Success { get; set; }
-        public string? AudioData { get; set; }
-        public string? Message { get; set; }
-    }
-
-    private class ValidationResult
-    {
-        public bool Success { get; set; }
-        public string Message { get; set; } = "";
-        public string? RecognizedCharacter { get; set; }
+        public string? Text { get; set; }
         public double Confidence { get; set; }
+        public string? Message { get; set; }
     }
 
     private class QuizQuestion

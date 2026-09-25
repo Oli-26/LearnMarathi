@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">LearnMarathi</string>
+    <string name="title_activity_main">LearnMarathi</string>
+    <string name="package_name">com.learnmarathi.app</string>
+    <string name="custom_url_scheme">com.learnmarathi.app</string>
+    <string name="press_back_again">Press back again to exit</string>
+</resources>

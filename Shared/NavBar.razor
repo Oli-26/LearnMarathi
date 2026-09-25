@@ -1,0 +1,35 @@
+@* Fixed bottom tabs; the spacer keeps page content clear of them. *@
+@inject NavigationManager NavigationManager
+
+<div style="height:calc(@(Height)px + env(safe-area-inset-bottom));"></div>
+
+<nav style="position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;background:@Theme.Ink2;border-top:1px solid @(Theme.MutedDk + "40");padding-bottom:env(safe-area-inset-bottom);">
+    @foreach (var tab in Tabs)
+    {
+        var active = IsActive(tab.Url);
+        <div @onclick="() => NavigationManager.NavigateTo(tab.Url)"
+             style="flex:1;height:@(Height)px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;">
+            <Icon Name="@tab.Icon" Size="20" Color="@(active ? Theme.Gold : Theme.Muted)" />
+            <span style="font-family:@Theme.Mono;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:@(active ? Theme.Gold : Theme.Muted);">@tab.Label</span>
+        </div>
+    }
+</nav>
+
+@code {
+    public const int Height = 60;
+
+    private record Tab(string Label, string Icon, string Url);
+
+    private static readonly Tab[] Tabs =
+    {
+        new("Home", "home", "/"),
+        new("Review", "flame", "/review"),
+        new("My words", "book", "/mywords"),
+    };
+
+    private bool IsActive(string url)
+    {
+        var path = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('?', '#')[0];
+        return path == url;
+    }
+}

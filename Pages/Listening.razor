@@ -1,0 +1,155 @@
+@page "/listening"
+@using LearnMarathi.Data
+@using LearnMarathi.Models
+@using LearnMarathi.Services
+@inject IBasicWordRepository WordRepository
+@inject IPhraseRepository PhraseRepository
+@inject ISrsService Srs
+@inject IStreakService Streak
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Listening · Learn Marathi</PageTitle>
+
+<div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
+
+    <PageHead Title="Listening" Marathi="ऐकणे" Eyebrow="Practice" Glyph="headphones" Compact="true"
+              Blurb="Nothing on screen but sound. The script is hidden until you have committed to an answer." />
+
+    @if (isLoading)
+    {
+        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+    }
+    else
+    {
+        <div style="display:flex;gap:8px;padding:18px 24px 6px;">
+            @foreach (var s in new[] { "Words", "Phrases" })
+            {
+                var active = source == s;
+                <span @onclick="() => SwitchSource(s)"
+                      style="padding:8px 14px;border-radius:100px;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-size:12px;font-weight:500;cursor:pointer;">@s</span>
+            }
+        </div>
+
+        @if (current != null)
+        {
+            <div style="padding:22px 24px 24px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">
+                    What did you hear? · @score correct
+                </div>
+
+                <div @onclick="Replay"
+                     style="margin:22px 0;padding:38px 18px;background:@Theme.Ink2;border-radius:18px;border:1px solid @(Theme.MutedDk + "30");text-align:center;cursor:pointer;">
+                    <Icon Name="speaker" Size="72" Color="@Theme.Gold" Stroke="1.2" />
+                    <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;margin-top:16px;">
+                        Tap to replay
+                    </div>
+                    @if (answered)
+                    {
+                        <div style="margin-top:18px;padding-top:16px;border-top:1px solid @(Theme.MutedDk + "40");">
+                            <div style="font-family:@Theme.Deva;font-size:26px;color:@Theme.Cream;">@current.Marathi</div>
+                            <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;margin-top:4px;">@current.Pronunciation</div>
+                        </div>
+                    }
+                </div>
+
+                <div style="display:grid;gap:10px;">
+                    @foreach (var opt in options)
+                    {
+                        var state = AnswerState(opt);
+                        <div @onclick="() => Answer(opt)"
+                             style="padding:16px;border-radius:14px;cursor:pointer;text-align:center;font-family:@Theme.Serif;font-size:19px;
+                                    border:1px solid @(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.MutedDk + "50");
+                                    background:@(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.Ink2);
+                                    color:@(state == "right" ? Theme.Ink : Theme.Cream);">@opt</div>
+                    }
+                </div>
+
+                <QuizNext Visible="answered" OnClick="NextQuestion" />
+            </div>
+        }
+    }
+
+    <NavBar />
+</div>
+
+@code {
+    private record Item(string Id, string Marathi, string English, string Pronunciation);
+
+    private List<Item> words = new();
+    private List<Item> phrases = new();
+    private string source = "Words";
+    private bool isLoading = true;
+
+    private Item? current;
+    private List<string> options = new();
+    private bool answered;
+    private string chosen = "";
+    private int score;
+    private readonly Random rng = new();
+
+    private List<Item> Pool => source == "Words" ? words : phrases;
+    private string Deck => source == "Words" ? "listen_words" : "listen_phrases";
+
+    protected override async Task OnInitializedAsync()
+    {
+        words = (await WordRepository.GetAllWordsAsync())
+            .Select(w => new Item(w.Id.ToString(), w.MarathiWord, w.EnglishTranslation, w.Pronunciation)).ToList();
+        phrases = (await PhraseRepository.GetAllAsync())
+            .Select(p => new Item(p.Id.ToString(), p.MarathiPhrase, p.EnglishTranslation, p.Pronunciation)).ToList();
+        isLoading = false;
+        await NextQuestion();
+    }
+
+    private async Task SwitchSource(string s)
+    {
+        if (source == s) return;
+        source = s;
+        await NextQuestion();
+    }
+
+    private async Task NextQuestion()
+    {
+        if (Pool.Count < 4) return;
+
+        var due = await Srs.GetDueIdsAsync(Deck, Pool.Select(i => i.Id), Math.Max(5, Pool.Count / 3));
+        var pickId = due.Count > 0 ? due[rng.Next(due.Count)] : Pool[rng.Next(Pool.Count)].Id;
+        current = Pool.First(i => i.Id == pickId);
+
+        options = Pool.Where(i => i.Id != current.Id)
+                      .Select(i => i.English)
+                      .Distinct()
+                      .OrderBy(_ => rng.Next())
+                      .Take(3)
+                      .Append(current.English)
+                      .OrderBy(_ => rng.Next())
+                      .ToList();
+        answered = false;
+        chosen = "";
+        StateHasChanged();
+        await Replay();
+    }
+
+    private string AnswerState(string opt)
+    {
+        if (!answered) return "";
+        if (opt == current!.English) return "right";
+        return opt == chosen ? "wrong" : "";
+    }
+
+    private async Task Answer(string opt)
+    {
+        if (answered || current == null) return;
+        answered = true;
+        chosen = opt;
+        var correct = opt == current.English;
+        if (correct) score++;
+        await Srs.RecordAsync(Deck, current.Id, correct);
+        await Streak.TouchAsync();
+    }
+
+    private async Task Replay()
+    {
+        if (current == null) return;
+        await JSRuntime.InvokeVoidAsync("speakMarathi", current.Marathi);
+    }
+}
