@@ -16,7 +16,7 @@
 
     @if (isLoading)
     {
-        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+        <div style="padding:24px;display:grid;gap:12px;"><div class="skeleton" style="height:120px;border-radius:18px;"></div><div class="skeleton" style="height:52px;"></div><div class="skeleton" style="height:52px;"></div></div>
     }
     else
     {
@@ -25,7 +25,7 @@
             {
                 var active = tab == t;
                 <span @onclick="() => SwitchTab(t)"
-                      style="padding:8px 14px;border-radius:100px;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-size:12px;font-weight:500;cursor:pointer;">@t</span>
+                      class="chip @(active ? "is-active" : "")">@t</span>
             }
         </div>
 
@@ -36,7 +36,7 @@
                 {
                     var active = selected?.Id == v.Id;
                     <span @onclick="() => selected = v"
-                          style="flex:0 0 auto;padding:8px 14px;border-radius:100px;white-space:nowrap;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-family:@Theme.Deva;font-size:15px;cursor:pointer;">@v.Infinitive</span>
+                          class="chip @(active ? "is-active" : "")">@v.Infinitive</span>
                 }
             </div>
 
@@ -80,7 +80,7 @@
                     Pick the right form · @score correct
                 </div>
 
-                <div style="margin:22px 0;padding:26px 18px;background:@Theme.Ink2;border-radius:18px;border:1px solid @(Theme.MutedDk + "30");text-align:center;">
+                <div @key="question" class="anim-slide-in" style="margin:22px 0;padding:26px 18px;background:@Theme.Ink2;border-radius:18px;border:1px solid @(Theme.MutedDk + "30");text-align:center;">
                     <div style="font-family:@Theme.Serif;font-size:28px;color:@Theme.Cream;line-height:1.2;">@question.Prompt</div>
                     <div style="font-family:@Theme.Deva;font-size:20px;color:@Theme.Gold;margin-top:12px;">@question.Person.Subject …</div>
                 </div>
@@ -89,11 +89,8 @@
                     @foreach (var opt in question.Options)
                     {
                         var state = AnswerState(opt);
-                        <div @onclick="() => Answer(opt)"
-                             style="padding:16px;border-radius:14px;cursor:pointer;text-align:center;font-family:@Theme.Deva;font-size:22px;
-                                    border:1px solid @(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.MutedDk + "50");
-                                    background:@(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.Ink2);
-                                    color:@(state == "right" ? Theme.Ink : Theme.Cream);">@opt</div>
+                        <div @onclick="() => Answer(opt)" class="option @(state == "right" ? "is-right" : state == "wrong" ? "is-wrong" : "")"
+                             style="padding:16px;border-radius:14px;cursor:pointer;text-align:center;font-family:@Theme.Deva;font-size:22px;">@opt</div>
                     }
                 </div>
 
@@ -201,6 +198,7 @@
         chosen = opt;
         var correct = opt == question.Correct;
         if (correct) score++;
+        await JSRuntime.InvokeVoidAsync("lmHaptic", correct ? "success" : "error");
         await Srs.RecordAsync(Deck, question.Verb.Id.ToString(), correct);
         await Streak.TouchAsync();
         await Speak(question.Person.Subject + " " + question.Correct);

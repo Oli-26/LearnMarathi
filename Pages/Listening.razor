@@ -17,7 +17,7 @@
 
     @if (isLoading)
     {
-        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+        <div style="padding:24px;display:grid;gap:12px;"><div class="skeleton" style="height:120px;border-radius:18px;"></div><div class="skeleton" style="height:52px;"></div><div class="skeleton" style="height:52px;"></div></div>
     }
     else
     {
@@ -26,7 +26,7 @@
             {
                 var active = source == s;
                 <span @onclick="() => SwitchSource(s)"
-                      style="padding:8px 14px;border-radius:100px;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-size:12px;font-weight:500;cursor:pointer;">@s</span>
+                      class="chip @(active ? "is-active" : "")">@s</span>
             }
         </div>
 
@@ -56,11 +56,8 @@
                     @foreach (var opt in options)
                     {
                         var state = AnswerState(opt);
-                        <div @onclick="() => Answer(opt)"
-                             style="padding:16px;border-radius:14px;cursor:pointer;text-align:center;font-family:@Theme.Serif;font-size:19px;
-                                    border:1px solid @(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.MutedDk + "50");
-                                    background:@(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.Ink2);
-                                    color:@(state == "right" ? Theme.Ink : Theme.Cream);">@opt</div>
+                        <div @onclick="() => Answer(opt)" class="option @(state == "right" ? "is-right" : state == "wrong" ? "is-wrong" : "")"
+                             style="padding:16px;border-radius:14px;cursor:pointer;text-align:center;font-family:@Theme.Serif;font-size:19px;">@opt</div>
                     }
                 </div>
 
@@ -143,6 +140,7 @@
         chosen = opt;
         var correct = opt == current.English;
         if (correct) score++;
+        await JSRuntime.InvokeVoidAsync("lmHaptic", correct ? "success" : "error");
         await Srs.RecordAsync(Deck, current.Id, correct);
         await Streak.TouchAsync();
     }

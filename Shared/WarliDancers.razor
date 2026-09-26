@@ -1,0 +1,18 @@
+@* Warli-style dancers holding hands: the folk-art motif, used to soften empty screens. *@
+
+<svg width="@(Count * 24 + 12)" height="46" viewBox="0 0 @(Count * 24 + 12) 46" style="display:block;margin:0 auto;opacity:@Opacity;" aria-hidden="true">
+    @for (var i = 0; i < Count; i++)
+    {
+        var x = 18 + i * 24;
+        <circle cx="@x" cy="7" r="4" fill="@Color" />
+        <path d="M@(x - 6) 13 L@(x + 6) 13 L@x 21 Z M@x 21 L@(x - 6) 29 L@(x + 6) 29 Z" fill="@Color" />
+        <path d="M@(x - 5) 14 L@(x - 12) 21 M@(x + 5) 14 L@(x + 12) 21 M@(x - 3) 29 L@(x - 7) 40 M@(x + 3) 29 L@(x + 7) 40"
+              stroke="@Color" stroke-width="1.6" stroke-linecap="round" fill="none" />
+    }
+</svg>
+
+@code {
+    [Parameter] public int Count { get; set; } = 5;
+    [Parameter] public string Color { get; set; } = Theme.Gold;
+    [Parameter] public double Opacity { get; set; } = 0.75;
+}

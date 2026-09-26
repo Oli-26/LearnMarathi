@@ -17,7 +17,9 @@ builder.Services.AddScoped<IVerbRepository, VerbRepository>();
 builder.Services.AddScoped<ISentenceRepository, SentenceRepository>();
 builder.Services.AddScoped<ICommuteRepository, CommuteRepository>();
 builder.Services.AddScoped<ISrsService, SrsService>();
+builder.Services.AddScoped<IHardWordsService, HardWordsService>();
 builder.Services.AddScoped<IStreakService, StreakService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<CommutePlayer>();
 
 await builder.Build().RunAsync();

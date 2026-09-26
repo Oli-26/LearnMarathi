@@ -2,49 +2,100 @@
 @using LearnMarathi.Services
 @inject IStreakService Streak
 @inject IReviewService Review
+@inject IHardWordsService HardWords
 @inject NavigationManager NavigationManager
+@inject CommutePlayer Player
+@implements IDisposable
 
 <PageTitle>Learn Marathi</PageTitle>
 
 <div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
     @* Masthead *@
     <div style="padding:8px 24px 0;">
-        <div style="font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">@DateTime.Now.ToString("dddd · d MMMM")</div>
-        <div style="margin:18px 0 4px;font-family:@Theme.Serif;font-size:54px;line-height:1;letter-spacing:-1.5px;color:@Theme.Cream;">
-            Learn<br/>Marathi.
-        </div>
-        <div style="font-family:@Theme.Deva;font-size:34px;color:@Theme.Gold;margin-top:8px;">मराठी शिका</div>
-        <div style="margin:16px 0 24px;">
-            <Warli Width="220" Height="20" Color="@Theme.Gold" Opacity="0.8" />
+        <div class="eyebrow" style="font-size:11px;">@DateTime.Now.ToString("dddd · d MMMM")</div>
+        <div style="display:flex;align-items:baseline;gap:12px;margin-top:14px;flex-wrap:wrap;">
+            <span style="font-family:@Theme.Serif;font-size:40px;line-height:1;letter-spacing:-1px;color:@Theme.Cream;">Learn Marathi.</span>
+            <span style="font-family:@Theme.Deva;font-size:24px;color:@Theme.Gold;">मराठी शिका</span>
         </div>
     </div>
 
-    @* Streak *@
-    <div style="margin:0 24px 28px;display:flex;align-items:flex-end;justify-content:space-between;border-top:1px solid @(Theme.MutedDk + "40");border-bottom:1px solid @(Theme.MutedDk + "40");padding:18px 0;">
-        <div>
-            <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Streak</div>
-            <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px;">
-                <span style="font-family:@Theme.Serif;font-size:46px;color:@Theme.Gold;line-height:1;">@CurrentStreakDisplay</span>
-                <span style="font-family:@Theme.Sans;font-size:13px;color:@Theme.Cream;">day@(streak?.CurrentStreak == 1 ? "" : "s")</span>
+    @* Today: the one-tap daily plan *@
+    <div class="card anim-fade-up" style="margin:22px 16px 30px;padding:20px 20px 18px;">
+        @if (!loaded)
+        {
+            <div class="skeleton" style="height:16px;width:40%;"></div>
+            <div class="skeleton" style="height:40px;margin-top:14px;"></div>
+            <div class="skeleton" style="height:50px;margin-top:16px;border-radius:100px;"></div>
+        }
+        else
+        {
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="eyebrow">Today</span>
+                <span style="display:flex;align-items:center;gap:6px;font-family:@Theme.Mono;font-size:11px;color:@(streak?.ActiveToday == true ? Theme.Gold : Theme.Muted);">
+                    <Icon Name="flame" Size="14" Color="@(streak?.ActiveToday == true ? Theme.Gold : Theme.Muted)" />
+                    @(streak?.CurrentStreak ?? 0)-day streak
+                </span>
             </div>
-            <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;margin-top:6px;">
-                @(streak?.ActiveToday == true ? "practiced today — keep going" : "practice today to keep your streak")
+
+            <div style="display:flex;gap:22px;margin-top:14px;">
+                @foreach (var (n, label, color) in new[] { (today.Due, "due", Theme.Cream), (today.New, "new", Theme.Cream), (hardCount, "hard", Theme.Gold) })
+                {
+                    <div>
+                        <div style="font-family:@Theme.Serif;font-size:34px;line-height:1;color:@(n > 0 ? color : Theme.MutedDk);">@n</div>
+                        <div class="eyebrow" style="margin-top:4px;">@label</div>
+                    </div>
+                }
+                <div style="margin-left:auto;display:flex;gap:5px;align-items:flex-end;">
+                    @foreach (var (day, on) in StreakDays())
+                    {
+                        var isToday = day == DateTime.Now.Date;
+                        <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+                            <div style="width:8px;height:@(on ? "26px" : "10px");border-radius:2px;background:@(on ? Theme.Gold : Theme.MutedDk + "70");transition:height .4s;"></div>
+                            <span style="font-family:@Theme.Mono;font-size:8px;color:@(isToday ? Theme.Gold : Theme.MutedDk);">@day.ToString("ddd")[0]</span>
+                        </div>
+                    }
+                </div>
             </div>
-            @if (streak != null && streak.LongestStreak > streak.CurrentStreak)
+
+            @if (today.Due + today.New > 0)
             {
-                <div style="font-family:@Theme.Mono;font-size:10px;color:@Theme.MutedDk;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;">Best · @streak.LongestStreak days</div>
-            }
-        </div>
-        <div style="display:flex;gap:6px;">
-            @foreach (var (day, on) in StreakDays())
-            {
-                var today = day == DateTime.Now.Date;
-                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-                    <div style="width:12px;height:@(on ? "32px" : "14px");border-radius:2px;background:@(on ? Theme.Gold : Theme.MutedDk + "80");margin-top:auto;"></div>
-                    <span style="font-family:@Theme.Mono;font-size:9px;color:@(today ? Theme.Gold : Theme.MutedDk);">@day.ToString("ddd")[0]</span>
+                <div @onclick='() => NavigationManager.NavigateTo("/review")' class="btn btn-gold" style="margin-top:18px;">
+                    Start review <Icon Name="arrow-right" Size="16" Color="@Theme.Ink" />
                 </div>
             }
-        </div>
+            else if (hardCount > 0)
+            {
+                <div @onclick='() => NavigationManager.NavigateTo("/review?hard=true")' class="btn btn-ghost" style="margin-top:18px;">
+                    All caught up · drill hard words
+                </div>
+            }
+            else
+            {
+                <div style="margin-top:18px;font-size:13px;color:@Theme.Muted;">All caught up for today. Nice work.</div>
+            }
+
+            @if (listenNext != null)
+            {
+                var resumeAt = Player.Positions.GetValueOrDefault(listenNext.Id);
+                var length = Player.Durations.GetValueOrDefault(listenNext.Id);
+                var playingThis = Player.Episode?.Id == listenNext.Id && Player.Playing;
+                <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:12px;">
+                    <span @onclick="() => ListenNow(listenNext)" class="tap" style="width:44px;height:44px;border-radius:50%;border:1px solid @Theme.Gold;flex-shrink:0;">
+                        <Icon Name="@(playingThis ? "pause" : "play")" Size="16" Color="@Theme.Gold" />
+                    </span>
+                    <div @onclick='() => NavigationManager.NavigateTo("/commute")' style="flex:1;min-width:0;cursor:pointer;">
+                        <div class="eyebrow">@(resumeAt > 0 ? "Continue listening" : "Next episode")</div>
+                        <div style="font-family:@Theme.Serif;font-size:17px;color:@Theme.Cream;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@listenNext.Title</div>
+                        @if (resumeAt > 0 && length > 0)
+                        {
+                            <div style="height:2px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden;">
+                                <div class="progress-fill" style="height:100%;width:@((int)(resumeAt * 100 / length))%;background:@Theme.Gold;"></div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
     </div>
 
     @* Sections *@
@@ -69,6 +120,11 @@
                             @if (it.Url == "/review" && dueCount > 0)
                             {
                                 <span style="font-family:@Theme.Mono;font-size:10px;font-weight:600;padding:3px 8px;border-radius:100px;background:@Theme.Gold;color:@Theme.Ink;">@dueCount</span>
+                            }
+                            @if (it.Url == "/review" && hardCount > 0)
+                            {
+                                <span @onclick='() => NavigationManager.NavigateTo("/review?hard=true")' @onclick:stopPropagation="true"
+                                      style="font-family:@Theme.Mono;font-size:10px;padding:3px 8px;border-radius:100px;border:1px solid @Theme.Gold;color:@Theme.Gold;cursor:pointer;">★ @hardCount hard</span>
                             }
                         </div>
                         <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;margin-top:4px;">@it.Sub</div>
@@ -100,10 +156,20 @@
 @code {
     private StreakInfo? streak;
     private int dueCount;
+    private int hardCount;
+    private (int Due, int New) today;
+    private bool loaded;
+    private LearnMarathi.Models.CommuteEpisode? listenNext;
+
+    // Plays from the home screen; the mini player takes over from here.
+    private async Task ListenNow(LearnMarathi.Models.CommuteEpisode ep)
+    {
+        if (Player.Episode?.Id == ep.Id) await Player.TogglePlayAsync();
+        else await Player.OpenAsync(ep, play: true);
+    }
 
     private Dictionary<string, (int Seen, int Known, int Total)> lessonProgress = new();
 
-    private string CurrentStreakDisplay => (streak?.CurrentStreak ?? 0).ToString();
 
     private record Lesson(string N, string T, string Sub, string Deva, string Url, bool Soon);
 
@@ -145,12 +211,25 @@
         }),
     };
 
+    protected override void OnInitialized() => Player.Changed += OnPlayerChanged;
+
+    private void OnPlayerChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Player.Changed -= OnPlayerChanged;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             streak = await Streak.GetAsync();
             dueCount = await Review.GetDueCountAsync();
+            today = await Review.GetTodayCountsAsync();
+            await Player.InitAsync();
+            listenNext = Player.Episode
+                ?? Player.Episodes.FirstOrDefault(e => Player.Positions.ContainsKey(e.Id))
+                ?? Player.Episodes.FirstOrDefault(e => !Player.Listened.Contains(e.Id) && Player.Durations.ContainsKey(e.Id));
+            loaded = true;
+            hardCount = (await HardWords.GetAllAsync()).Count;
             var progress = await Review.GetProgressAsync();
             lessonProgress = LessonDecks.ToDictionary(kv => kv.Key, kv =>
             {

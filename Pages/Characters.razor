@@ -50,8 +50,8 @@
             {
                 var isCorrectOpt = answerSelected && option == currentQuestion.CorrectAnswer;
                 var isPicked = answerSelected && option == selectedAnswer;
-                var bg = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? "#5a2828" : "transparent");
-                var border = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? "#a04040" : Theme.MutedDk + "80");
+                var bg = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? Theme.Error : "transparent");
+                var border = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? Theme.Error : Theme.MutedDk + "80");
                 var fg = isCorrectOpt ? Theme.Ink : Theme.Cream;
                 var letter = letters[li % letters.Length]; li++;
                 var captured = option;
@@ -66,8 +66,8 @@
 
         @if (answerSelected)
         {
-            <div style="margin:24px 24px 0;padding:16px 18px;background:@(isCorrect ? Theme.Gold + "18" : "#5a282818");border-left:2px solid @(isCorrect ? Theme.Gold : "#d96666");border-radius:2px 8px 8px 2px;">
-                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@(isCorrect ? Theme.Gold : "#d96666");text-transform:uppercase;">@(isCorrect ? "✓ Correct" : "✗ Wrong")</div>
+            <div class="anim-fade-up" style="margin:24px 24px 0;padding:16px 18px;background:@(isCorrect ? Theme.Gold + "18" : Theme.Error + "18");border-left:2px solid @(isCorrect ? Theme.Gold : Theme.ErrorText);border-radius:2px 8px 8px 2px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@(isCorrect ? Theme.Gold : Theme.ErrorText);text-transform:uppercase;">@(isCorrect ? "✓ Correct" : "✗ Wrong")</div>
                 @if (!isCorrect)
                 {
                     <div style="font-family:@Theme.Serif;font-size:16px;color:@Theme.Cream;margin-top:6px;">Answer: <span style="color:@Theme.Gold;">@currentQuestion.CorrectAnswer</span></div>
@@ -262,7 +262,7 @@
             else
             {
                 <button @onclick="StopRecording"
-                        style="width:84px;height:84px;border-radius:50%;background:#d96666;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px #d9666625, 0 0 0 18px #d9666610;cursor:pointer;animation:pulse 1.2s infinite;">
+                        style="width:84px;height:84px;border-radius:50%;background:@Theme.ErrorText;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px @(Theme.ErrorText + "25"), 0 0 0 18px @(Theme.ErrorText + "10");cursor:pointer;animation:pulse 1.2s infinite;">
                     <Icon Name="x" Size="32" Color="@Theme.Cream" />
                 </button>
             }
@@ -274,15 +274,15 @@
         @if (!string.IsNullOrEmpty(pronunciationFeedback))
         {
             var ok = pronunciationFeedbackClass == "validation-correct";
-            <div style="margin:26px 24px 0;padding:16px 18px;border:1px solid @(ok ? Theme.Gold : "#d96666" + "60");background:@(ok ? Theme.Gold + "12" : "#5a282818");border-radius:12px;">
+            <div style="margin:26px 24px 0;padding:16px 18px;border:1px solid @(ok ? Theme.Gold : Theme.ErrorText + "60");background:@(ok ? Theme.Gold + "12" : Theme.Error + "18");border-radius:12px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
                     <div>
                         <div style="font-family:@Theme.Mono;font-size:9px;letter-spacing:1.5px;color:@Theme.Muted;text-transform:uppercase;">You said</div>
                         <div style="font-family:@Theme.Serif;font-size:20px;color:@Theme.Cream;margin-top:4px;">@(string.IsNullOrEmpty(recognizedText) ? "—" : recognizedText)</div>
                     </div>
                     <div style="display:flex;align-items:center;gap:8px;">
-                        <Icon Name="@(ok ? "check" : "x")" Size="16" Color="@(ok ? Theme.Gold : "#d96666")" />
-                        <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:1.5px;color:@(ok ? Theme.Gold : "#d96666");text-transform:uppercase;">@(ok ? "Match" : "Try again")</span>
+                        <Icon Name="@(ok ? "check" : "x")" Size="16" Color="@(ok ? Theme.Gold : Theme.ErrorText)" />
+                        <span style="font-family:@Theme.Mono;font-size:10px;letter-spacing:1.5px;color:@(ok ? Theme.Gold : Theme.ErrorText);text-transform:uppercase;">@(ok ? "Match" : "Try again")</span>
                     </div>
                 </div>
                 <div style="font-family:@Theme.Sans;font-size:12px;color:@Theme.Muted;margin-top:8px;line-height:1.5;">@pronunciationFeedback</div>
@@ -315,15 +315,15 @@
 
         @if (!string.IsNullOrEmpty(errorMessage))
         {
-            <div style="margin:18px 24px;padding:16px;background:#5a282818;border-left:2px solid #d96666;border-radius:2px 8px 8px 2px;">
-                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:#d96666;text-transform:uppercase;">Error</div>
+            <div style="margin:18px 24px;padding:16px;background:@(Theme.Error + "18");border-left:2px solid @Theme.ErrorText;border-radius:2px 8px 8px 2px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.ErrorText;text-transform:uppercase;">Error</div>
                 <div style="font-family:@Theme.Sans;font-size:13px;color:@Theme.Cream;margin-top:4px;">@errorMessage</div>
             </div>
         }
 
         @if (isLoading)
         {
-            <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+            <div style="padding:24px;display:grid;gap:12px;"><div class="skeleton" style="height:120px;border-radius:18px;"></div><div class="skeleton" style="height:52px;"></div><div class="skeleton" style="height:52px;"></div></div>
         }
         else if (characters.Any())
         {
@@ -604,6 +604,7 @@
         answerSelected = true;
         selectedAnswer = answer;
         isCorrect = answer == currentQuestion.CorrectAnswer;
+        await JSRuntime.InvokeVoidAsync("lmHaptic", isCorrect ? "success" : "error");
 
         if (isCorrect)
         {

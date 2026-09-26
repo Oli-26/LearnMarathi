@@ -16,7 +16,7 @@
 
     @if (isLoading)
     {
-        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+        <div style="padding:24px;display:grid;gap:12px;"><div class="skeleton" style="height:120px;border-radius:18px;"></div><div class="skeleton" style="height:52px;"></div><div class="skeleton" style="height:52px;"></div></div>
     }
     else if (current != null)
     {
@@ -31,7 +31,7 @@
 
             @* Answer slot *@
             <div style="min-height:64px;padding:14px;border-radius:14px;background:@Theme.Ink2;
-                        border:1px solid @(checkedAnswer ? (IsCorrect ? Theme.Gold : "#8B3A3A") : Theme.MutedDk + "40");
+                        border:1px solid @(checkedAnswer ? (IsCorrect ? Theme.Gold : Theme.Error) : Theme.MutedDk + "40");
                         display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;">
                 @if (placed.Count == 0)
                 {
@@ -68,7 +68,7 @@
             else
             {
                 <div style="margin-top:22px;padding:18px;border-radius:14px;border:1px solid @(Theme.MutedDk + "40");">
-                    <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:@(IsCorrect ? Theme.Gold : "#C86B6B");">
+                    <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:@(IsCorrect ? Theme.Gold : Theme.ErrorText);">
                         @(IsCorrect ? "Correct" : "Not quite")
                     </div>
                     <div style="font-family:@Theme.Deva;font-size:23px;color:@Theme.Cream;margin-top:12px;line-height:1.4;">@current.Marathi</div>
@@ -148,6 +148,7 @@
         if (current == null || checkedAnswer || placed.Count != current.Tokens.Count) return;
         checkedAnswer = true;
         if (IsCorrect) score++;
+        await JSRuntime.InvokeVoidAsync("lmHaptic", IsCorrect ? "success" : "error");
         await Srs.RecordAsync(Deck, current.Id.ToString(), IsCorrect);
         await Streak.TouchAsync();
         await Speak(current.Marathi);

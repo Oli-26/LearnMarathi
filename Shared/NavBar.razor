@@ -1,7 +1,29 @@
-@* Fixed bottom tabs; the spacer keeps page content clear of them. *@
+@* Fixed bottom tabs, plus the Commute mini player when an episode is loaded; the spacer keeps page content clear of both. *@
+@using LearnMarathi.Services
+@implements IDisposable
 @inject NavigationManager NavigationManager
+@inject CommutePlayer Player
 
-<div style="height:calc(@(Height)px + env(safe-area-inset-bottom));"></div>
+<div style="height:calc(@(Height + (Player.MiniVisible ? CommutePlayer.MiniHeight : 0))px + env(safe-area-inset-bottom));"></div>
+
+@if (Player.MiniVisible)
+{
+    var ep = Player.Episode!;
+    var pct = Player.Timing!.Duration > 0 ? Player.Position * 100 / Player.Timing.Duration : 0;
+    <div class="anim-fade-up" style="position:fixed;left:0;right:0;bottom:calc(@(Height)px + env(safe-area-inset-bottom));z-index:21;height:@(CommutePlayer.MiniHeight)px;background:@Theme.Ink2;border-top:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 8px 0 18px;">
+        <div style="position:absolute;left:0;top:-1px;height:2px;width:@(pct.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%;background:@Theme.Gold;"></div>
+        <div @onclick='() => NavigationManager.NavigateTo("/commute?player=true")' style="flex:1;min-width:0;cursor:pointer;">
+            <div style="font-family:@Theme.Serif;font-size:15px;color:@Theme.Cream;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@ep.Title</div>
+            <div style="font-family:@Theme.Mono;font-size:9px;letter-spacing:1.5px;color:@Theme.Muted;text-transform:uppercase;margin-top:2px;">@Player.PhaseLabel · @LearnMarathi.Pages.Commute.FormatTime(Player.Position)</div>
+        </div>
+        <span @onclick="Player.TogglePlayAsync" class="tap" title="@(Player.Playing ? "Pause" : "Play")">
+            <Icon Name="@(Player.Playing ? "pause" : "play")" Size="22" Color="@Theme.Gold" Stroke="2.2" />
+        </span>
+        <span @onclick="Player.StopAsync" class="tap" title="Stop">
+            <Icon Name="x" Size="18" Color="@Theme.Muted" />
+        </span>
+    </div>
+}
 
 <nav style="position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;background:@Theme.Ink2;border-top:1px solid @(Theme.MutedDk + "40");padding-bottom:env(safe-area-inset-bottom);">
     @foreach (var tab in Tabs)
@@ -10,7 +32,7 @@
         <div @onclick="() => NavigationManager.NavigateTo(tab.Url)"
              style="flex:1;height:@(Height)px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;">
             <Icon Name="@tab.Icon" Size="20" Color="@(active ? Theme.Gold : Theme.Muted)" />
-            <span style="font-family:@Theme.Mono;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:@(active ? Theme.Gold : Theme.Muted);">@tab.Label</span>
+            <span style="font-family:@Theme.Mono;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:@(active ? Theme.Gold : Theme.Muted);transition:color .2s;">@tab.Label</span>
         </div>
     }
 </nav>
@@ -28,9 +50,15 @@
         new("My words", "book", "/mywords"),
     };
 
+    protected override void OnInitialized() => Player.Changed += OnPlayerChanged;
+
+    private void OnPlayerChanged() => InvokeAsync(StateHasChanged);
+
     private bool IsActive(string url)
     {
         var path = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('?', '#')[0];
         return path == url;
     }
+
+    public void Dispose() => Player.Changed -= OnPlayerChanged;
 }

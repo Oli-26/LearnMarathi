@@ -21,7 +21,11 @@ public interface IReviewService
     Task<List<ReviewCard>> GetAllCardsAsync();
     Task<List<ReviewCard>> GetDueAsync(int max);
     Task<int> GetDueCountAsync();
+    Task<(int Due, int New)> GetTodayCountsAsync();
     Task MarkIntroducedAsync();
+    Task<List<ReviewCard>> GetHardDrillAsync(int max);
+    Task GraduateHardAsync();
+    Task<List<CardProgress>> GetHardSuggestionsAsync();
 }
 
 public class ReviewService : IReviewService
@@ -33,6 +37,7 @@ public class ReviewService : IReviewService
     private readonly IVerbRepository _verbs;
     private readonly ISentenceRepository _sentences;
     private readonly ICommuteRepository _commute;
+    private readonly IHardWordsService _hard;
     private readonly ISrsService _srs;
 
     private readonly IJSRuntime _js;
@@ -51,6 +56,7 @@ public class ReviewService : IReviewService
         IVerbRepository verbs,
         ISentenceRepository sentences,
         ICommuteRepository commute,
+        IHardWordsService hard,
         ISrsService srs,
         IJSRuntime js)
     {
@@ -61,11 +67,20 @@ public class ReviewService : IReviewService
         _verbs = verbs;
         _sentences = sentences;
         _commute = commute;
+        _hard = hard;
         _srs = srs;
         _js = js;
     }
 
     public async Task<List<ReviewCard>> GetAllCardsAsync()
+    {
+        // Custom words change at runtime, so they are appended fresh rather than cached.
+        var custom = (await _hard.GetCustomAsync())
+            .Select(w => new ReviewCard(HardWordsService.CustomDeck, "My word", w.Id, w.Marathi, w.English, w.Roman, "custom"));
+        return (await BaseCardsAsync()).Concat(custom).ToList();
+    }
+
+    private async Task<List<ReviewCard>> BaseCardsAsync()
     {
         if (_cards != null) return _cards;
 
@@ -124,8 +139,11 @@ public class ReviewService : IReviewService
         foreach (var group in cards.GroupBy(c => c.Deck))
         {
             var state = await _srs.GetAllAsync(group.Key);
-            due.AddRange(group.Where(c =>
-                state.TryGetValue(c.Id, out var card) && card.Reps > 0 && card.DueUtc <= now));
+            // A typed-in word needs no introduction, so it is due as soon as it is added.
+            var isCustom = group.Key == HardWordsService.CustomDeck;
+            due.AddRange(group.Where(c => state.TryGetValue(c.Id, out var card)
+                ? (card.Reps > 0 || isCustom) && card.DueUtc <= now
+                : isCustom));
         }
 
         return due;
@@ -136,8 +154,55 @@ public class ReviewService : IReviewService
         var fresh = await NewCardsAsync(await NewAllowanceAsync());
         var due = await DueCardsAsync();
         // The same word can be due from both the Words and Listening decks; ask it once.
-        var picked = due.OrderBy(_ => Random.Shared.Next()).DistinctBy(c => c.Front).Take(max - fresh.Count).ToList();
+        var hard = await _hard.GetAllAsync();
+        var picked = due.OrderBy(c => hard.Contains(c.Front) ? 0 : 1).ThenBy(_ => Random.Shared.Next())
+                        .DistinctBy(c => c.Front).Take(max - fresh.Count).ToList();
         return SpreadByGroup(picked.Concat(fresh).ToList());
+    }
+
+    // When one hard word lives in several decks, drill it through the most direct one.
+    private static readonly string[] DeckPreference = { HardWordsService.CustomDeck, "words", "verbs", "commute", "listen_phrases" };
+
+    public async Task<List<ReviewCard>> GetHardDrillAsync(int max)
+    {
+        var hard = await _hard.GetAllAsync();
+        var picked = (await GetAllCardsAsync())
+            .Where(c => hard.Contains(c.Front))
+            .GroupBy(c => c.Front)
+            .Select(g => g.OrderBy(c => Array.IndexOf(DeckPreference, c.Deck) is var i && i >= 0 ? i : 99).First())
+            .OrderBy(_ => Random.Shared.Next())
+            .Take(max)
+            .ToList();
+        return SpreadByGroup(picked);
+    }
+
+    /// <summary>Drops words from the hard list once every deck they appear in has reached Known.</summary>
+    public async Task GraduateHardAsync()
+    {
+        var hard = await _hard.GetAllAsync();
+        if (hard.Count == 0) return;
+        var progress = await GetProgressAsync();
+        foreach (var g in progress.Where(p => hard.Contains(p.Card.Front)).GroupBy(p => p.Card.Front).ToList())
+        {
+            var seen = g.Where(p => p.Mastery != Mastery.New).ToList();
+            if (seen.Count > 0 && seen.All(p => p.Mastery == Mastery.Known)) await _hard.SetAsync(g.Key, false);
+        }
+    }
+
+    // Three misses is past bad luck: the word is genuinely not sticking.
+    private const int SuggestAfterWrong = 3;
+
+    public async Task<List<CardProgress>> GetHardSuggestionsAsync()
+    {
+        var hard = await _hard.GetAllAsync();
+        var dismissed = await _hard.GetDismissedAsync();
+        return (await GetProgressAsync())
+            .Where(p => !hard.Contains(p.Card.Front) && !dismissed.Contains(p.Card.Front))
+            .GroupBy(p => p.Card.Front)
+            .Select(g => g.OrderByDescending(p => p.Wrong).First() with { Wrong = g.Sum(p => p.Wrong), Correct = g.Sum(p => p.Correct) })
+            .Where(p => p.Wrong >= SuggestAfterWrong)
+            .OrderByDescending(p => p.Wrong)
+            .ToList();
     }
 
     /// <summary>Next unstudied cards in teaching order. A word met in any deck (e.g. Listening) is not new.</summary>
@@ -239,6 +304,9 @@ public class ReviewService : IReviewService
 
         return result;
     }
+
+    public async Task<(int Due, int New)> GetTodayCountsAsync() =>
+        ((await DueCardsAsync()).DistinctBy(c => c.Front).Count(), (await NewCardsAsync(await NewAllowanceAsync())).Count);
 
     public async Task<int> GetDueCountAsync() =>
         (await DueCardsAsync()).DistinctBy(c => c.Front).Count() + (await NewCardsAsync(await NewAllowanceAsync())).Count;

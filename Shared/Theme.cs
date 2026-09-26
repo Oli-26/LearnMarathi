@@ -10,9 +10,11 @@ public static class Theme
     public const string MutedDk  = "#787063";
     public const string Gold     = "#E8B14F";
     public const string GoldSoft = "#D69A2E";
+    public const string Error     = "#B4493E";  // wrong-answer fill; cream text on it stays readable
+    public const string ErrorText = "#E07A6E";  // wrong-answer text and borders on ink
 
     public const string Serif = "\"DM Serif Display\", Georgia, serif";
     public const string Sans  = "Inter, system-ui, sans-serif";
     public const string Mono  = "\"JetBrains Mono\", monospace";
-    public const string Deva  = "\"Tiro Devanagari Marathi\", \"Mukta\", serif";
+    public const string Deva  = "\"Tiro Devanagari Marathi\", serif";
 }

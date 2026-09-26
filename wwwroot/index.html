@@ -6,10 +6,8 @@
     <meta name="theme-color" content="#0F1115"/>
     <title>Learn Marathi</title>
     <base href="/"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600;700&family=Tiro+Devanagari+Marathi&family=Mukta:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-    <link href="css/site.css" rel="stylesheet"/>
+    <link href="fonts/fonts.css" rel="stylesheet"/>
+    <link href="css/app.css" rel="stylesheet"/>
     <style>
         html, body { background: #0F1115; color: #F5F0E6; margin: 0; padding: 0; min-height: 100vh; font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 
@@ -33,9 +31,10 @@
 </head>
 <body>
 <div id="app">
-    <div style="text-align: center; padding: 60px 20px;">
-        <h2 style="color: #2d6a2d;">Loading Learn Marathi...</h2>
-        <p>Please wait while the application loads.</p>
+    <div class="boot">
+        <div class="boot-title">Learn Marathi.</div>
+        <div class="boot-deva">मराठी शिका</div>
+        <div class="boot-dots"><i></i><i></i><i></i></div>
     </div>
 </div>
 
@@ -46,7 +45,7 @@
 </div>
 
 <script src="_framework/blazor.webassembly.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script src="lib/signature_pad.umd.min.js"></script>
 <script>
     var signaturePad;
 
@@ -253,9 +252,28 @@
         commuteAudio.load();
     }
 
+    function lmScrollToBottom() {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    }
+
     function lmScrollIntoView(id) {
         const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Answer feedback: native haptics in the app, a short vibration in a browser that supports it.
+    function lmHaptic(kind) {
+        try {
+            const cap = window.Capacitor;
+            const h = cap && cap.isNativePlatform && cap.isNativePlatform() && cap.Plugins && cap.Plugins.Haptics;
+            if (h) {
+                if (kind === 'success') h.notification({ type: 'SUCCESS' });
+                else if (kind === 'error') h.notification({ type: 'ERROR' });
+                else h.impact({ style: 'LIGHT' });
+            } else if (navigator.vibrate) {
+                navigator.vibrate(kind === 'error' ? [30, 40, 30] : 15);
+            }
+        } catch (e) { }
     }
 
     // localStorage bridge for Blazor WASM (SRS, streaks, prefs)

@@ -10,23 +10,32 @@
 
 <div style="min-height:100vh;background:@Theme.Ink;color:@Theme.Cream;font-family:@Theme.Sans;padding:24px 0 32px;">
 
-    <PageHead Title="Review" Marathi="उजळणी" Eyebrow="Practice" Glyph="flame" Compact="@(queue.Count > 0 && !finished)"
-              Blurb="Everything you have met, from every deck, shuffled together and served when it is about to slip. Plus a few new words each day." />
+    @if (Hard)
+    {
+        <PageHead Title="Hard words" Marathi="कठीण शब्द" Eyebrow="Practice" Glyph="star" BackUrl="/mywords" Compact="@(queue.Count > 0 && !finished)"
+                  Blurb="Only the words you starred, due or not." />
+    }
+    else
+    {
+        <PageHead Title="Review" Marathi="उजळणी" Eyebrow="Practice" Glyph="flame" Compact="@(queue.Count > 0 && !finished)"
+                  Blurb="Everything you have met, from every deck, shuffled together and served when it is about to slip. Plus a few new words each day." />
+    }
 
     @if (isLoading)
     {
-        <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+        <div style="padding:24px;display:grid;gap:12px;"><div class="skeleton" style="height:120px;border-radius:18px;"></div><div class="skeleton" style="height:52px;"></div><div class="skeleton" style="height:52px;"></div></div>
     }
     else if (queue.Count == 0 && !started)
     {
-        <div style="padding:40px 24px;text-align:center;">
-            <div style="font-family:@Theme.Serif;font-size:26px;color:@Theme.Cream;">All done for today.</div>
+        <div class="anim-fade-up" style="padding:40px 24px;text-align:center;">
+            <div style="margin-bottom:22px;"><WarliDancers /></div>
+            <div style="font-family:@Theme.Serif;font-size:26px;color:@Theme.Cream;">@(Hard ? "No hard words yet." : "All done for today.")</div>
             <div style="font-size:13px;color:@Theme.Muted;line-height:1.7;margin-top:12px;max-width:280px;margin-left:auto;margin-right:auto;">
-                Nothing is due and today's new words are learned. Come back tomorrow, or open a lesson to keep going.
+                @(Hard ? "Tap the star on any word that keeps tripping you up, or add your own in My words." : "Nothing is due and today's new words are learned. Come back tomorrow, or open a lesson to keep going.")
             </div>
-            <div @onclick='() => NavigationManager.NavigateTo("/")'
-                 style="margin:26px auto 0;max-width:220px;padding:15px;border-radius:100px;background:@Theme.Cream;color:@Theme.Ink;font-weight:600;cursor:pointer;">
-                Back to lessons
+            <div @onclick='() => NavigationManager.NavigateTo(Hard ? "/mywords" : "/")'
+                 class="btn btn-primary" style="margin:26px auto 0;max-width:240px;">
+                @(Hard ? "Go to My words" : "Back to lessons")
             </div>
         </div>
     }
@@ -34,9 +43,15 @@
     {
         <div style="padding:40px 24px;text-align:center;">
             @{ var quizzed = queue.Count(c => !c.IsNew); var learned = queue.Count - quizzed; }
+            <div class="sparks" style="width:220px;margin:0 auto;">
+                @for (var i = 0; i < 12; i++)
+                {
+                    <i style="left:@((i * 37) % 100)%;animation-delay:@((i % 4) * 0.12)s;"></i>
+                }
+            </div>
             @if (quizzed > 0)
             {
-                <div style="font-family:@Theme.Serif;font-size:46px;color:@Theme.Gold;line-height:1;">@score/@quizzed</div>
+                <div class="anim-pop" style="font-family:@Theme.Serif;font-size:46px;color:@Theme.Gold;line-height:1;">@score/@quizzed</div>
             }
             @if (learned > 0)
             {
@@ -44,8 +59,8 @@
             }
             <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;margin-top:12px;">Session complete</div>
             <div @onclick="Reload"
-                 style="margin:28px auto 0;max-width:220px;padding:15px;border-radius:100px;background:@Theme.Cream;color:@Theme.Ink;font-weight:600;cursor:pointer;">
-                Review again
+                 class="btn btn-primary" style="margin:28px auto 0;max-width:240px;">
+                @(Hard ? "Drill again" : "Review again")
             </div>
         </div>
     }
@@ -58,95 +73,103 @@
             </div>
 
             <div style="height:3px;background:@(Theme.MutedDk + "40");border-radius:2px;margin-top:10px;overflow:hidden;">
-                <div style="height:100%;width:@(total == 0 ? 0 : index * 100 / total)%;background:@Theme.Gold;"></div>
+                <div class="progress-fill" style="height:100%;width:@(total == 0 ? 0 : index * 100 / total)%;background:@Theme.Gold;"></div>
             </div>
 
-            @if (current.IsNew)
-            {
-                <div style="margin:26px 0;padding:34px 18px;background:@Theme.Ink2;border-radius:18px;border:1px solid @(Theme.Gold + "60");text-align:center;">
-                    <div style="font-family:@Theme.Deva;font-size:@(current.Front.Length > 12 ? "30px" : "52px");color:@Theme.Cream;line-height:1.3;">@current.Front</div>
-                    <div style="font-family:@Theme.Mono;font-size:12px;color:@Theme.Muted;font-style:italic;margin-top:8px;">@current.Pronunciation</div>
-                    <div style="font-family:@Theme.Serif;font-size:26px;color:@Theme.Gold;margin-top:18px;line-height:1.2;">@current.Back</div>
-                    <div @onclick="() => Speak(current.Front)" style="margin-top:18px;display:inline-flex;cursor:pointer;">
-                        <Icon Name="speaker" Size="22" Color="@Theme.Cream" />
-                    </div>
-                </div>
-                <div style="font-size:12px;color:@Theme.Muted;text-align:center;line-height:1.6;">You will be asked this one from tomorrow.</div>
-                <QuizNext Visible="true" Label="Got it" OnClick="LearnNew" />
-            }
-            else
-            {
-                <div style="margin:26px 0;padding:34px 18px;background:@Theme.Ink2;border-radius:18px;border:1px solid @(Theme.MutedDk + "30");text-align:center;">
-                    @if (mode == ReviewMode.Listen && !answered)
-                    {
-                        <div @onclick="() => Speak(current.Front)"
-                             style="display:inline-flex;padding:22px;border-radius:50%;cursor:pointer;background:@(Theme.Gold + "20");">
-                            <Icon Name="speaker" Size="40" Color="@Theme.Gold" />
-                        </div>
-                    }
-                    else
-                    {
-                        @if (mode is ReviewMode.Produce or ReviewMode.Say)
-                        {
-                            <div style="font-family:@Theme.Serif;font-size:@(current.Back.Length > 16 ? "22px" : "32px");color:@Theme.Cream;line-height:1.3;">@current.Back</div>
-                        }
-                        @if (mode is not (ReviewMode.Produce or ReviewMode.Say) || answered)
-                        {
-                            <div style="font-family:@Theme.Deva;font-size:@(current.Front.Length > 12 ? "26px" : "46px");color:@Theme.Cream;line-height:1.3;margin-top:@(mode is ReviewMode.Produce or ReviewMode.Say ? "12px" : "0");">@current.Front</div>
-                        }
-                        @if (answered)
-                        {
-                            <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;margin-top:10px;">@current.Pronunciation</div>
-                        }
-                        <div @onclick="() => Speak(current.Front)" style="margin-top:14px;display:inline-flex;cursor:pointer;">
-                            <Icon Name="speaker" Size="18" Color="@Theme.Muted" />
-                        </div>
-                    }
-                </div>
-
-                @if (mode == ReviewMode.Say)
+            <div @key="index" class="anim-slide-in">
+                @if (current.IsNew)
                 {
-                    @if (!answered)
-                    {
-                        <div style="text-align:center;">
-                            <div @onclick="ListenForAnswer"
-                                 style="display:inline-flex;padding:26px;border-radius:50%;cursor:pointer;background:@(listening ? Theme.Gold : Theme.Gold + "20");">
-                                <Icon Name="mic" Size="40" Color="@(listening ? Theme.Ink : Theme.Gold)" />
-                            </div>
-                            <div style="font-size:13px;color:@Theme.Muted;margin-top:12px;line-height:1.6;">@(listening ? "Listening…" : sayMessage ?? "Tap, then say it in Marathi")</div>
-                            <div @onclick="SkipSay"
-                                 style="margin-top:22px;font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.MutedDk;text-transform:uppercase;cursor:pointer;">Can't speak now</div>
+                    <div style="margin:20px 0;padding:24px 18px;background:@Theme.Ink2;border-radius:18px;border:1px solid @(Theme.Gold + "60");text-align:center;">
+                        <div style="font-family:@Theme.Deva;font-size:@(current.Front.Length > 12 ? "30px" : "52px");color:@Theme.Cream;line-height:1.3;">@current.Front</div>
+                        <div style="font-family:@Theme.Mono;font-size:12px;color:@Theme.Muted;font-style:italic;margin-top:8px;">@current.Pronunciation</div>
+                        <div style="font-family:@Theme.Serif;font-size:26px;color:@Theme.Gold;margin-top:18px;line-height:1.2;">@current.Back</div>
+                        <div style="margin-top:14px;display:flex;justify-content:center;align-items:center;gap:18px;">
+                            <span @onclick="() => Speak(current.Front)" class="tap">
+                                <Icon Name="speaker" Size="22" Color="@Theme.Cream" />
+                            </span>
+                            <StarButton Marathi="@current.Front" Size="22" />
                         </div>
-                    }
-                    else
-                    {
-                        <div style="text-align:center;padding:14px;border-radius:14px;border:1px solid @(sayCorrect ? Theme.Gold : "#8B3A3A");">
-                            <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@(sayCorrect ? Theme.Gold : "#d96666");text-transform:uppercase;">@(sayCorrect ? "Heard" : "Heard instead")</div>
-                            <div style="font-family:@Theme.Deva;font-size:22px;color:@Theme.Cream;margin-top:6px;">@(heard.FirstOrDefault() ?? "…")</div>
-                        </div>
-                        @if (!sayCorrect)
-                        {
-                            <div @onclick="OverrideSay"
-                                 style="margin-top:12px;padding:14px;text-align:center;border-radius:100px;border:1px solid @(Theme.MutedDk + "80");color:@Theme.Cream;cursor:pointer;">I said it right</div>
-                        }
-                    }
+                    </div>
+                    <div style="font-size:12px;color:@Theme.Muted;text-align:center;line-height:1.6;">You will be asked this one from tomorrow.</div>
+                    <QuizNext Visible="true" Label="Got it" OnClick="LearnNew" />
                 }
                 else
                 {
-                    <div style="display:grid;gap:10px;">
-                        @foreach (var opt in options)
+                    <div style="margin:20px 0;padding:24px 18px;background:@Theme.Ink2;border-radius:18px;border:1px solid @(Theme.MutedDk + "30");text-align:center;">
+                        @if (mode == ReviewMode.Listen && !answered)
                         {
-                            var state = AnswerState(opt);
-                            <div @onclick="() => Answer(opt)"
-                                 style="padding:16px;border-radius:14px;cursor:pointer;text-align:center;font-family:@(mode == ReviewMode.Produce ? Theme.Deva : Theme.Serif);font-size:19px;
-                                        border:1px solid @(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.MutedDk + "50");
-                                        background:@(state == "right" ? Theme.Gold : state == "wrong" ? "#8B3A3A" : Theme.Ink2);
-                                        color:@(state == "right" ? Theme.Ink : Theme.Cream);">@opt</div>
+                            <div @onclick="() => Speak(current.Front)"
+                                 style="display:inline-flex;padding:22px;border-radius:50%;cursor:pointer;background:@(Theme.Gold + "20");">
+                                <Icon Name="speaker" Size="40" Color="@Theme.Gold" />
+                            </div>
+                        }
+                        else
+                        {
+                            @if (mode is ReviewMode.Produce or ReviewMode.Say)
+                            {
+                                <div style="font-family:@Theme.Serif;font-size:@(current.Back.Length > 16 ? "22px" : "32px");color:@Theme.Cream;line-height:1.3;">@current.Back</div>
+                            }
+                            @if (mode is not (ReviewMode.Produce or ReviewMode.Say) || answered)
+                            {
+                                <div style="font-family:@Theme.Deva;font-size:@(current.Front.Length > 12 ? "26px" : "46px");color:@Theme.Cream;line-height:1.3;margin-top:@(mode is ReviewMode.Produce or ReviewMode.Say ? "12px" : "0");">@current.Front</div>
+                            }
+                            @if (answered)
+                            {
+                                <div style="font-family:@Theme.Mono;font-size:11px;color:@Theme.Muted;font-style:italic;margin-top:10px;">@current.Pronunciation</div>
+                            }
+                            <div style="margin-top:10px;display:flex;justify-content:center;align-items:center;gap:14px;">
+                                <span @onclick="() => Speak(current.Front)" class="tap">
+                                    <Icon Name="speaker" Size="18" Color="@Theme.Muted" />
+                                </span>
+                                @if (answered)
+                                {
+                                    <StarButton Marathi="@current.Front" />
+                                }
+                            </div>
                         }
                     </div>
+
+                    @if (mode == ReviewMode.Say)
+                    {
+                        @if (!answered)
+                        {
+                            <div style="text-align:center;">
+                                <div @onclick="ListenForAnswer"
+                                     style="display:inline-flex;padding:26px;border-radius:50%;cursor:pointer;background:@(listening ? Theme.Gold : Theme.Gold + "20");">
+                                    <Icon Name="mic" Size="40" Color="@(listening ? Theme.Ink : Theme.Gold)" />
+                                </div>
+                                <div style="font-size:13px;color:@Theme.Muted;margin-top:12px;line-height:1.6;">@(listening ? "Listening…" : sayMessage ?? "Tap, then say it in Marathi")</div>
+                                <div @onclick="SkipSay"
+                                     style="margin-top:22px;font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.MutedDk;text-transform:uppercase;cursor:pointer;">Can't speak now</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div style="text-align:center;padding:14px;border-radius:14px;border:1px solid @(sayCorrect ? Theme.Gold : Theme.Error);">
+                                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@(sayCorrect ? Theme.Gold : Theme.ErrorText);text-transform:uppercase;">@(sayCorrect ? "Heard" : "Heard instead")</div>
+                                <div style="font-family:@Theme.Deva;font-size:22px;color:@Theme.Cream;margin-top:6px;">@(heard.FirstOrDefault() ?? "…")</div>
+                            </div>
+                            @if (!sayCorrect)
+                            {
+                                <div @onclick="OverrideSay"
+                                     style="margin-top:12px;padding:14px;text-align:center;border-radius:100px;border:1px solid @(Theme.MutedDk + "80");color:@Theme.Cream;cursor:pointer;">I said it right</div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <div style="display:grid;gap:10px;">
+                            @foreach (var opt in options)
+                            {
+                                var state = AnswerState(opt);
+                                <div @onclick="() => Answer(opt)" class="option @(state == "right" ? "is-right" : state == "wrong" ? "is-wrong" : "")"
+                                     style="padding:14px;border-radius:14px;cursor:pointer;text-align:center;font-family:@(mode == ReviewMode.Produce ? Theme.Deva : Theme.Serif);font-size:19px;">@opt</div>
+                            }
+                        </div>
+                    }
+                    <QuizNext Visible="answered" Label="@(index + 1 >= total ? "Finish" : "Next")" OnClick="Advance" />
                 }
-                <QuizNext Visible="answered" Label="@(index + 1 >= total ? "Finish" : "Next")" OnClick="Advance" />
-            }
+            </div>
         </div>
     }
 
@@ -184,7 +207,16 @@
     private string chosen = "";
     private readonly Random rng = new();
 
-    protected override async Task OnInitializedAsync() => await Reload();
+    [Parameter, SupplyParameterFromQuery(Name = "hard")] public bool Hard { get; set; }
+    private bool? loadedHard;
+
+    // Same component serves /review and /review?hard=true, so reload whenever the mode changes.
+    protected override async Task OnParametersSetAsync()
+    {
+        if (loadedHard == Hard) return;
+        loadedHard = Hard;
+        await Reload();
+    }
 
     private async Task Reload()
     {
@@ -194,7 +226,8 @@
         score = 0;
         allCards = await ReviewService.GetAllCardsAsync();
         speechOk = await JSRuntime.InvokeAsync<bool>("speechAvailable");
-        queue = await ReviewService.GetDueAsync(SessionSize);
+        await ReviewService.GraduateHardAsync();
+        queue = Hard ? await ReviewService.GetHardDrillAsync(SessionSize) : await ReviewService.GetDueAsync(SessionSize);
         total = queue.Count;
         started = total > 0;
         isLoading = false;
@@ -228,7 +261,9 @@
         // Same-topic distractors first (Monday vs Tuesday, not Monday vs apple), topped up from the deck.
         var sameGroup = allCards.Where(c => c.Group == current!.Group).OrderBy(_ => rng.Next());
         var sameDeck = allCards.Where(c => c.Deck == current!.Deck && c.Group != current!.Group).OrderBy(_ => rng.Next());
-        options = sameGroup.Concat(sameDeck)
+        // Small decks (a handful of typed-in words) top up from general vocabulary.
+        var fallback = allCards.Where(c => c.Deck is "words" or "verbs" or "commute").OrderBy(_ => rng.Next());
+        options = sameGroup.Concat(sameDeck).Concat(fallback)
                            .Select(OptionText)
                            .Where(t => t != correct)
                            .Distinct()
@@ -256,6 +291,7 @@
         heard = attempt.Matches;
         answered = true;
         sayCorrect = SpeechMatch.IsMatch(current.Front, heard);
+        await JSRuntime.InvokeVoidAsync("lmHaptic", sayCorrect ? "success" : "error");
         await Streak.TouchAsync();
         await Speak(current.Front);
 
@@ -332,6 +368,7 @@
         chosen = opt;
         var correct = opt == OptionText(current);
         if (correct) score++;
+        await JSRuntime.InvokeVoidAsync("lmHaptic", correct ? "success" : "error");
         await Srs.RecordAsync(current.Deck, current.Id, correct);
         await Streak.TouchAsync();
         await Speak(current.Front);

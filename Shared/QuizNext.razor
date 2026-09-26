@@ -1,10 +1,12 @@
-@* Pinned above the tab bar so Next never ends up below the fold on a phone. *@
+@* Pinned above the tab bar (and mini player) so Next never ends up below the fold on a phone. *@
+@using LearnMarathi.Services
+@inject CommutePlayer Player
+@inject IJSRuntime JSRuntime
 @if (Visible)
 {
-    <div style="height:84px;"></div>
-    <div style="position:fixed;left:0;right:0;bottom:calc(@(NavBar.Height)px + env(safe-area-inset-bottom));z-index:19;padding:14px 24px 12px;background:linear-gradient(to bottom, transparent, @Theme.Ink 35%);">
-        <div @onclick="OnClick"
-             style="padding:16px;text-align:center;border-radius:100px;background:@Theme.Cream;color:@Theme.Ink;font-weight:600;cursor:pointer;">
+    <div style="height:@(84 + (Player.MiniVisible ? CommutePlayer.MiniHeight : 0))px;"></div>
+    <div style="position:fixed;left:0;right:0;bottom:calc(@(NavBar.Height + (Player.MiniVisible ? CommutePlayer.MiniHeight : 0))px + env(safe-area-inset-bottom));z-index:19;padding:14px 24px 12px;background:linear-gradient(to bottom, transparent, @Theme.Ink 35%);">
+        <div @onclick="OnClick" class="btn btn-primary">
             @Label
         </div>
     </div>
@@ -17,4 +19,13 @@
 
     /// <summary>Pause after a correct answer before moving on, long enough to hear it and see the gold.</summary>
     public const int AutoAdvanceMs = 900;
+
+    private bool wasVisible;
+
+    // When the bar appears, scroll to the bottom so the answers sit above it rather than under it.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Visible && !wasVisible) await JSRuntime.InvokeVoidAsync("lmScrollToBottom");
+        wasVisible = Visible;
+    }
 }

@@ -41,7 +41,7 @@
 
         @if (currentQuestion != null)
         {
-            <div style="margin:28px 24px;padding:36px 0;text-align:center;border-top:1px solid @Theme.Gold;border-bottom:1px solid @Theme.Gold;cursor:pointer;" @onclick="ReplayAudio" title="Tap to hear">
+            <div @key="currentQuestion" class="anim-slide-in" style="margin:28px 24px;padding:36px 0;text-align:center;border-top:1px solid @Theme.Gold;border-bottom:1px solid @Theme.Gold;cursor:pointer;" @onclick="ReplayAudio" title="Tap to hear">
                 @if (listeningMode)
                 {
                     <div style="display:flex;justify-content:center;align-items:center;height:130px;">
@@ -72,8 +72,8 @@
                     var optClass = GetOptionClass(option);
                     var isPicked = answerSelected && option == selectedAnswer;
                     var isCorrectOpt = answerSelected && option == currentQuestion.CorrectAnswer;
-                    var bg = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? "#5a2828" : "transparent");
-                    var border = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? "#a04040" : Theme.MutedDk + "80");
+                    var bg = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? Theme.Error : "transparent");
+                    var border = isCorrectOpt ? Theme.Gold : (isPicked && !isCorrect ? Theme.Error : Theme.MutedDk + "80");
                     var fg = isCorrectOpt ? Theme.Ink : Theme.Cream;
                     var letter = letters[letterIdx % letters.Length];
                     var captured = option;
@@ -89,8 +89,8 @@
 
             @if (answerSelected)
             {
-                <div style="margin:24px 24px 0;padding:16px 18px;background:@(isCorrect ? Theme.Gold + "18" : "#5a282818");border-left:2px solid @(isCorrect ? Theme.Gold : "#d96666");border-radius:2px 8px 8px 2px;">
-                    <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@(isCorrect ? Theme.Gold : "#d96666");text-transform:uppercase;">@(isCorrect ? "✓ Correct" : "✗ Wrong")</div>
+                <div class="anim-fade-up" style="margin:24px 24px 0;padding:16px 18px;background:@(isCorrect ? Theme.Gold + "18" : Theme.Error + "18");border-left:2px solid @(isCorrect ? Theme.Gold : Theme.ErrorText);border-radius:2px 8px 8px 2px;">
+                    <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@(isCorrect ? Theme.Gold : Theme.ErrorText);text-transform:uppercase;">@(isCorrect ? "✓ Correct" : "✗ Wrong")</div>
                     @if (!isCorrect)
                     {
                         <div style="font-family:@Theme.Serif;font-size:16px;color:@Theme.Cream;margin-top:6px;">Answer: <span style="color:@Theme.Gold;">@currentQuestion.CorrectAnswer</span></div>
@@ -118,15 +118,15 @@
 
         @if (!string.IsNullOrEmpty(errorMessage))
         {
-            <div style="margin:18px 24px;padding:16px;background:#5a282818;border-left:2px solid #d96666;border-radius:2px 8px 8px 2px;">
-                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:#d96666;text-transform:uppercase;">Error</div>
+            <div style="margin:18px 24px;padding:16px;background:@(Theme.Error + "18");border-left:2px solid @Theme.ErrorText;border-radius:2px 8px 8px 2px;">
+                <div style="font-family:@Theme.Mono;font-size:10px;letter-spacing:2px;color:@Theme.ErrorText;text-transform:uppercase;">Error</div>
                 <div style="font-family:@Theme.Sans;font-size:13px;color:@Theme.Cream;margin-top:4px;">@errorMessage</div>
             </div>
         }
 
         @if (isLoading)
         {
-            <div style="padding:40px 24px;text-align:center;font-family:@Theme.Mono;font-size:11px;letter-spacing:2px;color:@Theme.Muted;text-transform:uppercase;">Loading…</div>
+            <div style="padding:24px;display:grid;gap:12px;"><div class="skeleton" style="height:120px;border-radius:18px;"></div><div class="skeleton" style="height:52px;"></div><div class="skeleton" style="height:52px;"></div></div>
         }
         else if (words.Any())
         {
@@ -150,7 +150,7 @@
                     var active = selectedCategory == c;
                     var cap = c;
                     <span @onclick="() => FilterByCategory(cap)"
-                          style="padding:8px 14px;border-radius:100px;white-space:nowrap;border:1px solid @(active ? Theme.Gold : Theme.MutedDk + "80");background:@(active ? Theme.Gold : "transparent");color:@(active ? Theme.Ink : Theme.Cream);font-family:@Theme.Sans;font-size:12px;font-weight:500;cursor:pointer;">@c</span>
+                          class="chip @(active ? "is-active" : "")">@c</span>
                 }
             </div>
 
@@ -388,6 +388,7 @@
         answerSelected = true;
         selectedAnswer = answer;
         isCorrect = answer == currentQuestion.CorrectAnswer;
+        await JSRuntime.InvokeVoidAsync("lmHaptic", isCorrect ? "success" : "error");
 
         if (isCorrect) correctAnswers++; else wrongAnswers++;
 

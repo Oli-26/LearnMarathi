@@ -1,0 +1,30 @@
+@* Toggles a word on the hard-words list. Keyed by Marathi text, so it applies across decks. *@
+@using LearnMarathi.Services
+@implements IDisposable
+@inject IHardWordsService HardWords
+
+<span @onclick="Toggle" @onclick:stopPropagation="true" title="@(isHard ? "Remove from hard words" : "Add to hard words")"
+      class="tap">
+    <Icon Name="@(isHard ? "star-fill" : "star")" Size="@Size" Color="@(isHard ? Theme.Gold : Theme.MutedDk)" />
+</span>
+
+@code {
+    [Parameter, EditorRequired] public string Marathi { get; set; } = "";
+    [Parameter] public int Size { get; set; } = 18;
+
+    private bool isHard;
+
+    protected override void OnInitialized() => HardWords.Changed += OnChanged;
+
+    protected override async Task OnParametersSetAsync() => isHard = await HardWords.IsHardAsync(Marathi);
+
+    private async Task Toggle() => await HardWords.SetAsync(Marathi, !isHard);
+
+    private async void OnChanged()
+    {
+        isHard = await HardWords.IsHardAsync(Marathi);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() => HardWords.Changed -= OnChanged;
+}
